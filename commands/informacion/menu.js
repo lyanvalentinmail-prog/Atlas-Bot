@@ -121,11 +121,16 @@ const oneLine = (value, fallback = '') => {
 
 const sendList = async (sock, chatId, msg, { title, subtitle, text, footer, buttonText, sections }) => {
   const baileys = await loadBaileys()
-  if (!baileys?.proto?.Message?.InteractiveMessage ||
-      typeof baileys.generateWAMessageFromContent !== 'function') {
+  // proto cambia de nombre según la versión de Baileys:
+  // 6.7 exporta "proto", 6.17 exporta "WAProto" (y default.proto).
+  const proto = baileys?.proto || baileys?.WAProto || baileys?.default?.proto
+  const generateWAMessageFromContent =
+    baileys?.generateWAMessageFromContent || baileys?.default?.generateWAMessageFromContent
+
+  if (!proto?.Message?.InteractiveMessage ||
+      typeof generateWAMessageFromContent !== 'function') {
     throw new Error('esta instalación de Baileys no soporta listas interactivas')
   }
-  const { proto, generateWAMessageFromContent } = baileys
 
   const content = proto.Message.InteractiveMessage.fromObject({
     body: { text: String(text).slice(0, 1000) },
