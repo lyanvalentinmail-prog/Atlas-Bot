@@ -135,8 +135,7 @@ export const config = {
   //   header/info/footer » { user, botName, botWeb, botType, owner,
   //                          greeting, prefix, totalCommands, users, uptime, kaomoji }
   //   categoryTitle      » { label, count }
-  //   commandLine        » { prefix, name, alias, extra }
-  //   commandDesc        » { description }
+  //   commandLine        » { prefix, name, description }
   menu: {
     // ── « Banner del menú » ──────────────────
     // Imagen que acompaña al menú (ruta relativa a la
@@ -150,9 +149,8 @@ export const config = {
     kaomoji: '૮₍ ˶ᵔ ᵕ ᔔ˶ ₎ა',
     kaomojiHint: '૮(˶ᵔᕕᔔ˶)ა',
     divider: '✧･ﾟ: ✧･ﾟ: ── ⟡ ── :･ﾟ✧:･ﾟ✧',
-    frameTop: '╭╼ׅࣶ፝֟╾╌ֵ╾͜─ํ͜┈ְ ࣭࣪⢏࣭ࣧ⢢࣭ׄ᎐፝֟͟͝᎐࣭ׄ⡔࣭ࣧ⡹࣭࣭ׄ࣪ ְ┈ํ͜─͜╼ꨪᰰ╾࣮╌╼ࣶׅ፝֟╾╮',
-    frameBottom: '╰╼ׅࣶ፝֟╾╌ֵ╾͜─ํ͜┈ְ ࣭࣪⢏࣭ࣧ⢢࣭ׄ᎐፝֟͟͝᎐࣭ׄ⡔࣭ࣧ⡹࣭࣭ׄ࣪ ְ┈ํ͜─͜╼ꨪᰰ╾࣮╌╼ࣶׅ፝֟╾╯',
-    bullet: '₍ᐢ..ᐢ₎ ᜒ',
+    thinLine: '───────────────',
+    bullet: '₍ᐢ..ᐢ₎',
 
     // ── « Saludo de bienvenida » ─────────────
     header: ({ user, botName, greeting, kaomoji }) =>
@@ -170,29 +168,21 @@ export const config = {
     ].join('\n'),
 
     // ── « Título de la lista » ───────────────
-    commandsTitle: () => '𐚁 ֹ ִ LISTA DE COMANDOS ! ୧ ֹ ִ',
+    commandsTitle: () => '✧ *LISTA DE COMANDOS* ✧',
 
     // ── « Pista bajo el título » ─────────────
     hint: ({ prefix, filtered, kaomojiHint }) =>
       filtered
-        ? `> ${kaomojiHint} Usa *${prefix}menu* para volver al menú completo.`
-        : `> ${kaomojiHint} Usa *${prefix}menu <categoría>* para ver una categoría específica.`,
+        ? `> ${kaomojiHint} Usa *${prefix}menu* para el menú completo.`
+        : `> ${kaomojiHint} Usa *${prefix}menu <categoría>* para filtrar.`,
 
     // ── « Encabezado de cada categoría » ─────
-    categoryTitle: ({ label }) => `✐ *CATEGORÍA ${label}*`,
+    categoryTitle: ({ label }) => `✐ *${label}*`,
 
     // ── « Línea de cada comando » ────────────
-    commandLine: ({ prefix, name, alias, extra, bullet }) => {
-      const names = [name, ...(alias || [])]
-        .slice(0, 2)
-        .map(n => `*${prefix}${n}*`)
-        .join(' • ')
-      return `${bullet} ${names}${extra ? ` + _${extra}_` : ''}`
-    },
-
-    // ── « Descripción de cada comando » ──────
-    commandDesc: ({ description }) =>
-      `> 〄 ${toSmallCaps(description || 'sin descripción.')}`,
+    // El detalle completo se consulta con !help <comando>
+    commandLine: ({ prefix, name, description, bullet }) =>
+      `${bullet} *${prefix}${name}* » ${toSmallCaps(description || '')}`,
 
     // ── « Cierre del menú » ──────────────────
     footer: ({ botName, totalCommands }) =>

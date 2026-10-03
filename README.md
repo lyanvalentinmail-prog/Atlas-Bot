@@ -394,17 +394,20 @@ banner: 'assets/banner.jpg',   // imagen del menú
 | Pieza | Qué controla |
 |---|---|
 | `kaomoji` / `kaomojiHint` | Caritas del saludo y de la pista |
-| `divider` | Línea divisoria (`✧･ﾟ: ✧･ﾟ: ── ⟡ ── ...`) |
-| `frameTop` / `frameBottom` | Marco de cada categoría |
-| `bullet` | Viñeta de cada comando (`₍ᐢ..ᐢ₎ ᜒ`) |
+| `divider` | Línea divisoria del encabezado (`✧･ﾟ: ✧･ﾟ: ...`) |
+| `thinLine` | Separador fino entre categorías (`───────────────`) |
+| `bullet` | Viñeta de cada comando (`₍ᐢ..ᐢ₎`) |
 | `header(datos)` | Saludo inicial (`> Hola ...`) |
 | `info(datos)` | Líneas ʙᴏᴛ / ᴡᴇʙ / ᴛɪᴘᴏ / ᴀᴄᴛɪᴠᴏ / ᴜsᴜᴀʀɪᴏs / ᴄᴍᴅs |
-| `commandsTitle()` | Título de la lista (`LISTA DE COMANDOS`) |
+| `commandsTitle()` | Título de la lista (`*LISTA DE COMANDOS*`) |
 | `hint({ prefix, filtered })` | Pista bajo el título |
-| `categoryTitle({ label })` | Encabezado (`✐ *CATEGORÍA ...*`) |
-| `commandLine(datos)` | Línea de comando (`*!cmd* • *!alias* + _<uso>_`) |
-| `commandDesc(datos)` | Descripción en letras pequeñas (`> 〄 ...`) |
+| `categoryTitle({ label })` | Encabezado de categoría (`✐ *GRUPOS*`) |
+| `commandLine(datos)` | Línea de comando (`*!cmd* » ᴅᴇꜱᴄʀɪᴘᴄɪóɴ`) |
 | `footer(datos)` | Cierre del menú |
+
+Datos de `commandLine`: `{ prefix, name, description, bullet }` —
+cada comando ocupa una sola línea; el detalle completo (alias, uso,
+restricciones) se consulta con `!help <comando>`.
 
 Datos disponibles en `header`, `info` y `footer`:
 

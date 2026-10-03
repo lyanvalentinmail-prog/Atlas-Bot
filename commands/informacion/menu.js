@@ -98,27 +98,20 @@ export default {
     for (const [category, cmds] of entries) {
       const label = config.categoryLabels[category] || category.toUpperCase()
 
-      body.push('', m.frameTop)
+      body.push('', m.thinLine)
       body.push(m.categoryTitle({ label, count: cmds.length }))
-      body.push('')
 
-      cmds.forEach((cmd, i) => {
-        const extra = (cmd.usage || cmd.name).split(/\s+/).slice(1).join(' ')
+      for (const cmd of cmds) {
         body.push(m.commandLine({
           prefix,
           name: cmd.name,
-          alias: cmd.alias,
-          extra,
+          description: cmd.description,
           bullet: m.bullet
         }))
-        body.push(m.commandDesc({ description: cmd.description }))
-        if (i < cmds.length - 1) body.push('')
-      })
-
-      body.push(m.frameBottom)
+      }
     }
 
-    const footer = ['', m.divider, '', m.footer(data)]
+    const footer = ['', m.thinLine, '', m.footer(data)]
 
     // ── « Envío: con banner o solo texto » ──
     const banner = getBanner(config)
