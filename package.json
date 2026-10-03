@@ -1,0 +1,32 @@
+{
+  "name": "atlas-bot",
+  "version": "1.0.0",
+  "description": "Base modular y profesional para un bot de WhatsApp con Node.js y Baileys",
+  "type": "module",
+  "main": "index.js",
+  "license": "MIT",
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "scripts": {
+    "start": "node index.js",
+    "pm2:start": "pm2 start ecosystem.config.cjs",
+    "pm2:stop": "pm2 stop atlas-bot",
+    "pm2:restart": "pm2 restart atlas-bot",
+    "pm2:logs": "pm2 logs atlas-bot",
+    "pm2:delete": "pm2 delete atlas-bot"
+  },
+  "keywords": [
+    "whatsapp",
+    "bot",
+    "baileys",
+    "nodejs",
+    "whatsapp-bot"
+  ],
+  "dependencies": {
+    "@whiskeysockets/baileys": "^6.7.24",
+    "dotenv": "^16.4.7",
+    "pino": "^9.6.0",
+    "qrcode-terminal": "^0.12.0"
+  }
+}
