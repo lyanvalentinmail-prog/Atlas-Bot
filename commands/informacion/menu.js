@@ -19,7 +19,6 @@
 import { existsSync, readFileSync } from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { proto, generateWAMessageFromContent } from '@whiskeysockets/baileys'
 import { logger } from '../../lib/logger.js'
 import { formatUptime, getGreeting } from '../../lib/utils.js'
 import { getUserCount } from '../../lib/database.js'
@@ -98,6 +97,18 @@ const splitText = (text, max = MAX_CHUNK) => {
     : chunks.map((chunk, i) => `${chunk}\n\n> [: ${i + 1}/${chunks.length}]`)
 }
 
+// Baileys se carga de forma perezosa: si en la máquina
+// del usuario la versión instalada no trae proto o los
+// generadores, menu.js carga igual y el menú cae a texto.
+let baileysPromise = null
+const loadBaileys = () => {
+  if (!baileysPromise) {
+    baileysPromise = import('@whiskeysockets/baileys')
+      .catch(() => null)
+  }
+  return baileysPromise
+}
+
 // Envía UN mensaje de lista interactivo (single_select).
 // Las filas ejecutan su "id" como mensaje al tocarlas:
 // así, tocar «JUEGOS» envía «.menu juegos» solo.
@@ -109,6 +120,13 @@ const oneLine = (value, fallback = '') => {
 }
 
 const sendList = async (sock, chatId, msg, { title, subtitle, text, footer, buttonText, sections }) => {
+  const baileys = await loadBaileys()
+  if (!baileys?.proto?.Message?.InteractiveMessage ||
+      typeof baileys.generateWAMessageFromContent !== 'function') {
+    throw new Error('esta instalación de Baileys no soporta listas interactivas')
+  }
+  const { proto, generateWAMessageFromContent } = baileys
+
   const content = proto.Message.InteractiveMessage.fromObject({
     body: { text: String(text).slice(0, 1000) },
     footer: { text: oneLine(footer) },
