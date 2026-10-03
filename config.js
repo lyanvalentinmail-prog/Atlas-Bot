@@ -14,7 +14,7 @@ import { fileURLToPath } from 'node:url'
 import dotenv from 'dotenv'
 import { toSmallCaps } from './lib/utils.js'
 
-dotenv.config({ quiet: true })
+dotenv.config({ quiet: true, override: true })
 
 // Carpeta raíz del proyecto (donde está este archivo)
 export const ROOT_DIR = path.dirname(fileURLToPath(import.meta.url))
@@ -45,7 +45,16 @@ export const config = {
   // Prefijo de comandos. Cada carácter funciona como prefijo:
   // PREFIX = '!'  -> solo !
   // PREFIX = '!/' -> ! y /
-  prefix: process.env.PREFIX || '!',
+  // NOTA Termux: su shell trae una variable PREFIX propia
+  // (/data/data/com.termux/files/usr). Si el entorno mete una
+  // ruta, la descartamos y se usa '!'. Puedes poner tu prefijo
+  // con BOT_PREFIX o con PREFIX en el .env (el .env gana).
+  prefix: (() => {
+    const raw = process.env.BOT_PREFIX || process.env.PREFIX
+    const sane = typeof raw === 'string' &&
+      raw.length > 0 && raw.length <= 3 && !raw.includes('/')
+    return sane ? raw : '!'
+  })(),
 
   // ══ « 2. CONEXIÓN » ═══════════════════════
   sessionName: process.env.SESSION_NAME || 'session',

@@ -428,6 +428,10 @@ PREFIX=./!
   `OWNER_NUMBER=521234567890,521098765432`
 - `PREFIX`: cada carácter es un prefijo válido. Con `PREFIX=./!` sirven
   `.menu`, `/menu` y `!menu`.
+  **Nota Termux:** su shell trae una variable de sistema llamada `PREFIX`
+  (una ruta `/data/data/...`). Si el robot arranca mostrando una ruta como
+  prefijo, usa `BOT_PREFIX=.` en el `.env` — el bot descarta rutas como
+  prefijo automáticamente.
 
 ## » Cambiar el menú
 
