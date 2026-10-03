@@ -21,17 +21,32 @@ Código limpio, sin emojis (solo símbolos), sin dependencias innecesarias y lis
 - Conexión por **código QR** y **código de vinculación** (pairing).
 - **Sesión persistente**: no vuelves a vincular después de reiniciar.
 - **Reconexión automática** y manejo de errores.
-- **62 comandos** con alias en **14 categorías**: información, IA, descargas,
-  búsqueda, stickers, herramientas, grupos, perfil, sub-bots, juegos,
-  economía, gacha, pokemon y propietario.
-- **Anti-link y bienvenida automática por grupo** (configurables con
-  `!antilink on/off` y `!bienvenida on/off`).
+- **227 comandos** con alias en **20 categorías**: información, IA, descargas,
+  búsqueda, anime, stickers, imágenes, herramientas, utilidades, grupos,
+  moderación, administración, perfil, sub-bots, juegos, memes, economía,
+  gacha, pokemon y propietario.
+- **Moderación completa por grupo**: mute, warns con expulsión automática
+  al tercer aviso, ban con veto anti-reingreso, borrado de mensajes,
+  anti-link configurable (borrar/avisar/expulsar), anti-spam, anti-flood,
+  anti-bot, anti-NSFW, chat silenciado y comandos solo-admins.
+- **Minijuegos con estado** (el bot lee tus respuestas en el chat):
+  ahorcado, trivia, quiz, adivina, número secreto, memoria, scrabble,
+  anagrama, capitales, banderas, quiz de pokémon/anime/fútbol,
+  verdadero-falso y reacción rápida.
+- **Anti-link y bienvenida personalizables por grupo** (`!antilink on/off`,
+  `!bienvenida on/off`, `!setwelcome` y `!setbye` con `{user}`).
+- **Prefijo por grupo** además del global (`!setprefix`).
 - Juegos, economía y gacha con **base de datos JSON propia** (monedas,
-  recompensa diaria, registro, colecciones) — sin bases de datos externas.
+  recompensa diaria, banco, tienda, registro, nivel/exp, matrimonios y
+  colecciones) — sin bases de datos externas.
 - Comandos con **APIs gratuitas sin registro**: clima, Wikipedia, Pokémon
-  (PokeAPI), anime (Jikan), países (REST Countries), geolocalización de IP
-  (ipapi.co), códigos QR, generador de imágenes IA (Pollinations),
-  acortador y traductor.
+  (PokeAPI), anime y manga (Jikan), waifus (waifu.pics / nekos.best),
+  países (REST Countries), IP (ipapi.co), QR, imágenes IA (Pollinations),
+  definiciones (dictionaryapi.dev), noticias y tendencias (RSS), imágenes
+  libres (Openverse), letras (lyrics.ovh), series (TVMaze), juegos
+  (CheapShark), memes (meme-api.com) y más.
+- Edición de imágenes (blur, recorte, texto, meme, pixel, sepia...) con
+  **sharp opcional** (`npm i sharp`).
 - Listo para **VPS/Linux** y **Termux**.
 - Soporte para **PM2** (archivo `ecosystem.config.cjs` incluido).
 
@@ -63,30 +78,65 @@ Atlas-Bot/
 │
 ├── lib/                      # Núcleo del bot (no necesitas tocarlo)
 │   ├── connection.js         # Conexión, QR, pairing, reconexión y sesión
-│   ├── handler.js            # Lector de mensajes, prefijo y permisos
+│   ├── handler.js            # Lector de mensajes, prefijo, moderación y permisos
 │   ├── loader.js             # Cargador automático de comandos
-│   ├── database.js           # Mini base de datos JSON (usuarios y monedas)
-│   ├── logger.js             # Mensajes de consola con color
+│   ├── database.js           # Mini base de datos JSON (usuarios, monedas, ajustes)
+│   ├── logger.js             # Mensajes de consola con color (+ historial para !logs)
+│   ├── games.js              # Registro de los minijuegos con estado (por chat)
+│   ├── trackers.js           # Contadores en memoria (antispam/antiflood/antibot)
+│   ├── image.js              # Descarga de imágenes y carga opcional de sharp
 │   ├── utils.js              # Utilidades compartidas
 │   └── data/
-│       └── characters.js     # Personajes del gacha (edítalos a tu gusto)
+│       ├── characters.js     # Personajes del gacha (edítalos a tu gusto)
+│       ├── quiz.js           # Palabras, preguntas y pistas de los minijuegos
+│       ├── shop.js           # Objetos de la tienda virtual
+│       └── texts.js          # Chistes, frases, verdades/retos y símbolos
 │
 ├── commands/                 # COMANDOS (cada carpeta = una categoría)
 │   ├── informacion/          # menu, help, ping, info, creador, repo
 │   ├── ia/                   # ia (tu API key), imagine (Pollinations, gratis)
 │   ├── descargas/            # descargar, play (plantillas para tu API)
-│   ├── busqueda/             # clima, wiki, anime, pais, ipinfo
-│   ├── stickers/             # sticker, toimg (activar con: npm i sharp)
+│   ├── busqueda/             # clima, wiki, anime, pais, ipinfo, google, ytsearch,
+│   │                         # github, npm, define, sinonimo, antonimo, noticias,
+│   │                         # tendencias, imagen, gif, lyrics, pelicula, serie, juego
+│   ├── anime/                # manga, personaje, seiyuu, temporada, animefoto,
+│   │                         # randomanime, randommanga, waifu, husbando, animerank
+│   ├── stickers/             # sticker, toimg, sticker2, stickertexto, stickerqr,
+│   │                         # take, steal, stickerinfo, pack, toaudio, togif, tovideo
+│   ├── imagenes/             # blur, resize, recortar, rotate, flip, grayscale, pixel,
+│   │                         # invertir, brillo, contraste, sepia, negativo, marco,
+│   │                         # textoimg, meme (requieren: npm i sharp)
 │   ├── herramientas/         # calcular, acortar, traducir, qr, hora, morse, estilo
+│   ├── utilidades/           # base64, binario, hex, uuid, contraseña, hash,
+│   │                         # cronometro, temporizador, fecha, calendario,
+│   │                         # porcentaje, promedio, convertir, rgb, bin
 │   ├── grupos/               # grupo, kick, promote, demote, tagall, link,
 │   │                         # antilink, bienvenida, nuevolink, setdesc, setname
-│   ├── perfil/               # perfil, registrar
+│   ├── moderacion/           # mute, unmute, warn, warnings, delwarn, resetwarn,
+│   │                         # ban, unban, borrar, antilink2, antispam, antiflood,
+│   │                         # antibot, antinsfw, soloadmins, silenciar, desilenciar,
+│   │                         # listadmins, staff, reglas
+│   ├── administracion/       # setreglas, setfoto, setwelcome, setbye, setprefix,
+│   │                         # resetgrupo, config, settings, open, close, add,
+│   │                         # remove, promoteall, demoteall, listmembers
+│   ├── perfil/               # perfil, registrar, level, xp, rank, reputacion, bio,
+│   │                         # avatar, edad, matrimonio, divorcio, familia
 │   ├── subbots/              # serbot (plantilla)
-│   ├── juegos/               # ppt, dado, moneda, pregunta, ship, pareja, verdad, reto
-│   ├── economia/             # daily, balance, apostar, top, slot, transferir
+│   ├── juegos/               # ppt, dado, moneda, pregunta, ship, pareja, verdad,
+│   │                         # reto, ahorcado, trivia, quiz, adivina, numero, memoria,
+│   │                         # scrabble, anagrama, capitales, banderas, pokemonquiz,
+│   │                         # animequiz, futbolquiz, verdadero, reaccion
+│   ├── memes/                # meme2, chiste, dato, frase, insulto, roast,
+│   │                         # motivacion, consejo, 8ball, eleccion, random, azar,
+│   │                         # compatibilidad, suerte, horoscopo
+│   ├── economia/             # daily, balance, apostar, top, slot, transferir, work,
+│   │                         # crime, rob, depositar, retirar, banco, inventario,
+│   │                         # tienda, comprar, vender
 │   ├── gacha/                # roll, personajes, buscarpj
 │   ├── pokemon/              # pokedex, atrapar, mispokemon, liberar
-│   └── propietario/          # join, bc, reiniciar (solo dueño, al final del menú)
+│   └── propietario/          # join, bc, reiniciar, eval, exec, shell, broadcast,
+│                             # block, unblock, addowner, delowner, owners, logs,
+│                             # backup, update, plugins, reload, estado (solo dueño)
 │
 ├── database/                 # Se crea sola: usuarios y monedas (ignorada por git)
 └── session/                  # Se crea sola: guarda la sesión (ignorada por git)
@@ -556,14 +606,72 @@ Algunos comandos dependen de servicios externos. Estado actual:
 
 | Categoría | Comandos | Estado |
 |---|---|---|
-| Búsqueda | `clima`, `wiki`, `anime`, `pais`, `ipinfo` | Funcionan (APIs gratuitas sin registro) |
+| Búsqueda | `clima`, `wiki`, `anime`, `pais`, `ipinfo`, `github`, `npm`, `define`, `sinonimo`, `antonimo`, `noticias`, `tendencias`, `imagen`, `lyrics`, `serie`, `juego` | Funcionan (APIs gratuitas sin registro) |
+| Búsqueda | `google` (DuckDuckGo), `ytsearch`, `gif`, `pelicula` | Funcionan (páginas públicas «best-effort», pueden fallar si el proveedor cambia su HTML) |
+| Anime/Jikan | `anime`, `manga`, `personaje`, `seiyuu`, `temporada`, `animefoto`, `randomanime`, `randommanga`, `animerank` | Funcionan (Jikan, gratuita) |
+| Anime | `waifu`, `husbando` | Funcionan (waifu.pics / nekos.best) |
 | Pokemon | `pokedex`, `atrapar`, `mispokemon`, `liberar` | Funcionan (PokeAPI, gratuita) |
 | Herramientas | `acortar`, `traducir`, `calcular`, `qr` | Funcionan (sin registro) |
-| Herramientas | `hora`, `morse`, `estilo` | Funcionan **sin ninguna API** |
+| Herramientas / Utilidades | `hora`, `morse`, `estilo`, `base64`, `binario`, `hex`, `uuid`, `contraseña`, `hash`, `cronometro`, `temporizador`, `fecha`, `calendario`, `porcentaje`, `promedio`, `convertir`, `rgb`, `bin` | Funcionan **sin ninguna API** |
 | IA | `imagine` | Funciona (Pollinations, gratis sin registro) |
 | IA | `ia` | Requiere tu **API key** |
-| Stickers | `sticker`, `toimg` | Requieren instalar **sharp** |
+| Stickers | `sticker`, `toimg`, `sticker2`, `stickertexto`, `stickerqr`, `take`, `steal`, `togif` | Requieren instalar **sharp** (con aviso amigable si falta) |
+| Stickers | `stickerinfo`, `pack`, `toaudio`, `tovideo` | Informativos / requieren ffmpeg para video |
+| Imágenes | todas las de `imagenes/` | Requieren instalar **sharp** |
 | Descargas / Sub-Bots | `descargar`, `play`, `serbot` | **Plantillas** para conectar tu API |
+
+**» Moderación (grupos)**
+
+Todo se guarda por grupo en `database/db.json`. Los comandos de moderación
+son `adminOnly` (y varios piden que el bot también sea admin):
+
+```
+!mute @user / !unmute @user      # silencia a un miembro (se borran sus mensajes)
+!warn @user [motivo]             # a las 3 advertencias se expulsa solo
+!ban @user / !unban @user        # expulsa y veta (si vuelve a entrar, sale de nuevo)
+!borrar (respondiendo)           # elimina el mensaje citado
+!antilink on/off                 # borra enlaces de grupos (modo clásico)
+!antilink2 borrar/avisar/expulsar/off   # modo configurable
+!antispam / !antiflood / !antibot / !antinsfw on/off
+!silenciar [min] / !desilenciar  # calla el chat para no-admins
+!soloadmins add/del/lista <cmd>  # deja comandos solo para admins del grupo
+```
+
+**» Administración del grupo**
+
+`!setreglas` (todos las leen con `!reglas`), `!setwelcome`/`!setbye`
+(personalizan bienvenida/despedida con `{user}`), `!setprefix` (prefijo
+extra solo del grupo, sin quitar el global), `!setfoto`, `!config`,
+`!settings` (panel), `!open`/`!close`, `!add`, `!remove`,
+`!promoteall`/`!demoteall`, `!resetgrupo`.
+
+**» Minijuegos con estado**
+
+Algunos juegos siguen vivos en el chat hasta terminar: escribes la
+respuesta directamente (sin prefijo) y el bot la lee. Ejemplos:
+
+```
+!ahorcado » escribe letras: "a" ・ palabra completa: "perro" ・ "salir" para rendirte
+!numero » escribe un número y el bot dice ▲ más alto / ▼ más bajo
+!quiz / !futbolquiz / !verdadero » responde con el número o "verdadero/falso"
+!memoria » voltea casillas: "A1 B2"
+!reaccion » escribe el símbolo apenas salga; el primero gana
+```
+
+- Solo puede haber **un juego activo por chat** (se cierra solo a los 10 min).
+- Ganar suma **monedas y experiencia** (!level para ver tu nivel).
+
+**» Comandos del propietario (¡cuidado!)**
+
+Solo el dueño (incluidos los agregados con `!addowner`) puede usarlos:
+
+- `!eval` y `!shell` ejecutan código/comandos en el servidor → **poder
+  total sobre la máquina**: no agregues dueños en quien no confíes.
+- `!bc` anuncia solo a los grupos; `!broadcast` es igual (alias natural).
+- `!reload` recarga comandos sin reiniciar (útil al editar).
+- `!backup` descarga `database/db.json` como documento.
+- `!logs`, `!estado`, `!plugins`, `!update` » diagnósticos rápidos.
+- `!block`/`!unblock` bloquean a nivel cuenta de WhatsApp.
 
 **» Activar la inteligencia artificial (`!ia`)**
 

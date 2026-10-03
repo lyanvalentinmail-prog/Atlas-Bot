@@ -7,7 +7,7 @@ import { sleep } from '../../lib/utils.js'
 
 export default {
   name: 'bc',
-  alias: ['broadcast', 'anuncio', 'avisoglobal'],
+  alias: ['anuncio', 'avisoglobal'],
   category: 'propietario',
   description: 'Envía un mensaje a todos los grupos.',
   usage: 'bc <mensaje>',

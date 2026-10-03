@@ -21,7 +21,7 @@ const ANSWERS = [
 
 export default {
   name: 'pregunta',
-  alias: ['8ball', 'dime'],
+  alias: ['dime', 'pregunta8'],
   category: 'juegos',
   description: 'El bot responde tu pregunta al azar.',
   usage: 'pregunta <tu pregunta>',

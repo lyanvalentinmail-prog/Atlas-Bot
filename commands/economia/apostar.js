@@ -7,7 +7,7 @@ import { getAccount } from '../../lib/database.js'
 
 export default {
   name: 'apostar',
-  alias: ['bet', 'flip'],
+  alias: ['bet', 'apuesta'],
   category: 'economia',
   description: 'Apuesta monedas a cara o cruz.',
   usage: 'apostar <cantidad> <cara|cruz>',

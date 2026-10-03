@@ -88,7 +88,10 @@ export const config = {
     welcome: '> ¡Bienvenido/a {user}! ૮₍ ˶ᵔ ᵕ ᔔ˶ ₎ა\n> Lee las reglas del grupo y pásala bien.',
 
     // Aviso del anti-link (!antilink on) » puedes usar {user}
-    antilink: '> {user}, los enlaces de grupos no están permitidos aquí.'
+    antilink: '> {user}, los enlaces de grupos no están permitidos aquí.',
+
+    // Despedida automática (!bienvenida on) » puedes usar {user}
+    bye: '> Adiós {user}... ojalá vuelvas pronto. ૮₍ ˶ᵔ ᵕ ᔔ˶ ₎ა'
   },
 
   // ══ « 5. CATEGORÍAS DEL MENÚ » ═══════════
@@ -100,12 +103,18 @@ export const config = {
     'ia',
     'descargas',
     'busqueda',
+    'anime',
     'stickers',
+    'imagenes',
     'herramientas',
+    'utilidades',
     'grupos',
+    'moderacion',
+    'administracion',
     'perfil',
     'subbots',
     'juegos',
+    'memes',
     'economia',
     'gacha',
     'pokemon'
@@ -119,17 +128,23 @@ export const config = {
     informacion: 'INFORMACIÓN',
     ia: 'INTELIGENCIA ARTIFICIAL',
     descargas: 'DESCARGAS',
-    busqueda: 'BÚSQUEDA',
+    busqueda: 'BÚSQUEDA Y CONSULTAS',
+    anime: 'ANIME',
     stickers: 'STICKERS',
+    imagenes: 'IMÁGENES Y EDICIÓN',
     herramientas: 'HERRAMIENTAS',
+    utilidades: 'UTILIDADES',
     grupos: 'GRUPOS',
-    perfil: 'PERFIL',
+    moderacion: 'MODERACIÓN',
+    administracion: 'ADMINISTRACIÓN',
+    perfil: 'PERFIL Y SOCIAL',
     subbots: 'SUB-BOTS',
     juegos: 'JUEGOS',
+    memes: 'MEMES Y DIVERSIÓN',
     economia: 'ECONOMÍA',
     gacha: 'GACHA',
     pokemon: 'POKEMON',
-    propietario: 'PROPIETARIO'
+    propietario: 'PROPIETARIO / BOT'
   },
 
   // ══ « 6. DISEÑO DEL MENÚ » ════════════════
