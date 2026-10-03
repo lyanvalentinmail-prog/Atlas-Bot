@@ -198,7 +198,7 @@ export const config = {
   // apiUrl y model (DeepSeek, Groq, LM Studio...).
   ai: {
     apiUrl: process.env.AI_API_URL || 'https://api.openai.com/v1/chat/completions',
-    apiKey: process.env.AI_API_KEY || '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',
+    apiKey: process.env.AI_API_KEY || '',
     model: process.env.AI_MODEL || 'gpt-4o-mini',
     systemPrompt: 'Eres Atlas, el asistente de Atlas Bot. Responde siempre en español, de forma clara y breve.'
   },
