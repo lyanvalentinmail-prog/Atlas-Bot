@@ -1,26 +1,35 @@
 // ╭────────────────────────────────────────────
 // │  COMANDO » help
-// │  Ayuda general o detalle de un comando:
-// │  !help        -> resumen
-// │  !help ping   -> detalle del comando ping
+// │  Ayuda general, detalle de un comando o
+// │  la lista de una categoría:
+// │    !help          -> resumen
+// │    !help ping     -> detalle del comando ping
+// │    !help cats     -> comandos de gatos (alias)
+// │    !help gatos    -> idem en español
 // ╰────────────────────────────────────────────
 import { fmt } from '../../config.js'
+
+// Quita tildes para comparar: "imágenes" == "imagenes".
+const normalize = (value = '') =>
+  String(value).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '')
 
 export default {
   name: 'help',
   alias: ['ayuda', '?'],
   category: 'informacion',
-  description: 'Muestra la ayuda general o el detalle de un comando.',
-  usage: 'help [comando]',
+  description: 'Muestra la ayuda general, el detalle de un comando o una categoría.',
+  usage: 'help [comando o categoría]',
 
-  run: async ({ reply, args, prefix, config, commands }) => {
+  run: async ({ reply, args, prefix, config, commands, categories }) => {
 
     // « Sin argumentos: ayuda general »
     if (!args[0]) {
       return reply([
         `╭─「 AYUDA ・ ${config.botName.toUpperCase()} 」`,
-        `│ » ${prefix}menu             » lista de comandos`,
-        `│ » ${prefix}help <comando>   » detalle de un comando`,
+        `│ » ${prefix}menu             » menú de comandos`,
+        `│ » ${prefix}menu <categoría>  » solo esa categoría`,
+        `│ » ${prefix}help <comando>   » detalle del comando`,
+        `│ » ${prefix}help <categoría> » comandos de la categoría`,
         `│ » ${prefix}ping             » velocidad del bot`,
         `│ » ${prefix}info             » información del bot`,
         '╰─────────────',
@@ -28,28 +37,54 @@ export default {
       ].join('\n'))
     }
 
+    const term = normalize(args.join(' '))
+    const termSingle = normalize(args[0])
+
     // « Con argumento: detalle del comando »
-    const command = commands.get(args[0].toLowerCase())
-    if (!command) {
-      return reply(fmt(config.messages.commandNotFound, { prefix }))
+    const command = commands.get(term) || commands.get(termSingle)
+
+    if (command) {
+      const label = config.categoryLabels[command.category] || command.category.toUpperCase()
+      const restrictions = []
+      if (command.ownerOnly) restrictions.push('solo dueño')
+      if (command.groupOnly) restrictions.push('solo grupos')
+      if (command.adminOnly) restrictions.push('solo admins')
+      if (command.botAdminOnly) restrictions.push('bot admin')
+
+      return reply([
+        `╭─「 AYUDA ・ ${command.name.toUpperCase()} 」`,
+        `│ » Nombre      : ${command.name}`,
+        `│ » Alias       : ${command.alias?.length ? command.alias.join(', ') : 'ninguno'}`,
+        `│ » Categoría   : ${label}`,
+        `│ » Descripción : ${command.description || 'sin descripción'}`,
+        `│ » Uso         : ${prefix}${command.usage || command.name}`,
+        `│ » Restricción : ${restrictions.length ? restrictions.join(' » ') : 'ninguna'}`,
+        '╰─────────────'
+      ].join('\n'))
     }
 
-    const label = config.categoryLabels[command.category] || command.category.toUpperCase()
-    const restrictions = []
-    if (command.ownerOnly) restrictions.push('solo dueño')
-    if (command.groupOnly) restrictions.push('solo grupos')
-    if (command.adminOnly) restrictions.push('solo admins')
-    if (command.botAdminOnly) restrictions.push('bot admin')
+    // « O una categoría: !help cats / !help gatos »
+    const aliased = config.categoryAliases?.[termSingle]
+    const catEntry = [...(categories?.entries?.() || [])].find(([category]) =>
+      category === termSingle || category === aliased ||
+      normalize(config.categoryLabels?.[category] || '') === term
+    )
 
-    return reply([
-      `╭─「 AYUDA ・ ${command.name.toUpperCase()} 」`,
-      `│ » Nombre      : ${command.name}`,
-      `│ » Alias       : ${command.alias?.length ? command.alias.join(', ') : 'ninguno'}`,
-      `│ » Categoría   : ${label}`,
-      `│ » Descripción : ${command.description || 'sin descripción'}`,
-      `│ » Uso         : ${prefix}${command.usage || command.name}`,
-      `│ » Restricción : ${restrictions.length ? restrictions.join(' » ') : 'ninguna'}`,
-      '╰─────────────'
-    ].join('\n'))
+    if (catEntry) {
+      const [category, cmds] = catEntry
+      const label = config.categoryLabels?.[category] || category.toUpperCase()
+      return reply([
+        `╭─「 AYUDA ・ ${label} 」`,
+        ...cmds.map(cmd => `│ » ${prefix}${cmd.name.padEnd?.(12) || cmd.name} » ${cmd.description || ''}`),
+        '╰─────────────',
+        `> ${cmds.length} comando(s) » todo junto con *${prefix}menu ${category}*`
+      ].join('\n'))
+    }
+
+    // « Ni comando ni categoría »
+    return reply(
+      fmt(config.messages.commandNotFound, { prefix }) + '\n' +
+      `> Categorías: ${[...(categories?.keys?.() || [])].join(', ')}`
+    )
   }
 }

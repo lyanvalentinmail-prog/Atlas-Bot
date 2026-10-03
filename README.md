@@ -277,6 +277,8 @@ Aquí se personaliza todo lo demás **sin tocar la lógica del bot**:
 - **`symbols`** » los símbolos que usa el bot (`»`, `「」`, `╭`, `╰`, etc.).
 - **`messages`** » mensajes automáticos (permisos denegados, errores, etc.).
 - **`categoryLabels`** » cómo se muestra cada categoría en el menú.
+- **`categoryAliases`** » nombres alternativos para filtrar el menú
+  (`cats`, `gatos`, `mod`, `economy`, `games`…) sin renombrar carpetas.
 - **`menu`** » el diseño completo del menú (ver más abajo).
 
 ---
@@ -488,6 +490,13 @@ Notas del menú:
 - **`greeting`** dice «Buenos días / tardes / noches» según la hora del servidor (automático).
 - **`users`** es un conteo **real**: cada usuario que usa un comando se guarda en `database/users.json`.
 - El menú se puede **filtrar por categoría**: `!menu grupos` muestra solo esa categoría.
+  También acepta **alias en español e inglés** (`!menu cats`, `!menu gatos` → utilidades;
+  `!menu mod` → moderación; `!menu economy` → economía…). Se configuran en
+  **`categoryAliases`** dentro de `config.js`. Si la categoría no existe, el bot responde
+  con la lista de categorías en vez de mandar el menú completo.
+- Si el menú supera ~3500 caracteres se **divide en varios mensajes** numerados
+  `[1/n]` para que WhatsApp no se trabe con textos gigantes.
+- `!help cats` / `!help gatos` muestran la lista de comandos de esa categoría.
 - Las descripciones se convierten a letras pequeñas con la utilidad `toSmallCaps` (en `lib/utils.js`).
 
 ## » Cambiar los mensajes automáticos

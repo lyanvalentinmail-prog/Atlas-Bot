@@ -147,6 +147,62 @@ export const config = {
     propietario: 'PROPIETARIO / BOT'
   },
 
+  // ══ « 5.2. ALIAS DE CATEGORÍAS » ══════════
+  // "!menu <texto>" acepta estas formas alternativas
+  // de llamar a cada categoría (español e inglés).
+  // Clave: lo que escribe el usuario (minúsculas, sin tildes).
+  // Valor: nombre real de la carpeta en commands/.
+  categoryAliases: {
+    info: 'informacion',
+    inteligenciaartificial: 'ia',
+    downloads: 'descargas',
+    download: 'descargas',
+    dl: 'descargas',
+    search: 'busqueda',
+    buscar: 'busqueda',
+    consultas: 'busqueda',
+    sticker: 'stickers',
+    images: 'imagenes',
+    imagen: 'imagenes',
+    img: 'imagenes',
+    edicion: 'imagenes',
+    tools: 'herramientas',
+    tool: 'herramientas',
+    utils: 'utilidades',
+    utility: 'utilidades',
+    cats: 'utilidades',     // gatos (imágenes de gatitos)
+    gatos: 'utilidades',
+    gaticos: 'utilidades',
+    grupo: 'grupos',
+    group: 'grupos',
+    groups: 'grupos',
+    mod: 'moderacion',
+    mods: 'moderacion',
+    admin: 'administracion',
+    admins: 'administracion',
+    profile: 'perfil',
+    cuenta: 'perfil',
+    social: 'perfil',
+    subbot: 'subbots',
+    sub: 'subbots',
+    juego: 'juegos',
+    game: 'juegos',
+    games: 'juegos',
+    gaming: 'juegos',
+    meme: 'memes',
+    diversion: 'memes',
+    fun: 'memes',
+    eco: 'economia',
+    economy: 'economia',
+    dinero: 'economia',
+    coins: 'economia',
+    poke: 'pokemon',
+    pokedex: 'pokemon',
+    owner: 'propietario',
+    dueno: 'propietario',
+    creador: 'propietario'
+  },
+
   // ══ « 6. DISEÑO DEL MENÚ » ════════════════
   // Todo el estilo del menú se controla aquí.
   // Cada plantilla es una función que recibe
