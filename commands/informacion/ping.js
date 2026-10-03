@@ -1,9 +1,11 @@
 // ╭────────────────────────────────────────────
 // │  COMANDO » ping
-// │  Mide el tiempo que tardó en llegar el
-// │  mensaje y responde con la latencia.
+// │  Respuesta directa con la latencia en ms:
+// │
+// │  🏓 Pong!
+// │
+// │  ⚡ 12ms
 // ╰────────────────────────────────────────────
-import { formatUptime } from '../../lib/utils.js'
 
 export default {
   name: 'ping',
@@ -13,15 +15,11 @@ export default {
   usage: 'ping',
 
   run: async ({ msg, reply }) => {
+    // Latencia real: tiempo desde que enviaste el mensaje.
+    // (messageTimestamp llega en segundos con Baileys)
     const sentAt = Number(msg.messageTimestamp) * 1000
-    const latency = Math.max(0, Date.now() - sentAt)
+    const latency = sentAt > 0 ? Math.max(0, Date.now() - sentAt) : 0
 
-    await reply([
-      '╭─「 PING 」',
-      '│ » Estado    : Activo',
-      `│ » Velocidad : ${latency} ms`,
-      `│ » En línea  : ${formatUptime(process.uptime())}`,
-      '╰─────────────'
-    ].join('\n'))
+    await reply(`🏓 Pong!\n\n⚡ ${latency}ms`)
   }
 }
