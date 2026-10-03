@@ -40,6 +40,7 @@ export const config = {
   // Datos extra que se muestran en el menú
   botWeb: 'Aún no tiene web..',
   botType: 'Sub-Bot',
+  repoUrl: 'https://github.com/lyanvalentinmail-prog/Atlas-Bot',
 
   // Prefijo de comandos. Cada carácter funciona como prefijo:
   // PREFIX = '!'  -> solo !
@@ -81,7 +82,13 @@ export const config = {
     adminOnly: '» Este comando es solo para administradores del grupo.',
     botAdminOnly: '» Necesito ser administrador del grupo para hacer eso.',
     noMention: '» Menciona a un usuario o responde a uno de sus mensajes.',
-    commandNotFound: '» Comando no encontrado. Usa {prefix}menu para ver la lista.'
+    commandNotFound: '» Comando no encontrado. Usa {prefix}menu para ver la lista.',
+
+    // Mensaje de bienvenida (!bienvenida on) » puedes usar {user}
+    welcome: '> ¡Bienvenido/a {user}! ૮₍ ˶ᵔ ᵕ ᔔ˶ ₎ა\n> Lee las reglas del grupo y pásala bien.',
+
+    // Aviso del anti-link (!antilink on) » puedes usar {user}
+    antilink: '> {user}, los enlaces de grupos no están permitidos aquí.'
   },
 
   // ══ « 5. CATEGORÍAS DEL MENÚ » ═══════════

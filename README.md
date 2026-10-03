@@ -21,13 +21,17 @@ Código limpio, sin emojis (solo símbolos), sin dependencias innecesarias y lis
 - Conexión por **código QR** y **código de vinculación** (pairing).
 - **Sesión persistente**: no vuelves a vincular después de reiniciar.
 - **Reconexión automática** y manejo de errores.
-- 33 comandos de ejemplo en **13 categorías**: información, IA, descargas,
+- **62 comandos** con alias en **14 categorías**: información, IA, descargas,
   búsqueda, stickers, herramientas, grupos, perfil, sub-bots, juegos,
-  economía, gacha y pokemon.
+  economía, gacha, pokemon y propietario.
+- **Anti-link y bienvenida automática por grupo** (configurables con
+  `!antilink on/off` y `!bienvenida on/off`).
 - Juegos, economía y gacha con **base de datos JSON propia** (monedas,
-  recompensa diaria, colecciones) — sin bases de datos externas.
+  recompensa diaria, registro, colecciones) — sin bases de datos externas.
 - Comandos con **APIs gratuitas sin registro**: clima, Wikipedia, Pokémon
-  (PokeAPI), acortador y traductor.
+  (PokeAPI), anime (Jikan), países (REST Countries), geolocalización de IP
+  (ipapi.co), códigos QR, generador de imágenes IA (Pollinations),
+  acortador y traductor.
 - Listo para **VPS/Linux** y **Termux**.
 - Soporte para **PM2** (archivo `ecosystem.config.cjs` incluido).
 
@@ -68,20 +72,21 @@ Atlas-Bot/
 │       └── characters.js     # Personajes del gacha (edítalos a tu gusto)
 │
 ├── commands/                 # COMANDOS (cada carpeta = una categoría)
-│   ├── informacion/          # menu, help, ping, info
-│   ├── ia/                   # ia (OpenAI-compatible, configurable)
-│   ├── descargas/            # descargar (plantilla para tu API)
-│   ├── busqueda/             # clima, wiki
-│   ├── stickers/             # sticker (activar con: npm i sharp)
-│   ├── herramientas/         # calcular, acortar, traducir
-│   ├── grupos/               # grupo, kick, promote, demote, tagall, link
-│   ├── perfil/               # perfil
+│   ├── informacion/          # menu, help, ping, info, creador, repo
+│   ├── ia/                   # ia (tu API key), imagine (Pollinations, gratis)
+│   ├── descargas/            # descargar, play (plantillas para tu API)
+│   ├── busqueda/             # clima, wiki, anime, pais, ipinfo
+│   ├── stickers/             # sticker, toimg (activar con: npm i sharp)
+│   ├── herramientas/         # calcular, acortar, traducir, qr, hora, morse, estilo
+│   ├── grupos/               # grupo, kick, promote, demote, tagall, link,
+│   │                         # antilink, bienvenida, nuevolink, setdesc, setname
+│   ├── perfil/               # perfil, registrar
 │   ├── subbots/              # serbot (plantilla)
-│   ├── juegos/               # ppt, dado, moneda, pregunta
-│   ├── economia/             # daily, balance, apostar
-│   ├── gacha/                # roll, personajes
-│   ├── pokemon/              # pokedex, atrapar, mispokemon
-│   └── propietario/          # join (solo dueño, va al final del menú)
+│   ├── juegos/               # ppt, dado, moneda, pregunta, ship, pareja, verdad, reto
+│   ├── economia/             # daily, balance, apostar, top, slot, transferir
+│   ├── gacha/                # roll, personajes, buscarpj
+│   ├── pokemon/              # pokedex, atrapar, mispokemon, liberar
+│   └── propietario/          # join, bc, reiniciar (solo dueño, al final del menú)
 │
 ├── database/                 # Se crea sola: usuarios y monedas (ignorada por git)
 └── session/                  # Se crea sola: guarda la sesión (ignorada por git)
@@ -441,7 +446,13 @@ messages: {
   adminOnly: '» Este comando es solo para administradores del grupo.',
   botAdminOnly: '» Necesito ser administrador del grupo para hacer eso.',
   noMention: '» Menciona a un usuario o responde a uno de sus mensajes.',
-  commandNotFound: '» Comando no encontrado. Usa {prefix}menu para ver la lista.'
+  commandNotFound: '» Comando no encontrado. Usa {prefix}menu para ver la lista.',
+
+  // Mensaje de bienvenida (!bienvenida on) » puedes usar {user}
+  welcome: '> ¡Bienvenido/a {user}! ...',
+
+  // Aviso del anti-link (!antilink on) » puedes usar {user}
+  antilink: '> {user}, los enlaces de grupos no están permitidos aquí.'
 }
 ```
 
@@ -545,12 +556,14 @@ Algunos comandos dependen de servicios externos. Estado actual:
 
 | Categoría | Comandos | Estado |
 |---|---|---|
-| Búsqueda | `clima`, `wiki` | Funcionan (APIs gratuitas sin registro) |
-| Pokemon | `pokedex`, `atrapar` | Funcionan (PokeAPI, gratuita) |
-| Herramientas | `acortar`, `traducir`, `calcular` | Funcionan (sin registro) |
+| Búsqueda | `clima`, `wiki`, `anime`, `pais`, `ipinfo` | Funcionan (APIs gratuitas sin registro) |
+| Pokemon | `pokedex`, `atrapar`, `mispokemon`, `liberar` | Funcionan (PokeAPI, gratuita) |
+| Herramientas | `acortar`, `traducir`, `calcular`, `qr` | Funcionan (sin registro) |
+| Herramientas | `hora`, `morse`, `estilo` | Funcionan **sin ninguna API** |
+| IA | `imagine` | Funciona (Pollinations, gratis sin registro) |
 | IA | `ia` | Requiere tu **API key** |
-| Stickers | `sticker` | Requiere instalar **sharp** |
-| Descargas / Sub-Bots | `descargar`, `serbot` | **Plantillas** para conectar tu API |
+| Stickers | `sticker`, `toimg` | Requieren instalar **sharp** |
+| Descargas / Sub-Bots | `descargar`, `play`, `serbot` | **Plantillas** para conectar tu API |
 
 **» Activar la inteligencia artificial (`!ia`)**
 
@@ -575,13 +588,32 @@ El comando detecta solo si `sharp` está instalada; sin ella avisa cómo activar
 
 **» Economía y gacha**
 
-Funcionan sin nada externo. Las monedas, la recompensa diaria y las
-colecciones se guardan en `database/db.json` (se crea solo).
+Funcionan sin nada externo. Las monedas, la recompensa diaria, el registro
+y las colecciones se guardan en `database/db.json` (se crea solo).
 
 - Recompensas, costos y apuesta mínima: `config.js` » sección `game`.
 - Personajes y probabilidades del gacha: `lib/data/characters.js`
   (puedes agregar `"image": "https://..."` a cada personaje y `!roll`
   enviará la foto).
+
+**» Anti-link y bienvenida (grupos)**
+
+Se activan **por grupo** y solo los admins pueden cambiarlos:
+
+```
+!antilink on/off    # borra enlaces de invitación a otros grupos
+!bienvenida on/off  # saluda automáticamente a los nuevos miembros
+```
+
+- Los textos se editan en `config.js` » `messages.welcome` y
+  `messages.antilink` (puedes usar `{user}` para mencionar).
+- Los ajustes de cada grupo se guardan también en `database/db.json`.
+
+**» Reiniciar el bot (`!reiniciar`)**
+
+El comando apaga el proceso limpiamente (`process.exit`). Para que el bot
+**vuelva solo**, debe estar corriendo con PM2 (`pm2 start ecosystem.config.cjs`);
+si lo iniciaste con `npm start`, tendrás que encenderlo a mano.
 
 ---
 

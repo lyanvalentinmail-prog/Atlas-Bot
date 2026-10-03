@@ -14,14 +14,16 @@ export default {
   description: 'Muestra el perfil de un usuario.',
   usage: 'perfil [@usuario]',
 
-  run: async ({ sock, msg, chatId, reply, sender }) => {
+  run: async ({ sock, msg, chatId, reply, sender, prefix }) => {
     const target = getTargetUser(msg) || sender
     const number = getNumber(target)
     const account = getAccount(target)
+    const reg = account.registered
 
     const caption = [
       `╭─「 PERFIL 」`,
       `│ » Usuario   : @${number}`,
+      `│ » ${reg ? `Nombre    : ${reg.name} (${reg.age} años)` : `Registro  : no registrado · ${prefix}registrar`}`,
       `│ » Número    : +${number}`,
       `│ » Monedas   : ${account.coins}`,
       `│ » Pokemon   : ${account.pokemon.length} atrapados`,
