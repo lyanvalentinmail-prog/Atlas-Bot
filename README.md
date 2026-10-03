@@ -21,7 +21,13 @@ Código limpio, sin emojis (solo símbolos), sin dependencias innecesarias y lis
 - Conexión por **código QR** y **código de vinculación** (pairing).
 - **Sesión persistente**: no vuelves a vincular después de reiniciar.
 - **Reconexión automática** y manejo de errores.
-- 11 comandos de ejemplo: `menu`, `help`, `ping`, `info`, `grupo`, `kick`, `promote`, `demote`, `tagall`, `link` y `join`.
+- 33 comandos de ejemplo en **13 categorías**: información, IA, descargas,
+  búsqueda, stickers, herramientas, grupos, perfil, sub-bots, juegos,
+  economía, gacha y pokemon.
+- Juegos, economía y gacha con **base de datos JSON propia** (monedas,
+  recompensa diaria, colecciones) — sin bases de datos externas.
+- Comandos con **APIs gratuitas sin registro**: clima, Wikipedia, Pokémon
+  (PokeAPI), acortador y traductor.
 - Listo para **VPS/Linux** y **Termux**.
 - Soporte para **PM2** (archivo `ecosystem.config.cjs` incluido).
 
@@ -52,15 +58,29 @@ Atlas-Bot/
 │   ├── connection.js         # Conexión, QR, pairing, reconexión y sesión
 │   ├── handler.js            # Lector de mensajes, prefijo y permisos
 │   ├── loader.js             # Cargador automático de comandos
+│   ├── database.js           # Mini base de datos JSON (usuarios y monedas)
 │   ├── logger.js             # Mensajes de consola con color
-│   └── utils.js              # Utilidades compartidas
+│   ├── utils.js              # Utilidades compartidas
+│   └── data/
+│       └── characters.js     # Personajes del gacha (edítalos a tu gusto)
 │
 ├── commands/                 # COMANDOS (cada carpeta = una categoría)
-│   ├── general/              # menu, help, ping, info
+│   ├── informacion/          # menu, help, ping, info
+│   ├── ia/                   # ia (OpenAI-compatible, configurable)
+│   ├── descargas/            # descargar (plantilla para tu API)
+│   ├── busqueda/             # clima, wiki
+│   ├── stickers/             # sticker (activar con: npm i sharp)
+│   ├── herramientas/         # calcular, acortar, traducir
 │   ├── grupos/               # grupo, kick, promote, demote, tagall, link
-│   └── propietario/          # join (solo dueño)
+│   ├── perfil/               # perfil
+│   ├── subbots/              # serbot (plantilla)
+│   ├── juegos/               # ppt, dado, moneda, pregunta
+│   ├── economia/             # daily, balance, apostar
+│   ├── gacha/                # roll, personajes
+│   ├── pokemon/              # pokedex, atrapar, mispokemon
+│   └── propietario/          # join (solo dueño, va al final del menú)
 │
-├── database/                 # Se crea sola: contador de usuarios (ignorada por git)
+├── database/                 # Se crea sola: usuarios y monedas (ignorada por git)
 └── session/                  # Se crea sola: guarda la sesión (ignorada por git)
 ```
 
@@ -473,20 +493,70 @@ run: async (ctx) => { /* ... */ }
 
 ## » Crear nuevas categorías
 
-1. Crea una carpeta dentro de `commands/`, por ejemplo: `commands/descargas/`.
+1. Crea una carpeta dentro de `commands/`, por ejemplo: `commands/musica/`.
 2. Mete ahí los comandos que quieras.
 3. (Opcional) En `config.js` » `categoryLabels`, dale un nombre bonito:
 
 ```js
 categoryLabels: {
-  general: 'GENERAL',
-  grupos: 'GRUPOS',
-  propietario: 'PROPIETARIO',
-  descargas: 'DESCARGAS'
+  informacion: 'INFORMACIÓN',
+  ia: 'INTELIGENCIA ARTIFICIAL',
+  // ...
+  musica: 'MÚSICA'
 }
 ```
 
-Si no la agregas, se mostrará con el nombre de la carpeta en mayúsculas.
+4. (Opcional) En `config.js` » `categoryOrder` decides el orden del menú.
+   Las categorías que no estén listadas aparecen al final en orden alfabético.
+
+Si no la agregas a `categoryLabels`, se mostrará con el nombre de la carpeta
+en mayúsculas.
+
+---
+
+# APIS EXTERNAS (IA, STICKERS, DESCARGAS)
+
+Algunos comandos dependen de servicios externos. Estado actual:
+
+| Categoría | Comandos | Estado |
+|---|---|---|
+| Búsqueda | `clima`, `wiki` | Funcionan (APIs gratuitas sin registro) |
+| Pokemon | `pokedex`, `atrapar` | Funcionan (PokeAPI, gratuita) |
+| Herramientas | `acortar`, `traducir`, `calcular` | Funcionan (sin registro) |
+| IA | `ia` | Requiere tu **API key** |
+| Stickers | `sticker` | Requiere instalar **sharp** |
+| Descargas / Sub-Bots | `descargar`, `serbot` | **Plantillas** para conectar tu API |
+
+**» Activar la inteligencia artificial (`!ia`)**
+
+Agrega tu key en el `.env`:
+
+```env
+AI_API_KEY=tu-api-key
+```
+
+O en `config.js` » sección `ai` (ahí también puedes cambiar `apiUrl` y
+`model`: sirve cualquier API compatible con OpenAI: OpenAI, DeepSeek,
+Groq, LM Studio...).
+
+**» Activar los stickers (`!sticker`)**
+
+```bash
+npm install sharp
+npm restart o reinicia el bot
+```
+
+El comando detecta solo si `sharp` está instalada; sin ella avisa cómo activarla.
+
+**» Economía y gacha**
+
+Funcionan sin nada externo. Las monedas, la recompensa diaria y las
+colecciones se guardan en `database/db.json` (se crea solo).
+
+- Recompensas, costos y apuesta mínima: `config.js` » sección `game`.
+- Personajes y probabilidades del gacha: `lib/data/characters.js`
+  (puedes agregar `"image": "https://..."` a cada personaje y `!roll`
+  enviará la foto).
 
 ---
 

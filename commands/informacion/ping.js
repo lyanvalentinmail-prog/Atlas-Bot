@@ -8,7 +8,7 @@ import { formatUptime } from '../../lib/utils.js'
 export default {
   name: 'ping',
   alias: ['p', 'velocidad'],
-  category: 'general',
+  category: 'informacion',
   description: 'Comprueba la velocidad de respuesta del bot.',
   usage: 'ping',
 

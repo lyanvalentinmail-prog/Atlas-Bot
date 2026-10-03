@@ -79,13 +79,44 @@ export const config = {
     commandNotFound: '» Comando no encontrado. Usa {prefix}menu para ver la lista.'
   },
 
-  // ══ « 5. NOMBRES DE CATEGORÍAS » ══════════
+  // ══ « 5. CATEGORÍAS DEL MENÚ » ═══════════
+  // Orden en el que aparecen las categorías en el
+  // menú (nombre de cada carpeta en commands/).
+  // Las que no estén aquí se agregan al final.
+  categoryOrder: [
+    'informacion',
+    'ia',
+    'descargas',
+    'busqueda',
+    'stickers',
+    'herramientas',
+    'grupos',
+    'perfil',
+    'subbots',
+    'juegos',
+    'economia',
+    'gacha',
+    'pokemon'
+  ],
+
+  // ══ « 5.1. NOMBRES DE CATEGORÍAS » ═══════
   // Clave: nombre de la carpeta dentro de commands/
   // Valor: cómo se mostrará en el menú.
   // Si una carpeta no está aquí, se muestra en mayúsculas.
   categoryLabels: {
-    general: 'GENERAL',
+    informacion: 'INFORMACIÓN',
+    ia: 'INTELIGENCIA ARTIFICIAL',
+    descargas: 'DESCARGAS',
+    busqueda: 'BÚSQUEDA',
+    stickers: 'STICKERS',
+    herramientas: 'HERRAMIENTAS',
     grupos: 'GRUPOS',
+    perfil: 'PERFIL',
+    subbots: 'SUB-BOTS',
+    juegos: 'JUEGOS',
+    economia: 'ECONOMÍA',
+    gacha: 'GACHA',
+    pokemon: 'POKEMON',
     propietario: 'PROPIETARIO'
   },
 
@@ -153,6 +184,27 @@ export const config = {
     // ── « Cierre del menú » ──────────────────
     footer: ({ botName, totalCommands }) =>
       `> *${botName}* ✧ ${totalCommands} comandos disponibles.`
+  },
+
+  // ══ « 7. INTELIGENCIA ARTIFICIAL » ═══════
+  // El comando !ia usa una API compatible con OpenAI.
+  // Pon tu API key aquí o en el .env (AI_API_KEY).
+  // También sirve para APIs alternativas cambiando
+  // apiUrl y model (DeepSeek, Groq, LM Studio...).
+  ai: {
+    apiUrl: process.env.AI_API_URL || 'https://api.openai.com/v1/chat/completions',
+    apiKey: process.env.AI_API_KEY || '',
+    model: process.env.AI_MODEL || 'gpt-4o-mini',
+    systemPrompt: 'Eres Atlas, el asistente de Atlas Bot. Responde siempre en español, de forma clara y breve.'
+  },
+
+  // ══ « 8. JUEGOS Y ECONOMÍA » ═════════════
+  game: {
+    startCoins: 500,   // Monedas iniciales de cada usuario
+    dailyReward: 250,  // Recompensa del comando !daily
+    gachaCost: 50,     // Costo de cada tirada !roll
+    gachaRefund: 25,   // Reembolso si el personaje ya lo tienes
+    minBet: 10         // Apuesta mínima de !apostar
   }
 }
 

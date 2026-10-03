@@ -9,7 +9,7 @@ import { fmt } from '../../config.js'
 export default {
   name: 'help',
   alias: ['ayuda', '?'],
-  category: 'general',
+  category: 'informacion',
   description: 'Muestra la ayuda general o el detalle de un comando.',
   usage: 'help [comando]',
 

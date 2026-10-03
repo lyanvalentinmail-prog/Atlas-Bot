@@ -12,7 +12,7 @@ const pkg = JSON.parse(
 export default {
   name: 'info',
   alias: ['infobot', 'estado'],
-  category: 'general',
+  category: 'informacion',
   description: 'Muestra información del bot y del sistema.',
   usage: 'info',
 

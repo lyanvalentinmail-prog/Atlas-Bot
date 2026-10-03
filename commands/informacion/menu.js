@@ -13,7 +13,7 @@ import { getUserCount } from '../../lib/database.js'
 export default {
   name: 'menu',
   alias: ['menú', 'allmenu', 'comandos'],
-  category: 'general',
+  category: 'informacion',
   description: 'Muestra el menú con todos los comandos.',
   usage: 'menu [categoría]',
 
