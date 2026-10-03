@@ -12,7 +12,7 @@ export default {
 
   run: async ({ reply }) => {
     try {
-      const data = await fetchJson('https://api.jikan.moe/v4/top/anime?limit=10')
+      const data = await fetchJson('https://api.jikan.moe/v4/top/anime?limit=10&sfw')
       const lista = data?.data
       if (!lista?.length) return reply('» No pude leer el ranking ahora.')
 

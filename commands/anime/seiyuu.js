@@ -14,7 +14,7 @@ export default {
     if (!text) return reply(`» Uso: ${prefix}seiyuu <nombre>`)
 
     try {
-      const data = await fetchJson(`https://api.jikan.moe/v4/people?q=${encodeURIComponent(text)}&limit=1`)
+      const data = await fetchJson(`https://api.jikan.moe/v4/people?q=${encodeURIComponent(text)}&limit=1&sfw`)
       const persona = data?.data?.[0]
       if (!persona) return reply(`» No encontré a *${text}*.`)
 

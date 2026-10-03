@@ -17,12 +17,9 @@ export default {
     const anio = Math.abs(parseInt(args[0], 10))
     const temp = (args[1] || '').toLowerCase()
 
-    let url
-    if (anio && TEMPORADAS.includes(temp)) {
-      url = `https://api.jikan.moe/v4/seasons/${anio}/${temp}?limit=8`
-    } else {
-      url = 'https://api.jikan.moe/v4/seasons/now?limit=8'
-    }
+    const url = (anio && TEMPORADAS.includes(temp))
+      ? `https://api.jikan.moe/v4/seasons/${anio}/${temp}?sfw&limit=8`
+      : 'https://api.jikan.moe/v4/seasons/now?sfw&limit=8'
 
     try {
       const data = await fetchJson(url)

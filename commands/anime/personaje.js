@@ -14,7 +14,7 @@ export default {
     if (!text) return reply(`» Uso: ${prefix}personaje <nombre>`)
 
     try {
-      const data = await fetchJson(`https://api.jikan.moe/v4/characters?q=${encodeURIComponent(text)}&limit=1`)
+      const data = await fetchJson(`https://api.jikan.moe/v4/characters?q=${encodeURIComponent(text)}&limit=1&sfw`)
       const pj = data?.data?.[0]
       if (!pj) return reply(`» No encontré a *${text}*.`)
 

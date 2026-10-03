@@ -17,7 +17,7 @@ export default {
 
     try {
       const data = await fetchJson(
-        `https://api.jikan.moe/v4/anime?q=${encodeURIComponent(text)}&limit=1`
+        `https://api.jikan.moe/v4/anime?q=${encodeURIComponent(text)}&limit=1&sfw`
       )
       const anime = data?.data?.[0]
       if (!anime) return reply(`» No encontré el anime *${text}*.`)

@@ -14,7 +14,7 @@ export default {
     if (!text) return reply(`» Uso: ${prefix}animefoto <título del anime>`)
 
     try {
-      const data = await fetchJson(`https://api.jikan.moe/v4/anime?q=${encodeURIComponent(text)}&limit=1`)
+      const data = await fetchJson(`https://api.jikan.moe/v4/anime?q=${encodeURIComponent(text)}&limit=1&sfw`)
       const anime = data?.data?.[0]
       const imagen = anime?.images?.jpg?.large_image_url || anime?.images?.jpg?.image_url
       if (!imagen) return reply(`» No encontré imagen de *${text}*.`)

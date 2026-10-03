@@ -14,7 +14,7 @@ export default {
     if (!text) return reply(`» Uso: ${prefix}manga <título>`)
 
     try {
-      const data = await fetchJson(`https://api.jikan.moe/v4/manga?q=${encodeURIComponent(text)}&limit=1`)
+      const data = await fetchJson(`https://api.jikan.moe/v4/manga?q=${encodeURIComponent(text)}&limit=1&sfw`)
       const manga = data?.data?.[0]
       if (!manga) return reply(`» No encontré el manga *${text}*.`)
 

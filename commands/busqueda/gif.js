@@ -21,7 +21,7 @@ export default {
 
       const posts = (data?.data?.children || [])
         .map(p => p.data)
-        .filter(p => p.url && /\.(gif|mp4)/i.test(p.url))
+        .filter(p => p.url && /\.(gif|mp4)/i.test(p.url) && !p.over_18)
 
       if (posts.length === 0) return reply(`» No encontré GIFs de *${text}*.`)
 

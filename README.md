@@ -47,6 +47,12 @@ Código limpio, sin emojis (solo símbolos), sin dependencias innecesarias y lis
   (CheapShark), memes (meme-api.com) y más.
 - Edición de imágenes (blur, recorte, texto, meme, pixel, sepia...) con
   **sharp opcional** (`npm i sharp`).
+- **Filtros de contenido para todos**: las búsquedas de anime/manga usan el
+  modo `sfw` de Jikan, las imágenes de Openverse excluyen material para
+  adultos, los GIFs de Reddit descartan posts `over_18`, los memes
+  (meme-api) rechazan contenido NSFW y los comandos aleatorios de
+  anime/manga reintentan hasta 4 veces si el resultado no es apto. El
+  grupo además tiene `!antinsfw` para borrar enlaces y palabras filtradas.
 - Listo para **VPS/Linux** y **Termux**.
 - Soporte para **PM2** (archivo `ecosystem.config.cjs` incluido).
 

@@ -17,7 +17,7 @@ export default {
 
     try {
       const data = await fetchJson(
-        `https://api.openverse.org/v1/images/?q=${encodeURIComponent(text)}&page_size=10&license_type=commercial`
+        `https://api.openverse.org/v1/images/?q=${encodeURIComponent(text)}&mature=false&page_size=10`
       )
       const resultados = (data?.results || []).filter(r => r.url)
       if (resultados.length === 0) return reply(`» No encontré imágenes libres de *${text}*.`)

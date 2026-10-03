@@ -1,20 +1,30 @@
 // ╭────────────────────────────────────────────
-// │  COMANDO » randommanga » manga al azar.
+// │  COMANDO » randommanga » manga al azar SOLO
+// │  apto para todos (sans hentai/ecchi).
 // ╰────────────────────────────────────────────
 import { fetchJson } from '../../lib/utils.js'
+
+const esSeguro = (item) => {
+  if (!item) return false
+  const generos = (item.genres || []).map(g => (g.name || '').toLowerCase())
+  return !generos.some(g => ['hentai', 'erotica', 'ecchi'].includes(g))
+}
 
 export default {
   name: 'randommanga',
   alias: ['mangarec', 'aleatoriomang'],
   category: 'anime',
-  description: 'Recomienda un manga aleatorio.',
+  description: 'Recomienda un manga aleatorio (apto para todos).',
   usage: 'randommanga',
 
   run: async ({ reply }) => {
     try {
-      const data = await fetchJson('https://api.jikan.moe/v4/random/manga')
-      const manga = data?.data
-      if (!manga) return reply('» No pude sacar un manga aleatorio.')
+      let manga = null
+      for (let i = 0; i < 4 && !esSeguro(manga); i++) {
+        const data = await fetchJson('https://api.jikan.moe/v4/random/manga?sfw')
+        manga = data?.data
+      }
+      if (!esSeguro(manga)) return reply('» No encontré un manga apto ahora; prueba otra vez.')
 
       const sinopsis = (manga.synopsis || 'Sin descripción.')
       await reply([
