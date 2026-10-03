@@ -13,7 +13,9 @@ Código limpio, sin emojis (solo símbolos), sin dependencias innecesarias y lis
 ## » Características
 
 - Sistema de comandos dividido por **categorías** (carpetas).
-- **Menú personalizable** desde un solo archivo (`config.js`).
+- **Menú decorado personalizable** (kaomojis y símbolos, sin emojis) con
+  saludo según la hora, filtro por categoría (`!menu grupos`) y contador
+  real de usuarios.
 - **Prefijo configurable** (uno o varios caracteres).
 - **Configuración central**: nombre del bot, dueño, símbolos y mensajes.
 - Conexión por **código QR** y **código de vinculación** (pairing).
@@ -58,6 +60,7 @@ Atlas-Bot/
 │   ├── grupos/               # grupo, kick, promote, demote, tagall, link
 │   └── propietario/          # join (solo dueño)
 │
+├── database/                 # Se crea sola: contador de usuarios (ignorada por git)
 └── session/                  # Se crea sola: guarda la sesión (ignorada por git)
 ```
 
@@ -341,32 +344,45 @@ PREFIX=./!
 
 ## » Cambiar el menú
 
-El menú se arma con **plantillas** en `config.js`, sección `menu`. Cada
-plantilla es una función que recibe datos y devuelve texto:
+El menú se arma con **plantillas** en `config.js`, sección `menu`. No usa
+emojis: todo el estilo se logra con símbolos Unicode y kaomojis.
+
+**Datos extra del encabezado** (en `config.js`):
 
 ```js
-menu: {
-  // Encabezado. Datos: { botName, user, owner, prefix, totalCommands, uptime }
-  header: ({ botName, prefix }) =>
-    `╭─「 ${botName} 」\n│ » Prefijo : [ ${prefix} ]\n╰─────────────`,
-
-  // Título de cada categoría. Datos: { label, count }
-  categoryTitle: ({ label }) => `╭─「 ${label} 」`,
-
-  // Cada línea de comando. Datos: { prefix, name, description }
-  commandItem: ({ prefix, name }) => `│ » ${prefix}${name}`,
-
-  // Cierre de cada categoría
-  categoryFooter: () => '╰─────────────',
-
-  // Línea final del menú
-  footer: ({ prefix }) => `» Usa ${prefix}help <comando> para más detalles.`
-}
+botWeb: 'Aún no tiene web..',  // línea "ᴡᴇʙ" del menú
+botType: 'Sub-Bot',            // línea "ᴛɪᴘᴏ" del menú
 ```
 
-Modifica esos textos como quieras: el bot los renderiza tal cual.
-El menú se genera **solo con símbolos** (`╭ ╰ │ ─ 「 」 » ・`), siguiendo el
-estilo sin emojis del proyecto.
+**Decoraciones y plantillas** (sección `menu`):
+
+| Pieza | Qué controla |
+|---|---|
+| `kaomoji` / `kaomojiHint` | Caritas del saludo y de la pista |
+| `divider` | Línea divisoria (`✧･ﾟ: ✧･ﾟ: ── ⟡ ── ...`) |
+| `frameTop` / `frameBottom` | Marco de cada categoría |
+| `bullet` | Viñeta de cada comando (`₍ᐢ..ᐢ₎ ᜒ`) |
+| `header(datos)` | Saludo inicial (`> Hola ...`) |
+| `info(datos)` | Líneas ʙᴏᴛ / ᴡᴇʙ / ᴛɪᴘᴏ / ᴀᴄᴛɪᴠᴏ / ᴜsᴜᴀʀɪᴏs / ᴄᴍᴅs |
+| `commandsTitle()` | Título de la lista (`LISTA DE COMANDOS`) |
+| `hint({ prefix, filtered })` | Pista bajo el título |
+| `categoryTitle({ label })` | Encabezado (`✐ *CATEGORÍA ...*`) |
+| `commandLine(datos)` | Línea de comando (`*!cmd* • *!alias* + _<uso>_`) |
+| `commandDesc(datos)` | Descripción en letras pequeñas (`> 〄 ...`) |
+| `footer(datos)` | Cierre del menú |
+
+Datos disponibles en `header`, `info` y `footer`:
+
+```
+{ user, botName, botWeb, botType, owner, greeting, prefix, totalCommands, users, uptime, kaomoji }
+```
+
+Notas del menú:
+
+- **`greeting`** dice «Buenos días / tardes / noches» según la hora del servidor (automático).
+- **`users`** es un conteo **real**: cada usuario que usa un comando se guarda en `database/users.json`.
+- El menú se puede **filtrar por categoría**: `!menu grupos` muestra solo esa categoría.
+- Las descripciones se convierten a letras pequeñas con la utilidad `toSmallCaps` (en `lib/utils.js`).
 
 ## » Cambiar los mensajes automáticos
 

@@ -7,6 +7,9 @@ session/
 sessions/
 auth_info/
 
+# ── Base de datos local (contador de usuarios) ──
+database/
+
 # ── Variables de entorno ─────────────────────
 .env
 .env.local

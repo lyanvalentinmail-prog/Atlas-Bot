@@ -5,6 +5,7 @@
 import process from 'node:process'
 import { config } from './config.js'
 import { loadCommands } from './lib/loader.js'
+import { loadDatabase } from './lib/database.js'
 import { startConnection } from './lib/connection.js'
 import { logger, colors } from './lib/logger.js'
 
@@ -59,6 +60,8 @@ const main = async () => {
   } else {
     logger.success(`${total} comandos cargados en ${categories.size} categorías.`)
   }
+
+  loadDatabase()
 
   await startConnection({ commands, categories, sock: null, method })
 }

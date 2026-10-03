@@ -10,6 +10,7 @@
 // ╰────────────────────────────────────────────
 import process from 'node:process'
 import dotenv from 'dotenv'
+import { toSmallCaps } from './lib/utils.js'
 
 dotenv.config({ quiet: true })
 
@@ -30,6 +31,10 @@ export const config = {
   botVersion: '1.0.0',
   ownerName: process.env.OWNER_NAME || 'Sin definir',
   ownerNumbers: toNumberList(process.env.OWNER_NUMBER),
+
+  // Datos extra que se muestran en el menú
+  botWeb: 'Aún no tiene web..',
+  botType: 'Sub-Bot',
 
   // Prefijo de comandos. Cada carácter funciona como prefijo:
   // PREFIX = '!'  -> solo !
@@ -85,37 +90,69 @@ export const config = {
   },
 
   // ══ « 6. DISEÑO DEL MENÚ » ════════════════
-  // Plantillas del menú. Cada una es una función que
-  // recibe datos y devuelve una línea (o varias) de texto.
-  // Modifícalas a tu gusto sin tocar el código del bot.
+  // Todo el estilo del menú se controla aquí.
+  // Cada plantilla es una función que recibe
+  // datos y devuelve texto. Modifícalas a tu
+  // gusto sin tocar el código del bot.
   //
-  // Datos disponibles en header/footer:
-  //   { botName, user, owner, prefix, totalCommands, uptime }
-  // Datos en categoryTitle/categoryFooter:
-  //   { label, count }
-  // Datos en commandItem:
-  //   { prefix, name, description }
+  // Datos disponibles:
+  //   header/info/footer » { user, botName, botWeb, botType, owner,
+  //                          greeting, prefix, totalCommands, users, uptime, kaomoji }
+  //   categoryTitle      » { label, count }
+  //   commandLine        » { prefix, name, alias, extra }
+  //   commandDesc        » { description }
   menu: {
-    header: ({ botName, user, owner, prefix, totalCommands, uptime }) => [
-      '╭───────────── »',
-      `│  ${botName.toUpperCase()}`,
-      '│─────────────',
-      `│ » Usuario  : ${user}`,
-      `│ » Dueño    : ${owner}`,
-      `│ » Prefijo  : [ ${prefix} ]`,
-      `│ » Comandos : ${totalCommands}`,
-      `│ » Activo   : ${uptime}`,
-      '╰───────────── »'
+    // ── « Decoraciones » ─────────────────────
+    kaomoji: '૮₍ ˶ᵔ ᵕ ᔔ˶ ₎ა',
+    kaomojiHint: '૮(˶ᵔᕕᔔ˶)ა',
+    divider: '✧･ﾟ: ✧･ﾟ: ── ⟡ ── :･ﾟ✧:･ﾟ✧',
+    frameTop: '╭╼ׅࣶ፝֟╾╌ֵ╾͜─ํ͜┈ְ ࣭࣪⢏࣭ࣧ⢢࣭ׄ᎐፝֟͟͝᎐࣭ׄ⡔࣭ࣧ⡹࣭࣭ׄ࣪ ְ┈ํ͜─͜╼ꨪᰰ╾࣮╌╼ࣶׅ፝֟╾╮',
+    frameBottom: '╰╼ׅࣶ፝֟╾╌ֵ╾͜─ํ͜┈ְ ࣭࣪⢏࣭ࣧ⢢࣭ׄ᎐፝֟͟͝᎐࣭ׄ⡔࣭ࣧ⡹࣭࣭ׄ࣪ ְ┈ํ͜─͜╼ꨪᰰ╾࣮╌╼ࣶׅ፝֟╾╯',
+    bullet: '₍ᐢ..ᐢ₎ ᜒ',
+
+    // ── « Saludo de bienvenida » ─────────────
+    header: ({ user, botName, greeting, kaomoji }) =>
+      `> Hola ${user}, soy *${botName}* ${kaomoji}\n\n` +
+      `> ¡${greeting}! Aquí tienes el menú de mis comandos.`,
+
+    // ── « Líneas de información » ────────────
+    info: ({ botName, botWeb, botType, uptime, users, totalCommands }) => [
+      `: ̗̀〄 ʙᴏᴛ › ${botName}`,
+      `: ̗̀☁︎ ᴡᴇʙ › ${botWeb}`,
+      `: ̗̀ꕥ ᴛɪᴘᴏ › ${botType}`,
+      `: ̗̀☄︎ ᴀᴄᴛɪᴠᴏ › ${uptime}`,
+      `: ̗̀❖ ᴜsᴜᴀʀɪᴏs › ${users}`,
+      `: ̗̀❀ ᴄᴍᴅs › ${totalCommands}`
     ].join('\n'),
 
-    categoryTitle: ({ label }) => `╭─「 ${label} 」`,
+    // ── « Título de la lista » ───────────────
+    commandsTitle: () => '𐚁 ֹ ִ LISTA DE COMANDOS ! ୧ ֹ ִ',
 
-    commandItem: ({ prefix, name }) => `│ » ${prefix}${name}`,
+    // ── « Pista bajo el título » ─────────────
+    hint: ({ prefix, filtered, kaomojiHint }) =>
+      filtered
+        ? `> ${kaomojiHint} Usa *${prefix}menu* para volver al menú completo.`
+        : `> ${kaomojiHint} Usa *${prefix}menu <categoría>* para ver una categoría específica.`,
 
-    categoryFooter: () => '╰─────────────',
+    // ── « Encabezado de cada categoría » ─────
+    categoryTitle: ({ label }) => `✐ *CATEGORÍA ${label}*`,
 
-    footer: ({ prefix }) =>
-      `» Usa ${prefix}help <comando> para ver el detalle de cada comando.`
+    // ── « Línea de cada comando » ────────────
+    commandLine: ({ prefix, name, alias, extra, bullet }) => {
+      const names = [name, ...(alias || [])]
+        .slice(0, 2)
+        .map(n => `*${prefix}${n}*`)
+        .join(' • ')
+      return `${bullet} ${names}${extra ? ` + _${extra}_` : ''}`
+    },
+
+    // ── « Descripción de cada comando » ──────
+    commandDesc: ({ description }) =>
+      `> 〄 ${toSmallCaps(description || 'sin descripción.')}`,
+
+    // ── « Cierre del menú » ──────────────────
+    footer: ({ botName, totalCommands }) =>
+      `> *${botName}* ✧ ${totalCommands} comandos disponibles.`
   }
 }
 
