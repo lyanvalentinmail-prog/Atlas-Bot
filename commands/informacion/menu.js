@@ -101,23 +101,39 @@ const splitText = (text, max = MAX_CHUNK) => {
 // Envía UN mensaje de lista interactivo (single_select).
 // Las filas ejecutan su "id" como mensaje al tocarlas:
 // así, tocar «JUEGOS» envía «.menu juegos» solo.
-const sendList = async (sock, chatId, msg, { title, text, footer, buttonText, sections }) => {
-  await sock.sendMessage(chatId, {
-    interactiveMessage: proto.Message.InteractiveMessage.fromObject({
-      body: { text },
-      footer: { text: footer },
-      header: { title, hasMediaAttachment: false },
-      nativeFlowMessage: {
-        buttons: [{
-          name: 'single_select',
-          buttonParamsJson: JSON.stringify({
-            title: buttonText,
-            sections
-          })
-        }]
-      }
-    })
-  }, { quoted: msg })
+// Reglas duras de WhatsApp: título/pie de UNA línea,
+// cuerpo corto y payload validado antes de enviar.
+const oneLine = (value, fallback = '') => {
+  const text = String(value ?? fallback).split('\n')[0].trim()
+  return text || fallback
+}
+
+const sendList = async (sock, chatId, msg, { title, subtitle, text, footer, buttonText, sections }) => {
+  const content = proto.Message.InteractiveMessage.fromObject({
+    body: { text: String(text).slice(0, 1000) },
+    footer: { text: oneLine(footer) },
+    header: {
+      title: oneLine(title, 'MENÚ'),
+      subtitle: oneLine(subtitle),
+      hasMediaAttachment: false
+    },
+    nativeFlowMessage: {
+      buttons: [{
+        name: 'single_select',
+        buttonParamsJson: JSON.stringify({
+          title: oneLine(buttonText, 'Abrir'),
+          sections
+        })
+      }]
+    }
+  })
+
+  // Validación protobuf: si algo está mal, lanzamos error
+  // y el menú cae automáticamente al texto de respaldo.
+  const invalid = proto.Message.InteractiveMessage.verify(content)
+  if (invalid) throw new Error(`lista inválida: ${invalid}`)
+
+  await sock.sendMessage(chatId, { interactiveMessage: content }, { quoted: msg })
 }
 
 export default {
@@ -285,8 +301,9 @@ export default {
 
           await sendList(sock, chatId, msg, {
             title: `${data.botName} ・ ${label}`,
+            subtitle: `${cmds.length} comandos`,
             text: `> ${cmds.length} comandos de *${label}*.\n> Toca uno para ver su ayuda completa.`,
-            footer: tpl(m, 'footer', data) || `${data.botName} ✧ ${totalCommands} comandos`,
+            footer: `Toca la categoría › se abre sola`,
             buttonText: decor(m.listButton, `Abrir ${label.toLowerCase()}`),
             sections
           })
@@ -310,8 +327,9 @@ export default {
 
         await sendList(sock, chatId, msg, {
           title: `${data.botName} ・ MENÚ`,
-          text: `${header}\n\n> ${totalCommands} comandos en ${categories.size} categorías.\n> Toca una categoría para ver sus comandos.`,
-          footer: tpl(m, 'footer', data) || `${data.botName} ✧ ${totalCommands} comandos`,
+          subtitle: `${totalCommands} comandos`,
+          text: `${oneLine(header)}\n\n> ${totalCommands} comandos en ${categories.size} categorías.\n> Toca una categoría para ver sus comandos.`,
+          footer: `Toca la categoría › se abre sola`,
           buttonText: decor(m.listButton, 'Ver las categorías'),
           sections: [{
             title: 'CATEGORÍAS',
