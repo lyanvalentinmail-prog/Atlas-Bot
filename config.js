@@ -170,9 +170,10 @@ export const config = {
     tool: 'herramientas',
     utils: 'utilidades',
     utility: 'utilidades',
-    cats: 'utilidades',     // gatos (imágenes de gatitos)
-    gatos: 'utilidades',
+    gatos: 'utilidades',      // comandos de gatitos
     gaticos: 'utilidades',
+    // ojo: "cats" NO es gatos » es el índice de
+    // categorías (lo maneja menu.js directamente)
     grupo: 'grupos',
     group: 'grupos',
     groups: 'grupos',

@@ -123,11 +123,43 @@ export default {
       kaomoji: decor(m.kaomoji, '૮₍ ˶ᵔ ᵕ ᔔ˶ ₎ა')
     }
 
+    // Normaliza el argumento: "MODERACIÓN" -> "moderacion"
+    const requested = normalize(args[0] || '')
+
+    // ── « Índice de categorías: !menu cats » ──
+    // "cats" (abreviatura de "categorías"), su lista
+    // completa y otros sinónimos muestran el índice de
+    // TODAS las categorías, no el menú entero.
+    const INDEX_TERMS = new Set([
+      'cats', 'cat', 'categorias', 'categoria', 'categorys', 'category',
+      'lista', 'list', 'secciones', 'seccion', 'index', 'indice', 'todo'
+    ])
+
+    if (INDEX_TERMS.has(requested)) {
+      const lines = [
+        `╭─「 CATEGORÍAS DEL MENÚ 」`
+      ]
+      for (const [category, cmds] of categories) {
+        if (!cmds?.length) continue
+        const label = config.categoryLabels?.[category] || category.toUpperCase()
+        lines.push(`│ ✐ *${label}* · ${cmds.length} » ${prefix}menu ${category}`)
+      }
+      lines.push(
+        '╰─────────────',
+        `> ${totalCommands} comandos en ${categories.size} categorías.`,
+        `> Detalle de una: *${prefix}menu <categoría>* (ej: ${prefix}menu juegos)`,
+        `> Todo junto: *${prefix}menu* ・ ayuda: *${prefix}help <comando>*`
+      )
+      return sock.sendMessage(chatId, {
+        text: lines.join('\n'),
+        mentions: [sender]
+      }, { quoted: msg })
+    }
+
     // ── « Filtro por categoría: !menu grupos » ──
     // Acepta el nombre de la carpeta, su etiqueta
     // del menú y los alias de config.categoryAliases
     // (en español o inglés, con o sin tildes).
-    const requested = normalize(args[0] || '')
     let entries = [...categories]
 
     if (requested) {
@@ -150,6 +182,7 @@ export default {
           .join(', ')
         return sock.sendMessage(chatId, {
           text: `> No encontré la categoría *${args[0]}*.\n` +
+                `> Todas las categorías: *${prefix}menu cats*\n` +
                 `> Categorías: ${[...categories.keys()].join(', ')}\n` +
                 (aliasHint ? `> Alias útiles: ${aliasHint}…\n` : '') +
                 `> Usa *${prefix}menu* para el menú completo.`,

@@ -490,10 +490,14 @@ Notas del menú:
 - **`greeting`** dice «Buenos días / tardes / noches» según la hora del servidor (automático).
 - **`users`** es un conteo **real**: cada usuario que usa un comando se guarda en `database/users.json`.
 - El menú se puede **filtrar por categoría**: `!menu grupos` muestra solo esa categoría.
-  También acepta **alias en español e inglés** (`!menu cats`, `!menu gatos` → utilidades;
+  También acepta **alias en español e inglés** (`!menu gatos` → utilidades;
   `!menu mod` → moderación; `!menu economy` → economía…). Se configuran en
   **`categoryAliases`** dentro de `config.js`. Si la categoría no existe, el bot responde
   con la lista de categorías en vez de mandar el menú completo.
+- **`!menu cats`** muestra el **índice de todas las categorías** (cats = abreviatura
+  de "categorías"): cada una con su conteo de comandos y el `!menu <categoría>` exacto
+  para verla en detalle. También valen `categorias`, `lista`, `index`, `secciones`.
+  Para los comandos de gatitos de verdad: `!menu gatos`.
 - Si el menú supera ~3500 caracteres se **divide en varios mensajes** numerados
   `[1/n]` para que WhatsApp no se trabe con textos gigantes.
 - `!help cats` / `!help gatos` muestran la lista de comandos de esa categoría.

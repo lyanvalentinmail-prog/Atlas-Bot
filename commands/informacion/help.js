@@ -40,6 +40,26 @@ export default {
     const term = normalize(args.join(' '))
     const termSingle = normalize(args[0])
 
+    // « Índice de categorías: !help cats »
+    // ("cats" = abreviatura de "categorías", no gatitos)
+    const INDEX_TERMS = new Set([
+      'cats', 'cat', 'categorias', 'categoria', 'lista', 'list',
+      'secciones', 'seccion', 'index', 'indice', 'todo'
+    ])
+    if (INDEX_TERMS.has(termSingle)) {
+      const lines = [`╭─「 CATEGORÍAS DEL MENÚ 」`]
+      for (const [category, cmds] of categories?.entries?.() || []) {
+        if (!cmds?.length) continue
+        const label = config.categoryLabels?.[category] || category.toUpperCase()
+        lines.push(`│ ✐ *${label}* · ${cmds.length} » ${prefix}menu ${category}`)
+      }
+      lines.push(
+        '╰─────────────',
+        `> Esa categoría al completo: *${prefix}menu <categoría>*`
+      )
+      return reply(lines.join('\n'))
+    }
+
     // « Con argumento: detalle del comando »
     const command = commands.get(term) || commands.get(termSingle)
 
