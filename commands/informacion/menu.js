@@ -19,7 +19,7 @@
 import { existsSync, readFileSync } from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { proto } from '@whiskeysockets/baileys'
+import { proto, generateWAMessageFromContent } from '@whiskeysockets/baileys'
 import { logger } from '../../lib/logger.js'
 import { formatUptime, getGreeting } from '../../lib/utils.js'
 import { getUserCount } from '../../lib/database.js'
@@ -133,7 +133,25 @@ const sendList = async (sock, chatId, msg, { title, subtitle, text, footer, butt
   const invalid = proto.Message.InteractiveMessage.verify(content)
   if (invalid) throw new Error(`lista inválida: ${invalid}`)
 
-  await sock.sendMessage(chatId, { interactiveMessage: content }, { quoted: msg })
+  // Intento 1: sendMessage estándar (el camino normal).
+  try {
+    await sock.sendMessage(chatId, { interactiveMessage: content }, { quoted: msg })
+    return
+  } catch (firstError) {
+    logger.warn(`sendMessage de la lista falló (${firstError.message}). Probando relayMessage…`)
+  }
+
+  // Intento 2: generateWAMessageFromContent + relayMessage.
+  // Con listas nativas suele funcionar cuando sendMessage las rechaza.
+  if (typeof sock.relayMessage === 'function') {
+    const full = generateWAMessageFromContent(chatId, {
+      interactiveMessage: content
+    }, { userJid: sock.user?.id })
+    await sock.relayMessage(chatId, full.message, { messageId: full.key.id })
+    return
+  }
+
+  throw new Error('relayMessage no disponible en esta sesión')
 }
 
 export default {
