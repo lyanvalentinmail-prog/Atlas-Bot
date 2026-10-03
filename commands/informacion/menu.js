@@ -1,40 +1,64 @@
 // ╭────────────────────────────────────────────
 // │  COMANDO » menu
-// │  Muestra el menú principal. Su diseño se
-// │  edita en config.js, sección "menu".
+// │  Muestra el menú principal.
 // │
 // │  Uso:
 // │    !menu          -> menú completo
 // │    !menu grupos   -> solo esa categoría
 // │
-// │  Si hay banner (config.menu.banner), el
-// │  encabezado viaja como pie de la imagen y
-// │  la lista de comandos en un mensaje de texto.
+// │  Diseño a prueba de fallos:
+// │   - Si el banner no existe o no puede enviarse,
+// │     el menú cae automáticamente a texto.
+// │   - Si falta alguna plantilla en config.js,
+// │     usa respaldos internos en vez de romperse.
 // ╰────────────────────────────────────────────
 import { existsSync, readFileSync } from 'node:fs'
 import path from 'node:path'
-import { ROOT_DIR } from '../../config.js'
+import { fileURLToPath } from 'node:url'
 import { logger } from '../../lib/logger.js'
 import { formatUptime, getGreeting } from '../../lib/utils.js'
 import { getUserCount } from '../../lib/database.js'
+
+// Raíz del proyecto según la ubicación de ESTE archivo:
+// no depende de config.js (funciona aunque la config sea vieja).
+const PROJECT_ROOT = path.resolve(
+  path.dirname(fileURLToPath(import.meta.url)), '..', '..'
+)
 
 // El banner se lee del disco una sola vez.
 let bannerCache = null
 let bannerMissing = false
 
-const getBanner = (config) => {
+const getBanner = (menuCfg) => {
   if (bannerCache || bannerMissing) return bannerCache
-  if (!config.menu.banner) { bannerMissing = true; return null }
+  const bannerPath = menuCfg?.banner
+  if (!bannerPath) { bannerMissing = true; return null }
 
-  const filePath = path.resolve(ROOT_DIR, config.menu.banner)
-  if (!existsSync(filePath)) {
-    logger.warn(`No se encontró el banner "${config.menu.banner}". El menú se enviará como texto.`)
+  try {
+    const filePath = path.resolve(PROJECT_ROOT, bannerPath)
+    if (!existsSync(filePath)) throw new Error('archivo inexistente')
+    bannerCache = readFileSync(filePath)
+  } catch {
+    logger.warn(`No se encontró el banner "${bannerPath}". El menú se enviará como texto.`)
     bannerMissing = true
     return null
   }
-  bannerCache = readFileSync(filePath)
   return bannerCache
 }
+
+// Ejecuta una plantilla del menú; nunca lanza error.
+const tpl = (menuCfg, key, data) => {
+  try {
+    const value = menuCfg?.[key]
+    return typeof value === 'function' ? value(data) : String(value ?? '')
+  } catch {
+    return ''
+  }
+}
+
+// Devuelve una decoración válida (o el respaldo).
+const decor = (value, fallback) =>
+  (typeof value === 'string' && value.length ? value : fallback)
 
 export default {
   name: 'menu',
@@ -44,7 +68,7 @@ export default {
   usage: 'menu [categoría]',
 
   run: async ({ sock, msg, chatId, sender, args, prefix, config, categories }) => {
-    const m = config.menu
+    const m = config?.menu || {}
     const totalCommands = [...categories.values()]
       .reduce((sum, list) => sum + list.length, 0)
 
@@ -59,7 +83,7 @@ export default {
       totalCommands,
       users: getUserCount(),
       uptime: formatUptime(process.uptime()),
-      kaomoji: m.kaomoji
+      kaomoji: decor(m.kaomoji, '૮₍ ˶ᵔ ᵕ ᔔ˶ ₎ა')
     }
 
     // ── « Filtro por categoría: !menu grupos » ──
@@ -68,7 +92,7 @@ export default {
 
     if (requested) {
       entries = entries.filter(([category]) => {
-        const label = (config.categoryLabels[category] || '').toLowerCase()
+        const label = (config.categoryLabels?.[category] || '').toLowerCase()
         return category === requested || label === requested
       })
       if (entries.length === 0) {
@@ -81,60 +105,66 @@ export default {
     }
 
     // ── « Construcción del menú » ───────────
-    const head = [
-      m.header(data),
-      '',
-      m.divider,
-      '',
-      m.info(data)
-    ]
+    const divider = decor(m.divider, '───────────────')
+    const thinLine = decor(m.thinLine, '───────────────')
+    const bullet = decor(m.bullet, '»')
+
+    const header = tpl(m, 'header', data) ||
+      `> ¡${data.greeting}! Menú de *${data.botName}*`
+    const info = tpl(m, 'info', data)
 
     const body = [
-      m.commandsTitle(data),
+      tpl(m, 'commandsTitle', data) || '*LISTA DE COMANDOS*',
       '',
-      m.hint({ prefix, filtered: Boolean(requested), kaomojiHint: m.kaomojiHint })
+      tpl(m, 'hint', { prefix, filtered: Boolean(requested), kaomojiHint: decor(m.kaomojiHint, '') })
     ]
 
     for (const [category, cmds] of entries) {
-      const label = config.categoryLabels[category] || category.toUpperCase()
+      const label = config.categoryLabels?.[category] || category.toUpperCase()
 
-      body.push('', m.thinLine)
-      body.push(m.categoryTitle({ label, count: cmds.length }))
+      body.push('', thinLine)
+      body.push(
+        tpl(m, 'categoryTitle', { label, count: cmds.length }) || `*${label}*`
+      )
 
       for (const cmd of cmds) {
-        body.push(m.commandLine({
-          prefix,
-          name: cmd.name,
-          description: cmd.description,
-          bullet: m.bullet
-        }))
+        body.push(
+          tpl(m, 'commandLine', { prefix, name: cmd.name, description: cmd.description, bullet }) ||
+          `${bullet} *${prefix}${cmd.name}*`
+        )
       }
     }
 
-    const footer = ['', m.thinLine, '', m.footer(data)]
+    body.push('', thinLine, '',
+      tpl(m, 'footer', data) || `> *${data.botName}* ✧ ${totalCommands} comandos disponibles.`)
 
     // ── « Envío: con banner o solo texto » ──
-    const banner = getBanner(config)
+    const banner = getBanner(m)
 
     if (banner) {
-      // Foto con el encabezado como pie de imagen
-      await sock.sendMessage(chatId, {
-        image: banner,
-        caption: head.join('\n'),
-        mentions: [sender]
-      }, { quoted: msg })
+      try {
+        // Foto con el encabezado como pie de imagen
+        await sock.sendMessage(chatId, {
+          image: banner,
+          caption: [header, '', divider, '', info].join('\n'),
+          mentions: [sender]
+        }, { quoted: msg })
 
-      // Lista de comandos como texto (los captions tienen
-      // límite de caracteres, por eso viaja aparte)
-      await sock.sendMessage(chatId, {
-        text: [...body, ...footer].join('\n'),
-        mentions: [sender]
-      })
-    } else {
-      await sock.sendMessage(chatId, {
-        text: [...head, '', m.divider, ...body, ...footer].join('\n'),
-        mentions: [sender]
-      }, { quoted: msg })
+        // Lista de comandos como texto (los captions tienen
+        // límite de caracteres, por eso viaja aparte)
+        await sock.sendMessage(chatId, {
+          text: body.join('\n'),
+          mentions: [sender]
+        })
+        return
+      } catch (error) {
+        logger.warn(`No se pudo enviar el banner (${error.message}). El menú va como texto.`)
+      }
     }
+
+    await sock.sendMessage(chatId, {
+      text: [header, '', divider, '', info, '', divider, ...body].join('\n'),
+      mentions: [sender]
+    }, { quoted: msg })
   }
 }
