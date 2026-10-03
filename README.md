@@ -92,6 +92,7 @@ Atlas-Bot/
 │   ├── trackers.js           # Contadores en memoria (antispam/antiflood/antibot)
 │   ├── image.js              # Descarga de imágenes y carga opcional de sharp
 │   ├── utils.js              # Utilidades compartidas
+│   ├── ui.js                 # Sistema de diseño de menús (cajas, barras, rankings)
 │   └── data/
 │       ├── characters.js     # Personajes del gacha (edítalos a tu gusto)
 │       ├── quiz.js           # Palabras, preguntas y pistas de los minijuegos
@@ -502,6 +503,10 @@ Notas del menú:
   `[1/n]` para que WhatsApp no se trabe con textos gigantes.
 - `!help cats` / `!help gatos` muestran la lista de comandos de esa categoría.
 - Las descripciones se convierten a letras pequeñas con la utilidad `toSmallCaps` (en `lib/utils.js`).
+- Todas las pantallas tipo menú (tienda, inventario, top, perfil, colecciones,
+  reglas, staff, ajustes, estado…) usan el mismo sistema de diseño:
+  **`lib/ui.js`** (`box`, `kv`, `num`, `bar`, `stars`, `rankRows`, `flag`, `hint`).
+  Si creas un menú nuevo, impórtalo de ahí para mantener el estilo.
 
 ## » Cambiar los mensajes automáticos
 

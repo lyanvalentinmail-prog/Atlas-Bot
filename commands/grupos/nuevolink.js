@@ -17,7 +17,13 @@ export default {
   run: async ({ sock, chatId, reply }) => {
     try {
       const codigo = await sock.groupRevokeInvite(chatId)
-      await reply(`> こ Enlace renovado:\n> https://chat.whatsapp.com/${codigo}`)
+      await reply([
+        '╭─「 ENLACE RENOVADO 」',
+        '╰─────────────',
+        `https://chat.whatsapp.com/${codigo}`,
+        '',
+        '> こ El enlace anterior quedó revocado.'
+      ].join('\n'))
     } catch {
       await reply('» No pude renovar el enlace.')
     }

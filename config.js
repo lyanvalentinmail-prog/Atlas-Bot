@@ -247,7 +247,7 @@ export const config = {
     ].join('\n'),
 
     // ── « Título de la lista » ───────────────
-    commandsTitle: () => '✧ *LISTA DE COMANDOS* ✧',
+    commandsTitle: ({ totalCommands }) => `✧ *LISTA DE COMANDOS* ・ ${totalCommands} ✧`,
 
     // ── « Pista bajo el título » ─────────────
     hint: ({ prefix, filtered, kaomojiHint }) =>
@@ -266,8 +266,9 @@ export const config = {
       (description ? `\n> ${toSmallCaps(description)}` : ''),
 
     // ── « Cierre del menú » ──────────────────
-    footer: ({ botName, totalCommands }) =>
-      `> *${botName}* ✧ ${totalCommands} comandos disponibles.`
+    footer: ({ botName, totalCommands, prefix }) =>
+      `> *${botName}* ✧ ${totalCommands} comandos disponibles.\n` +
+      `> Índice de categorías: *${prefix}menu cats*`
   },
 
   // ══ « 7. INTELIGENCIA ARTIFICIAL » ═══════

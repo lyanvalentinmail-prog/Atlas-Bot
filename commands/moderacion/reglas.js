@@ -1,7 +1,9 @@
 // ╭────────────────────────────────────────────
-// │  COMANDO » reglas » muestra las reglas.
+// │  COMANDO » reglas » muestra las reglas
+// │  del grupo enmarcadas.
 // ╰────────────────────────────────────────────
 import { getGroupSettings } from '../../lib/database.js'
+import { box, hint } from '../../lib/ui.js'
 
 export default {
   name: 'rules',
@@ -16,6 +18,8 @@ export default {
     if (!settings.rules) {
       return reply(`> Este grupo aún no tiene reglas.\n> Un admin las define con: ${prefix}setrules <texto>`)
     }
-    await reply(`╭─「 REGLAS DEL GRUPO 」\n╰─────────────\n${settings.rules}`)
+    await reply(box('REGLAS DEL GRUPO',
+      settings.rules.split('\n').map(l => `│ ${l}`),
+      hint('Cúmplelas › a la tercera advertencia hay expulsión.')))
   }
 }

@@ -1,9 +1,10 @@
 // ╭────────────────────────────────────────────
 // │  COMANDO » buscarpj
 // │  Busca un personaje del gacha por nombre
-// │  y muestra suas datos y rareza.
+// │  y muestra sus datos y rareza.
 // ╰────────────────────────────────────────────
 import { CHARACTERS } from '../../lib/data/characters.js'
+import { box, stars } from '../../lib/ui.js'
 
 export default {
   name: 'findchar',
@@ -24,11 +25,14 @@ export default {
       return reply(`» No encontré *${text}* en el gacha. Usa ${prefix}characters para ver todos.`)
     }
 
-    const lineas = encontrados.slice(0, 5).map(pj => {
-      const estrellas = '★'.repeat(pj.rarity) + '☆'.repeat(4 - pj.rarity)
-      return `> *${pj.name}*\n> Rareza: ${estrellas}`
-    })
-
-    await reply(lineas.join('\n\n'))
+    const total = encontrados.length
+    await reply(box(`RESULTADOS ・ ${total}`, [
+      ...encontrados.slice(0, 5).flatMap((pj, i, arr) => [
+        `│ *${pj.name}*`,
+        `│ › Rareza : ${stars(pj.rarity)}`,
+        ...(i < arr.length - 1 ? ['│─────────────'] : [])
+      ]),
+      ...(total > 5 ? [`│ … y ${total - 5} resultado(s) más`] : [])
+    ]))
   }
 }

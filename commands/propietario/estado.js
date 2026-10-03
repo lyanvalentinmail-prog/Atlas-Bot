@@ -3,6 +3,7 @@
 // ╰────────────────────────────────────────────
 import { formatUptime, formatBytes } from '../../lib/utils.js'
 import { getUserCount } from '../../lib/database.js'
+import { box, kv, section } from '../../lib/ui.js'
 
 export default {
   name: 'status',
@@ -16,16 +17,21 @@ export default {
     const mem = process.memoryUsage()
     const base = new Set([...commands.values()]).size
 
-    await reply([
-      '╭─「 ESTADO DEL BOT 」',
-      `│ » Uptime      : ${formatUptime(process.uptime())}`,
-      `│ » Memoria     : ${formatBytes(mem.rss)} (RSS)`,
-      `│ » Heap usado  : ${formatBytes(mem.heapUsed)}`,
-      `│ » Node.js     : ${process.version}`,
-      `│ » Prefijo     : ${config.prefix}`,
-      `│ » Categorías  : ${categories.size} ・ Comandos: ${base} (${commands.size} con alias)`,
-      `│ » Usuarios    : ${getUserCount()}`,
-      '╰─────────────'
-    ].join('\n'))
+    await reply(box('ESTADO DEL BOT', [
+      section('Actividad'),
+      kv('En línea', formatUptime(process.uptime())),
+      kv('Usuarios', `${getUserCount()}`),
+      '│',
+      section('Comandos'),
+      kv('Base', `${base}`),
+      kv('Con alias', `${commands.size}`),
+      kv('Categorías', `${categories.size}`),
+      '│',
+      section('Recursos'),
+      kv('Memoria RSS', formatBytes(mem.rss)),
+      kv('Heap usado', formatBytes(mem.heapUsed)),
+      kv('Node.js', process.version),
+      kv('Prefijo', `[ ${[...config.prefix].join(' ')} ]`)
+    ]))
   }
 }

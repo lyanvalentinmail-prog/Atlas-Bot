@@ -1,11 +1,12 @@
 // ╭────────────────────────────────────────────
 // │  COMANDO » perfil
-// │  Muestra tu perfil: número, monedas,
-// │  pokemon y personajes coleccionados.
+// │  Tarjeta de usuario: registro, monedas,
+// │  nivel, rep y colecciones.
 // │  !perfil  o  !perfil @usuario
 // ╰────────────────────────────────────────────
 import { getTargetUser, getNumber } from '../../lib/utils.js'
 import { getAccount } from '../../lib/database.js'
+import { box, kv, hint, num } from '../../lib/ui.js'
 
 export default {
   name: 'profile',
@@ -20,16 +21,21 @@ export default {
     const account = getAccount(target)
     const reg = account.registered
 
-    const caption = [
-      `╭─「 PERFIL 」`,
-      `│ » Usuario   : @${number}`,
-      `│ » ${reg ? `Nombre    : ${reg.name} (${reg.age} años)` : `Registro  : no registrado · ${prefix}register`}`,
-      `│ » Número    : +${number}`,
-      `│ » Monedas   : ${account.coins}`,
-      `│ » Pokemon   : ${account.pokemon.length} atrapados`,
-      `│ » Personajes: ${account.characters.length} obtenidos`,
-      '╰─────────────'
-    ].join('\n')
+    const caption = box(`PERFIL DE @${number}`, [
+      kv('Usuario', `@${number}`),
+      kv('Registro', reg
+        ? `*${reg.name}* (${reg.age} años) ✔`
+        : `sin registrar ・ ${prefix}register`),
+      ...(account.bio ? [kv('Bio', account.bio)] : []),
+      kv('Monedas', `*${num(account.coins)}* ・ banco: ${num(account.bank)}`),
+      kv('Nivel', `${account.level} ・ ${num(account.exp)} exp`),
+      kv('Reputación', `${account.rep} pts`),
+      kv('Pareja', account.marriage ? `@${account.marriage.partner} ♡` : 'ninguna'),
+      '│─────────────',
+      kv('Pokemon', `${account.pokemon.length} atrapados`),
+      kv('Personajes', `${account.characters.length} obtenidos`),
+      kv('Objetos', `${account.items.length} en inventario`)
+    ], hint(`${prefix}level ・ ${prefix}inventory ・ ${prefix}mypokemon`))
 
     // Intenta incluir la foto de perfil; si no se puede, solo texto
     try {

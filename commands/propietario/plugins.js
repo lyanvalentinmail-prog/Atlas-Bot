@@ -1,6 +1,8 @@
 // ╭────────────────────────────────────────────
-// │  COMANDO » plugins » comandos instalados.
+// │  COMANDO » plugins » comandos instalados,
+// │  con detalle por categoría.
 // ╰────────────────────────────────────────────
+import { box, section } from '../../lib/ui.js'
 
 export default {
   name: 'plugins',
@@ -10,17 +12,21 @@ export default {
   usage: 'plugins',
   ownerOnly: true,
 
-  run: async ({ reply, commands, categories }) => {
-    const conteo = [...categories.entries()].map(([cat, lista]) =>
-      `・ *${cat}* » ${lista.length} cmd(s)`)
+  run: async ({ reply, commands, categories, config }) => {
+    const base = new Set([...commands.values()]).size
 
-    await reply([
-      '╭─「 PLUGINS 」',
-      `│ » Total categorías: ${categories.size}`,
-      `│ » Total comandos  : ${[...commands.values()] ? new Set([...commands.values()]).size : 0}`,
-      `│ » Alias totales   : ${commands.size}`,
-      '╰─────────────',
+    const conteo = [...categories.entries()].map(([cat, lista]) => {
+      const label = config.categoryLabels?.[cat] || cat.toUpperCase()
+      return `│ ・ *${label}* › ${lista.length}`
+    })
+
+    await reply(box('PLUGINS INSTALADOS', [
+      `│ » Comandos base  : ${base}`,
+      `│ » Con alias      : ${commands.size}`,
+      `│ » Categorías     : ${categories.size}`,
+      '│─────────────',
+      section('Por categoría'),
       ...conteo
-    ].join('\n'))
+    ]))
   }
 }

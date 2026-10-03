@@ -14,6 +14,12 @@ export default {
 
   run: async ({ sock, chatId, reply }) => {
     const code = await sock.groupInviteCode(chatId)
-    await reply(`» Enlace del grupo:\nhttps://chat.whatsapp.com/${code}`)
+    await reply([
+      '╭─「 ENLACE DEL GRUPO 」',
+      '╰─────────────',
+      `https://chat.whatsapp.com/${code}`,
+      '',
+      `> Compártelo con quien quieras sumar al grupo.`
+    ].join('\n'))
   }
 }

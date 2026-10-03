@@ -1,7 +1,9 @@
 // ╭────────────────────────────────────────────
-// │  COMANDO » listadmins » lista los admins.
+// │  COMANDO » listadmins » lista los admins
+// │  con mención y conteo.
 // ╰────────────────────────────────────────────
 import { getNumber, isAdmin } from '../../lib/utils.js'
+import { box, hint } from '../../lib/ui.js'
 
 export default {
   name: 'listadmins',
@@ -15,13 +17,14 @@ export default {
     try {
       const metadata = await sock.groupMetadata(chatId)
       const admins = metadata.participants.filter(p => isAdmin(p)).map(p => p.id)
-      const lineas = admins.map((jid, i) => `${i + 1}. @${getNumber(jid)}`)
+      const creador = metadata.owner || null
 
-      await reply([
-        '╭─「 ADMINS DEL GRUPO 」',
-        ...lineas,
-        '╰─────────────'
-      ].join('\n'), { mentions: admins })
+      const lineas = admins.map((jid, i) =>
+        `│ ${i + 1}. @${getNumber(jid)}${creador && jid === creador ? ' › creador' : ''}`)
+
+      await reply(box(`ADMINS DEL GRUPO ・ ${admins.length}`, lineas,
+        hint(`${metadata.participants.length} miembros en total`)),
+        { mentions: admins })
     } catch {
       await reply('» No pude leer la lista de administradores.')
     }

@@ -1,9 +1,9 @@
 // ╭────────────────────────────────────────────
-// │  COMANDO » config » resumen de ajustes.
+// │  COMANDO » config » resumen de ajustes
+// │  del grupo con marcas ✔/✘.
 // ╰────────────────────────────────────────────
 import { getGroupSettings } from '../../lib/database.js'
-
-const onoff = (v) => (v ? 'on' : 'off')
+import { box, kv, hint, flag } from '../../lib/ui.js'
 
 export default {
   name: 'config',
@@ -13,25 +13,26 @@ export default {
   usage: 'config',
   groupOnly: true,
 
-  run: async ({ reply, chatId }) => {
+  run: async ({ reply, chatId, prefix }) => {
     const s = getGroupSettings(chatId)
-    const silencio = s.mutedChat === -1 ? 'indefinido' : (s.mutedChat > Date.now() ? 'temporal' : 'no')
+    const silencio = s.mutedChat === -1
+      ? 'indefinido'
+      : (s.mutedChat > Date.now() ? 'temporal' : flag(false))
 
-    await reply([
-      '╭─「 CONFIG DEL GRUPO 」',
-      `│ » Anti-link      : ${onoff(s.antilink)}${s.antilink2.on ? ` (${s.antilink2.mode})` : ''}`,
-      `│ » Bienvenida     : ${onoff(s.welcome)}${s.customWelcome ? ' (personalizada)' : ''}`,
-      `│ » Anti-spam      : ${onoff(s.antispam)}`,
-      `│ » Anti-flood     : ${onoff(s.antiflood)}`,
-      `│ » Anti-bot       : ${onoff(s.antibot)}`,
-      `│ » Anti-NSFW      : ${onoff(s.antinsfw)}`,
-      `│ » Chat silenciado: ${silencio}`,
-      `│ » Silenciados    : ${s.muted.length}`,
-      `│ » Vetados        : ${s.banned.length}`,
-      `│ » Solo-admins    : ${s.soloAdmins.length ? s.soloAdmins.join(', ') : 'ninguno'}`,
-      `│ » Prefijo extra  : ${s.groupPrefix || '(ninguno)'}`,
-      `│ » Reglas         : ${s.rules ? 'definidas' : 'sin definir'}`,
-      '╰─────────────'
-    ].join('\n'))
+    await reply(box('CONFIG DEL GRUPO', [
+      kv('Anti-link', `${flag(s.antilink)}${s.antilink2.on ? ` › ${s.antilink2.mode}` : ''}`),
+      kv('Bienvenida', `${flag(s.welcome)}${s.customWelcome ? ' › personalizada' : ''}`),
+      kv('Anti-spam', flag(s.antispam)),
+      kv('Anti-flood', flag(s.antiflood)),
+      kv('Anti-bot', flag(s.antibot)),
+      kv('Anti-NSFW', flag(s.antinsfw)),
+      kv('Chat silenciado', silencio),
+      '│─────────────',
+      kv('Silenciados', `${s.muted.length}`),
+      kv('Vetados', `${s.banned.length}`),
+      kv('Solo-admins', s.soloAdmins.length ? s.soloAdmins.join(', ') : 'ninguno'),
+      kv('Prefijo extra', s.groupPrefix || '(ninguno)'),
+      kv('Reglas', s.rules ? 'definidas ✔' : 'sin definir ✘')
+    ], hint(`Cambia opciones con ${prefix}settings`)))
   }
 }
