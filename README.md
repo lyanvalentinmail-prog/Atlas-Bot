@@ -402,12 +402,19 @@ banner: 'assets/banner.jpg',   // imagen del menú
 | `commandsTitle()` | Título de la lista (`*LISTA DE COMANDOS*`) |
 | `hint({ prefix, filtered })` | Pista bajo el título |
 | `categoryTitle({ label })` | Encabezado de categoría (`✐ *GRUPOS*`) |
-| `commandLine(datos)` | Línea de comando (`*!cmd* » ᴅᴇꜱᴄʀɪᴘᴄɪóɴ`) |
+| `commandLine(datos)` | Bloque de comando (nombre `»` + descripción en `>`) |
 | `footer(datos)` | Cierre del menú |
 
 Datos de `commandLine`: `{ prefix, name, description, bullet }` —
-cada comando ocupa una sola línea; el detalle completo (alias, uso,
-restricciones) se consulta con `!help <comando>`.
+cada comando usa dos líneas:
+
+```
+₍ᐢ..ᐢ₎ *!help* »
+> ᴍᴜᴇꜱᴛʀᴀ ʟᴀ ᴀʏᴜᴅᴀ ɢᴇɴᴇʀᴀʟ...
+```
+
+El detalle completo (alias, uso, restricciones) se consulta con
+`!help <comando>`.
 
 Datos disponibles en `header`, `info` y `footer`:
 

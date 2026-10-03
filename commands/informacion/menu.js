@@ -130,7 +130,7 @@ export default {
       for (const cmd of cmds) {
         body.push(
           tpl(m, 'commandLine', { prefix, name: cmd.name, description: cmd.description, bullet }) ||
-          `${bullet} *${prefix}${cmd.name}*`
+          `${bullet} *${prefix}${cmd.name}* »`
         )
       }
     }

@@ -180,9 +180,11 @@ export const config = {
     categoryTitle: ({ label }) => `✐ *${label}*`,
 
     // ── « Línea de cada comando » ────────────
+    // Dos líneas: nombre arriba, descripción abajo.
     // El detalle completo se consulta con !help <comando>
     commandLine: ({ prefix, name, description, bullet }) =>
-      `${bullet} *${prefix}${name}* » ${toSmallCaps(description || '')}`,
+      `${bullet} *${prefix}${name}* »` +
+      (description ? `\n> ${toSmallCaps(description)}` : ''),
 
     // ── « Cierre del menú » ──────────────────
     footer: ({ botName, totalCommands }) =>
