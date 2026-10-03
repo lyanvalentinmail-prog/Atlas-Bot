@@ -10,6 +10,8 @@
   },
   "scripts": {
     "start": "node index.js",
+    "start:qr": "node index.js --qr",
+    "start:pairing": "node index.js --pairing",
     "pm2:start": "pm2 start ecosystem.config.cjs",
     "pm2:stop": "pm2 stop atlas-bot",
     "pm2:restart": "pm2 restart atlas-bot",

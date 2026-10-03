@@ -38,7 +38,8 @@ export const config = {
 
   // ══ « 2. CONEXIÓN » ═══════════════════════
   sessionName: process.env.SESSION_NAME || 'session',
-  connectionMethod: (process.env.CONNECTION_METHOD || 'qr').trim().toLowerCase(), // 'qr' | 'pairing'
+  // 'qr' | 'pairing' | '' (vacío = el bot pregunta al iniciar)
+  connectionMethod: (process.env.CONNECTION_METHOD || '').trim().toLowerCase(),
   pairingNumber: cleanNumber(process.env.PAIRING_NUMBER || ''),
   reconnectDelay: Number(process.env.RECONNECT_DELAY) || 3000,
 

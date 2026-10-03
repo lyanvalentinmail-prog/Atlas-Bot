@@ -25,17 +25,33 @@ const showBanner = () => {
 }
 
 // ── « Inicio » ──────────────────────────────
+// ── « Método de conexión por argumentos » ───
+// npm start -- --qr   |   npm start -- --pairing
+// (o los atajos: npm run start:qr / start:pairing)
+const getCliMethod = () => {
+  const args = process.argv.slice(2)
+  if (args.includes('--pairing')) return 'pairing'
+  if (args.includes('--qr')) return 'qr'
+  return null
+}
+
 const main = async () => {
   showBanner()
 
-  if (!['qr', 'pairing'].includes(config.connectionMethod)) {
-    logger.warn(`Método de conexión desconocido: "${config.connectionMethod}". Se usará "qr".`)
-    config.connectionMethod = 'qr'
+  // El método se decide así: argumento CLI > .env > pregunta al iniciar.
+  let method = getCliMethod()
+  if (!method && ['qr', 'pairing'].includes(config.connectionMethod)) {
+    method = config.connectionMethod
   }
 
   logger.info(`Dueño   : ${config.ownerName} » ${config.ownerNumbers.join(', ') || 'sin definir'}`)
   logger.info(`Prefijo : [ ${[...config.prefix].join(' ')} ]`)
-  logger.info(`Método  : ${config.connectionMethod === 'pairing' ? 'Código de vinculación' : 'Código QR'}`)
+  logger.info(
+    'Método  : ' +
+    (method === 'pairing' ? 'Código de vinculación'
+      : method === 'qr' ? 'Código QR'
+      : 'se elegirá al iniciar')
+  )
 
   const { commands, categories, total } = await loadCommands()
   if (total === 0) {
@@ -44,7 +60,7 @@ const main = async () => {
     logger.success(`${total} comandos cargados en ${categories.size} categorías.`)
   }
 
-  await startConnection({ commands, categories, sock: null })
+  await startConnection({ commands, categories, sock: null, method })
 }
 
 // ── « Manejo de errores globales » ──────────

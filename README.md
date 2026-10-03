@@ -178,7 +178,7 @@ Toda la configuración básica está en el archivo `.env` (lo creas a partir de
 | `OWNER_NAME` | Nombre del dueño (informativo) | `Valentin` |
 | `OWNER_NUMBER` | Número(s) del dueño, con código de país, sin `+`. Varios separados por comas | `521234567890` |
 | `PREFIX` | Prefijo de comandos. Cada carácter cuenta como prefijo | `!` o `!./` |
-| `CONNECTION_METHOD` | Método de conexión: `qr` o `pairing` | `qr` |
+| `CONNECTION_METHOD` | Método de conexión: `qr` o `pairing` (vacío = te pregunta al iniciar) | `qr` |
 | `PAIRING_NUMBER` | Número del teléfono para el código de vinculación (vacío = te lo pide en consola) | `521234567890` |
 | `SESSION_NAME` | Carpeta donde se guarda la sesión | `session` |
 | `RECONNECT_DELAY` | Espera entre reconexiones (milisegundos) | `3000` |
@@ -200,14 +200,45 @@ Aquí se personaliza todo lo demás **sin tocar la lógica del bot**:
 npm start
 ```
 
-La primera vez mostrará el **código QR** o el **código de vinculación**
-(según `CONNECTION_METHOD`). Los siguientes arranques usarán la **sesión
-guardada** y conectarán directamente.
+## » Elegir entre QR y código de vinculación
+
+La primera vez (sin sesión guardada) puedes elegir el método de tres formas:
+
+**1. Pregunta interactiva (recomendado)** » si `CONNECTION_METHOD` está vacío
+en el `.env`, el bot te pregunta directamente al iniciar:
+
+```
+[ATLAS] ¿Cómo quieres conectar el bot?
+    [1] Código QR
+    [2] Código de vinculación (pairing)
+ » Selecciona [1 o 2]:
+```
+
+**2. Atajos por comando** » fuerzan un método sin editar nada:
+
+```bash
+npm run start:qr        # equivale a: node index.js --qr
+npm run start:pairing   # equivale a: node index.js --pairing
+```
+
+**3. Desde el .env** » fija el método permanentemente:
+
+```env
+CONNECTION_METHOD=qr            # o: pairing
+PAIRING_NUMBER=521234567890     # solo necesario para pairing
+```
+
+> **Prioridad:** atajo de comando » `.env` » pregunta al iniciar.
+> Una vez vinculado, el bot usa la sesión guardada y ya no pregunta nada.
+>
+> **Con PM2 no hay terminal interactiva:** si no defines el método se usa QR;
+> para pairing define `CONNECTION_METHOD=pairing` y `PAIRING_NUMBER` en el
+> `.env` y mira el código con `pm2 logs atlas-bot`.
 
 ## » Conectar con código QR
 
-1. En tu `.env` pon `CONNECTION_METHOD=qr`.
-2. Ejecuta `npm start`.
+1. Elige el método QR (opción 1, `npm run start:qr` o `CONNECTION_METHOD=qr`).
+2. Ejecuta el bot.
 3. En WhatsApp ve a: **Ajustes » Dispositivos vinculados » Vincular un dispositivo**.
 4. Escanea el QR que aparece en la terminal.
 
@@ -218,16 +249,14 @@ guardada** y conectarán directamente.
 
 Ideal para Termux o terminales donde el QR no se ve bien.
 
-1. En tu `.env` pon:
-   ```env
-   CONNECTION_METHOD=pairing
-   PAIRING_NUMBER=521234567890
-   ```
-   (Número **con código de país, sin `+`** y sin espacios. Si lo dejas vacío,
-   el bot te lo pedirá en la consola al iniciar.)
-2. Ejecuta `npm start` y verás un código tipo `ABCD-1234`.
-3. En WhatsApp ve a: **Ajustes » Dispositivos vinculados » Vincular con número de teléfono**
-   e ingresa el código (dura poco tiempo; si expira, reinicia el bot).
+1. Elige el método pairing (opción 2, `npm run start:pairing` o `CONNECTION_METHOD=pairing`).
+2. Escribe tu número **con código de país, sin `+` ni espacios**
+   (`521234567890`) cuando el bot lo pida — o déjalo listo en
+   `PAIRING_NUMBER` del `.env` para saltarte la pregunta.
+3. El bot mostrará un código tipo `ABCD-1234`.
+4. En WhatsApp ve a: **Ajustes » Dispositivos vinculados » Vincular con número de teléfono**
+   e ingresa el código. Si expira antes de usarlo, reinicia el bot para
+   generar uno nuevo.
 
 ## » Sesión persistente
 
@@ -460,6 +489,11 @@ Confirma que el número tenga **código de país, sin `+` y sin espacios**
 (`521234567890`), espera unos segundos tras el arranque y no reintentes
 muchas veces seguidas (WhatsApp limita los intentos). Si persiste, borra la
 carpeta `session/` y vuelve a intentar.
+
+**» El bot no me pregunta si quiero QR o pairing**
+Sucede cuando: 1) ya definiste `CONNECTION_METHOD` en el `.env`, 2) usaste
+un atajo (`--qr`/`--pairing`), 3) ya existe una sesión vinculada, o 4) corre
+bajo PM2 (sin terminal interactiva » se usa QR salvo que lo fijes en el `.env`).
 
 **» Aparece "La sesión fue cerrada por WhatsApp (código 401)"**
 WhatsApp invalidó la sesión (se desvinculó el dispositivo o expiró).
