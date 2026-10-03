@@ -4,11 +4,11 @@
 import { CHISTES } from '../../lib/data/texts.js'
 
 export default {
-  name: 'chiste',
-  alias: ['joke', 'risa'],
+  name: 'joke',
+  alias: ['risa', 'chiste'],
   category: 'memes',
   description: 'Cuenta un chiste aleatorio.',
-  usage: 'chiste',
+  usage: 'joke',
 
   run: async ({ reply }) => {
     const chiste = CHISTES[Math.floor(Math.random() * CHISTES.length)]

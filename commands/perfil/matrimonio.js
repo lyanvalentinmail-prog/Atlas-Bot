@@ -6,23 +6,23 @@ import { getAccount, saveDatabase } from '../../lib/database.js'
 import { getTargetUser, getNumber } from '../../lib/utils.js'
 
 export default {
-  name: 'matrimonio',
-  alias: ['casarse', 'marry'],
+  name: 'marry',
+  alias: ['casarse', 'matrimonio'],
   category: 'perfil',
   description: 'Propone un matrimonio virtual.',
-  usage: 'matrimonio @usuario',
+  usage: 'marry @usuario',
 
   run: async ({ reply, sender, args, prefix, msg }) => {
     const target = getTargetUser(msg)
     if (!target || target === sender) {
-      return reply(`» Uso: ${prefix}matrimonio @usuario`)
+      return reply(`» Uso: ${prefix}marry @usuario`)
     }
 
     const miCuenta = getAccount(sender)
     const suCuenta = getAccount(target)
 
     if (miCuenta.marriage) {
-      return reply(`» Ya estás casado/a con @${miCuenta.marriage.partner}. Usa ${prefix}divorcio primero.`)
+      return reply(`» Ya estás casado/a con @${miCuenta.marriage.partner}. Usa ${prefix}divorce primero.`)
     }
     if (suCuenta.marriage) {
       return reply('» Esa persona ya tiene pareja virtual.')
@@ -47,7 +47,7 @@ export default {
     await reply([
       '> ✿ Propuesta enviada:',
       `> @${getNumber(sender)} quiere casarse contigo, @${getNumber(target)}.`,
-      `> Para aceptar: @${getNumber(target)} usa *${prefix}matrimonio @${getNumber(sender)}*`
+      `> Para aceptar: @${getNumber(target)} usa *${prefix}marry @${getNumber(sender)}*`
     ].join('\n'), { mentions: [sender, target] })
   }
 }

@@ -5,11 +5,11 @@ import { getAccount } from '../../lib/database.js'
 import { getTargetUser, getNumber } from '../../lib/utils.js'
 
 export default {
-  name: 'banco',
-  alias: ['bank', 'saldocuenta'],
+  name: 'bank',
+  alias: ['saldocuenta', 'banco'],
   category: 'economia',
   description: 'Muestra tu saldo bancario.',
-  usage: 'banco [@usuario]',
+  usage: 'bank [@usuario]',
 
   run: async ({ msg, reply, sender }) => {
     const target = getTargetUser(msg) || sender

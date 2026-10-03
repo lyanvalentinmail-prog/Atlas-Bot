@@ -5,11 +5,11 @@ import { getAccount, saveDatabase } from '../../lib/database.js'
 import { getNumber } from '../../lib/utils.js'
 
 export default {
-  name: 'divorcio',
-  alias: ['divorce', 'separarse'],
+  name: 'divorce',
+  alias: ['separarse', 'divorcio'],
   category: 'perfil',
   description: 'Finaliza un matrimonio virtual.',
-  usage: 'divorcio',
+  usage: 'divorce',
 
   run: async ({ reply, sender }) => {
     const cuenta = getAccount(sender)

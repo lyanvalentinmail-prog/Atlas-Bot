@@ -6,11 +6,11 @@ import { formatUptime } from '../../lib/utils.js'
 const cronometros = new Map() // chatId -> timestamp de inicio
 
 export default {
-  name: 'cronometro',
-  alias: ['crono', 'stopwatch'],
+  name: 'stopwatch',
+  alias: ['crono', 'cronometro'],
   category: 'utilidades',
   description: 'Inicia un cronómetro.',
-  usage: 'cronometro [ver|parar]',
+  usage: 'stopwatch [ver|parar]',
 
   run: async ({ reply, chatId, args }) => {
     const accion = (args[0] || '').toLowerCase()

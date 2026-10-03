@@ -20,14 +20,14 @@ const ANSWERS = [
 ]
 
 export default {
-  name: 'pregunta',
-  alias: ['dime', 'pregunta8'],
+  name: 'question',
+  alias: ['dime', 'pregunta8', 'pregunta'],
   category: 'juegos',
   description: 'El bot responde tu pregunta al azar.',
-  usage: 'pregunta <tu pregunta>',
+  usage: 'question <tu pregunta>',
 
   run: async ({ reply, text, prefix }) => {
-    if (!text) return reply(`» Uso: ${prefix}pregunta <tu pregunta>`)
+    if (!text) return reply(`» Uso: ${prefix}question <tu pregunta>`)
     const answer = ANSWERS[Math.floor(Math.random() * ANSWERS.length)]
     await reply(`> Pregunta: _${text}_\n> Respuesta: *${answer}*`)
   }

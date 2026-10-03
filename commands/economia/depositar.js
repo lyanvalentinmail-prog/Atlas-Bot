@@ -4,11 +4,11 @@
 import { getAccount, saveDatabase } from '../../lib/database.js'
 
 export default {
-  name: 'depositar',
-  alias: ['bancdepor', 'guardmonedas'],
+  name: 'deposit',
+  alias: ['bancdepor', 'guardmonedas', 'depositar'],
   category: 'economia',
   description: 'Guarda monedas en el banco virtual.',
-  usage: 'depositar <cantidad|todo>',
+  usage: 'deposit <cantidad|todo>',
 
   run: async ({ reply, sender, args, prefix }) => {
     const cuenta = getAccount(sender)
@@ -20,7 +20,7 @@ export default {
       cantidad = Math.abs(Math.floor(Number(args[0])))
     }
 
-    if (!cantidad || cantidad <= 0) return reply(`» Uso: ${prefix}depositar <cantidad> o ${prefix}depositar todo`)
+    if (!cantidad || cantidad <= 0) return reply(`» Uso: ${prefix}deposit <cantidad> o ${prefix}deposit todo`)
     if (cuenta.coins < cantidad) return reply(`» Solo tienes ${cuenta.coins} monedas.`)
 
     cuenta.coins -= cantidad

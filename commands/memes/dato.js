@@ -5,11 +5,11 @@ import { fetchJson } from '../../lib/utils.js'
 import { DATOS } from '../../lib/data/texts.js'
 
 export default {
-  name: 'dato',
-  alias: ['fact', 'datoCurioso'],
+  name: 'fact',
+  alias: ['datoCurioso', 'dato'],
   category: 'memes',
   description: 'Muestra un dato curioso.',
-  usage: 'dato',
+  usage: 'fact',
 
   run: async ({ reply }) => {
     try {

@@ -10,11 +10,11 @@ import { fetchJson, getQuoted } from '../../lib/utils.js'
 const LANGS = ['es', 'en', 'pt', 'fr', 'it', 'de', 'ja', 'ko', 'zh', 'ru', 'ar']
 
 export default {
-  name: 'traducir',
-  alias: ['translate', 'tr'],
+  name: 'translate',
+  alias: ['tr', 'traducir'],
   category: 'herramientas',
   description: 'Traduce texto a otro idioma.',
-  usage: 'traducir <idioma> [texto]',
+  usage: 'translate <idioma> [texto]',
 
   run: async ({ msg, reply, args, prefix }) => {
     const lang = (args[0] || '').toLowerCase()
@@ -29,8 +29,8 @@ export default {
 
     if (!LANGS.includes(lang) || !text) {
       return reply(
-        `» Uso: ${prefix}traducir <idioma> <texto>\n` +
-        `» Ejemplo: ${prefix}traducir en Hola, ¿cómo estás?\n` +
+        `» Uso: ${prefix}translate <idioma> <texto>\n` +
+        `» Ejemplo: ${prefix}translate en Hola, ¿cómo estás?\n` +
         `» Idiomas: ${LANGS.join(', ')}`
       )
     }

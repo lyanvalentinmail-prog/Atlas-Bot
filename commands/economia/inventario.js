@@ -6,11 +6,11 @@ import { ITEMS } from '../../lib/data/shop.js'
 import { getTargetUser, getNumber } from '../../lib/utils.js'
 
 export default {
-  name: 'inventario',
-  alias: ['inv', 'mochila'],
+  name: 'inventory',
+  alias: ['inv', 'mochila', 'inventario'],
   category: 'economia',
   description: 'Muestra tus objetos y recompensas.',
-  usage: 'inventario [@usuario]',
+  usage: 'inventory [@usuario]',
 
   run: async ({ msg, reply, sender }) => {
     const target = getTargetUser(msg) || sender

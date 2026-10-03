@@ -4,16 +4,16 @@
 import { getNumber } from '../../lib/utils.js'
 
 export default {
-  name: 'temporizador',
-  alias: ['timer', 'avisoen'],
+  name: 'timer',
+  alias: ['avisoen', 'temporizador'],
   category: 'utilidades',
   description: 'Crea un temporizador que te avisa al final.',
-  usage: 'temporizador <minutos> [motivo]',
+  usage: 'timer <minutos> [motivo]',
 
   run: async ({ sock, chatId, reply, sender, args, prefix }) => {
     const minutos = Math.abs(parseFloat(args[0]))
     if (!minutos || minutos < 0.1 || minutos > 360) {
-      return reply(`» Uso: ${prefix}temporizador <minutos> [motivo]\n» Ejemplo: ${prefix}temporizador 5 revisar el pan`)
+      return reply(`» Uso: ${prefix}timer <minutos> [motivo]\n» Ejemplo: ${prefix}timer 5 revisar el pan`)
     }
 
     const motivo = args.slice(1).join(' ') || 'tu temporizador'

@@ -8,11 +8,11 @@ import { getAccount, saveDatabase } from '../../lib/database.js'
 const norm = (t) => t.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').trim()
 
 export default {
-  name: 'capitales',
-  alias: ['capitalquiz', 'capital'],
+  name: 'capitals',
+  alias: ['capitalquiz', 'capital', 'capitales'],
   category: 'juegos',
   description: 'Adivina la capital de un país.',
-  usage: 'capitales',
+  usage: 'capitals',
 
   run: async ({ sock, chatId, reply }) => {
     if (getGame(chatId)) return reply('» Ya hay un juego activo. Espera o escribe "salir".')

@@ -4,11 +4,11 @@
 // ╰────────────────────────────────────────────
 
 export default {
-  name: 'tendencias',
-  alias: ['trends', 'tendencia'],
+  name: 'trends',
+  alias: ['tendencia', 'tendencias'],
   category: 'busqueda',
   description: 'Muestra temas populares de búsqueda.',
-  usage: 'tendencias [país código, ej: uy / ar / mx]',
+  usage: 'trends [país código, ej: uy / ar / mx]',
 
   run: async ({ reply, args }) => {
     const geo = (args[0] || 'us').toUpperCase().slice(0, 2)

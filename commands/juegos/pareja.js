@@ -6,11 +6,11 @@
 import { getNumber } from '../../lib/utils.js'
 
 export default {
-  name: 'pareja',
-  alias: ['ship2', 'shippeo'],
+  name: 'couple',
+  alias: ['ship2', 'shippeo', 'pareja'],
   category: 'juegos',
   description: 'Forma una pareja al azar entre los miembros.',
-  usage: 'pareja',
+  usage: 'couple',
   groupOnly: true,
 
   run: async ({ sock, msg, chatId, reply }) => {

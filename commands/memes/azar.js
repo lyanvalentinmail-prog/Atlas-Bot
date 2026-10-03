@@ -5,11 +5,11 @@
 import { getMentions, getNumber } from '../../lib/utils.js'
 
 export default {
-  name: 'azar',
-  alias: ['sorteo', 'pick'],
+  name: 'pick',
+  alias: ['sorteo', 'azar'],
   category: 'memes',
   description: 'Selecciona una opción al azar entre los mencionados.',
-  usage: 'azar @a @b ...  ó  azar <a,b,c>',
+  usage: 'pick @a @b ...  ó  azar <a,b,c>',
 
   run: async ({ msg, reply, text, prefix }) => {
     const menciones = getMentions(msg)
@@ -26,6 +26,6 @@ export default {
     }
 
     // Sin opciones: número de la suerte 1-10
-    await reply(`> No me diste opciones... tu número al azar: *${Math.floor(Math.random() * 10) + 1}*\n> (${prefix}azar @a @b  o  ${prefix}azar rojo,verde,azul)`)
+    await reply(`> No me diste opciones... tu número al azar: *${Math.floor(Math.random() * 10) + 1}*\n> (${prefix}pick @a @b  o  ${prefix}pick rojo,verde,azul)`)
   }
 }

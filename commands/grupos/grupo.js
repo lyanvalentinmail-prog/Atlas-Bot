@@ -6,11 +6,11 @@
 // ╰────────────────────────────────────────────
 
 export default {
-  name: 'grupo',
-  alias: ['group'],
+  name: 'group',
+  alias: ['grupo'],
   category: 'grupos',
   description: 'Abre o cierra el grupo.',
-  usage: 'grupo <abrir|cerrar>',
+  usage: 'group <abrir|cerrar>',
   groupOnly: true,
   adminOnly: true,
   botAdminOnly: true,
@@ -26,7 +26,7 @@ export default {
 
     const setting = settings[action]
     if (!setting) {
-      return reply(`» Uso correcto: ${prefix}grupo <abrir/cerrar>`)
+      return reply(`» Uso correcto: ${prefix}group <abrir/cerrar>`)
     }
 
     await sock.groupSettingUpdate(chatId, setting)

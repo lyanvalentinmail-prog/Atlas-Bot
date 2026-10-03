@@ -4,11 +4,11 @@
 import { downloadImage, findImageMessage } from '../../lib/image.js'
 
 export default {
-  name: 'setfoto',
-  alias: ['fotogrupo', 'cambiarfoto'],
+  name: 'setphoto',
+  alias: ['fotogrupo', 'cambiarfoto', 'setfoto'],
   category: 'administracion',
   description: 'Cambia la foto del grupo.',
-  usage: 'setfoto (respondiendo a una imagen)',
+  usage: 'setphoto (respondiendo a una imagen)',
   adminOnly: true,
   groupOnly: true,
   botAdminOnly: true,

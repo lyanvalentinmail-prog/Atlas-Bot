@@ -8,11 +8,11 @@ import { getAccount, saveDatabase } from '../../lib/database.js'
 const norm = (t) => t.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '')
 
 export default {
-  name: 'adivina',
-  alias: ['adivinanza', 'secretword'],
+  name: 'guess',
+  alias: ['adivinanza', 'secretword', 'adivina'],
   category: 'juegos',
   description: 'Adivina la palabra secreta con una pista.',
-  usage: 'adivina',
+  usage: 'guess',
 
   run: async ({ sock, chatId, reply }) => {
     if (getGame(chatId)) return reply('» Ya hay un juego activo. Espera o escribe "salir".')

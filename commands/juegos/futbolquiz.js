@@ -6,11 +6,11 @@ import { FUTBOL_TRIVIA } from '../../lib/data/quiz.js'
 import { getAccount, saveDatabase } from '../../lib/database.js'
 
 export default {
-  name: 'futbolquiz',
-  alias: ['futbol', 'quizfutbol'],
+  name: 'soccerquiz',
+  alias: ['futbol', 'quizfutbol', 'futbolquiz'],
   category: 'juegos',
   description: 'Responde preguntas sobre fútbol (racha de 3).',
-  usage: 'futbolquiz',
+  usage: 'soccerquiz',
 
   run: async ({ sock, chatId, reply }) => {
     if (getGame(chatId)) return reply('» Ya hay un juego activo. Espera o escribe "salir".')

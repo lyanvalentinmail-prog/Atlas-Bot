@@ -5,11 +5,11 @@
 const MESES = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre']
 
 export default {
-  name: 'calendario',
-  alias: ['cal', 'mes'],
+  name: 'calendar',
+  alias: ['cal', 'mes', 'calendario'],
   category: 'utilidades',
   description: 'Genera un calendario mensual.',
-  usage: 'calendario [mes] [año]',
+  usage: 'calendar [mes] [año]',
 
   run: async ({ reply, args }) => {
     const hoy = new Date()

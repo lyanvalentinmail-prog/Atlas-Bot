@@ -18,11 +18,11 @@ const ZONAS = {
 }
 
 export default {
-  name: 'hora',
-  alias: ['time', 'reloj'],
+  name: 'time',
+  alias: ['reloj', 'hora'],
   category: 'herramientas',
   description: 'Muestra la hora actual (ej: hora madrid).',
-  usage: 'hora [ciudad o zona]',
+  usage: 'time [ciudad o zona]',
 
   run: async ({ reply, args, prefix }) => {
     const consulta = (args[0] || '').toLowerCase().replace(/[\s_-]/g, '')
@@ -37,8 +37,8 @@ export default {
       } else {
         return reply(
           `» No conozco la zona *${args[0]}*.\n` +
-          `» Usa una ciudad (ej: ${prefix}hora madrid)\n` +
-          `» o una zona completa (ej: ${prefix}hora America/Montevideo)`
+          `» Usa una ciudad (ej: ${prefix}time madrid)\n` +
+          `» o una zona completa (ej: ${prefix}time America/Montevideo)`
         )
       }
     }

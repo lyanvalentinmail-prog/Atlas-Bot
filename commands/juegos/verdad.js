@@ -22,11 +22,11 @@ const VERDADES = [
 ]
 
 export default {
-  name: 'verdad',
-  alias: ['truth'],
+  name: 'truth',
+  alias: ['verdad'],
   category: 'juegos',
   description: 'Pregunta aleatoria de "verdad".',
-  usage: 'verdad',
+  usage: 'truth',
 
   run: async ({ reply }) => {
     const pregunta = VERDADES[Math.floor(Math.random() * VERDADES.length)]

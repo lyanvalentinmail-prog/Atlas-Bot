@@ -5,11 +5,11 @@
 // ╰────────────────────────────────────────────
 
 export default {
-  name: 'reiniciar',
-  alias: ['restart', 'botrestart'],
+  name: 'restart',
+  alias: ['botrestart', 'reiniciar'],
   category: 'propietario',
   description: 'Reinicia el bot (con PM2 vuelve solo).',
-  usage: 'reiniciar',
+  usage: 'restart',
   ownerOnly: true,
 
   run: async ({ reply, config }) => {

@@ -6,11 +6,11 @@ import { randomInt } from 'node:crypto'
 const CARACTERES = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789#$%&*+?@.-_'
 
 export default {
-  name: 'contraseña',
-  alias: ['contrasena', 'password', 'passw'],
+  name: 'password',
+  alias: ['contrasena', 'passw', 'contraseña'],
   category: 'utilidades',
   description: 'Genera una contraseña aleatoria segura.',
-  usage: 'contraseña [longitud]',
+  usage: 'password [longitud]',
 
   run: async ({ reply, args }) => {
     const longitud = Math.min(64, Math.max(6, Math.abs(parseInt(args[0], 10)) || 16))

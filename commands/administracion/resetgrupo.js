@@ -4,11 +4,11 @@
 import { resetGroupSettings } from '../../lib/database.js'
 
 export default {
-  name: 'resetgrupo',
-  alias: ['reiniciargrupo', 'resetgroup'],
+  name: 'resetgroup',
+  alias: ['reiniciargrupo', 'resetgrupo'],
   category: 'administracion',
   description: 'Restablece la configuración del grupo.',
-  usage: 'resetgrupo',
+  usage: 'resetgroup',
   adminOnly: true,
   groupOnly: true,
 

@@ -6,23 +6,23 @@
 import { getAccount, saveDatabase } from '../../lib/database.js'
 
 export default {
-  name: 'liberar',
-  alias: ['release', 'soltar'],
+  name: 'release',
+  alias: ['soltar', 'liberar'],
   category: 'pokemon',
   description: 'Libera un pokemon de tu colección.',
-  usage: 'liberar <nombre o número>',
+  usage: 'release <nombre o número>',
 
   run: async ({ reply, sender, args, prefix }) => {
     const cuenta = getAccount(sender)
 
     if (cuenta.pokemon.length === 0) {
-      return reply(`» No tienes pokemon. Atrapa uno con ${prefix}atrapar`)
+      return reply(`» No tienes pokemon. Atrapa uno con ${prefix}catch`)
     }
 
     const objetivo = (args[0] || '').toLowerCase().trim()
     if (!objetivo) {
       const lista = cuenta.pokemon.map((p, i) => `${i + 1}. ${p.name}`).join('\n')
-      return reply(`» ¿Cuál quieres liberar?\n${lista}\n\n» Ejemplo: ${prefix}liberar pikachu  o  ${prefix}liberar 1`)
+      return reply(`» ¿Cuál quieres liberar?\n${lista}\n\n» Ejemplo: ${prefix}release pikachu  o  ${prefix}release 1`)
     }
 
     // ¿Por número de lista?
@@ -35,7 +35,7 @@ export default {
     }
 
     if (indice === -1) {
-      return reply(`» No encontré *${objetivo}* en tu colección. Mira la lista con ${prefix}mispokemon`)
+      return reply(`» No encontré *${objetivo}* en tu colección. Mira la lista con ${prefix}mypokemon`)
     }
 
     const liberado = cuenta.pokemon.splice(indice, 1)[0]

@@ -7,16 +7,16 @@ const OPTIONS = ['piedra', 'papel', 'tijera']
 const WINS_AGAINST = { piedra: 'tijera', papel: 'piedra', tijera: 'papel' }
 
 export default {
-  name: 'ppt',
-  alias: ['piedrapapeltijera'],
+  name: 'rps',
+  alias: ['piedrapapeltijera', 'ppt'],
   category: 'juegos',
   description: 'Juega piedra, papel o tijera contra el bot.',
-  usage: 'ppt <piedra|papel|tijera>',
+  usage: 'rps <piedra|papel|tijera>',
 
   run: async ({ reply, args, prefix }) => {
     const choice = (args[0] || '').toLowerCase().replace(/s$/, '')
     if (!OPTIONS.includes(choice)) {
-      return reply(`» Uso: ${prefix}ppt <piedra/papel/tijera>`)
+      return reply(`» Uso: ${prefix}rps <piedra/papel/tijera>`)
     }
 
     const botChoice = OPTIONS[Math.floor(Math.random() * OPTIONS.length)]

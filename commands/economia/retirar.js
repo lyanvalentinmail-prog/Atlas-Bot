@@ -4,11 +4,11 @@
 import { getAccount, saveDatabase } from '../../lib/database.js'
 
 export default {
-  name: 'retirar',
-  alias: ['bancretirar', 'sacarmonedas'],
+  name: 'withdraw',
+  alias: ['bancretirar', 'sacarmonedas', 'retirar'],
   category: 'economia',
   description: 'Retira monedas del banco virtual.',
-  usage: 'retirar <cantidad|todo>',
+  usage: 'withdraw <cantidad|todo>',
 
   run: async ({ reply, sender, args, prefix }) => {
     const cuenta = getAccount(sender)
@@ -20,7 +20,7 @@ export default {
       cantidad = Math.abs(Math.floor(Number(args[0])))
     }
 
-    if (!cantidad || cantidad <= 0) return reply(`» Uso: ${prefix}retirar <cantidad> o ${prefix}retirar todo`)
+    if (!cantidad || cantidad <= 0) return reply(`» Uso: ${prefix}withdraw <cantidad> o ${prefix}withdraw todo`)
     if (cuenta.bank < cantidad) return reply(`» Solo tienes ${cuenta.bank} en el banco.`)
 
     cuenta.bank -= cantidad

@@ -22,11 +22,11 @@ const renderTablero = (game) => {
 }
 
 export default {
-  name: 'memoria',
-  alias: ['memorama', 'memoriapares'],
+  name: 'memory',
+  alias: ['memorama', 'memoriapares', 'memoria'],
   category: 'juegos',
   description: 'Juega a encontrar pares de símbolos.',
-  usage: 'memoria',
+  usage: 'memory',
 
   run: async ({ sock, chatId, reply }) => {
     if (getGame(chatId)) return reply('» Ya hay un juego activo. Espera o escribe "salir".')

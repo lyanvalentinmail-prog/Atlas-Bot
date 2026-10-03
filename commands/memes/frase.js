@@ -4,11 +4,11 @@
 import { FRASES } from '../../lib/data/texts.js'
 
 export default {
-  name: 'frase',
-  alias: ['quote', 'frasedeldia'],
+  name: 'quote',
+  alias: ['frasedeldia', 'frase'],
   category: 'memes',
   description: 'Muestra una frase aleatoria.',
-  usage: 'frase',
+  usage: 'quote',
 
   run: async ({ reply }) => {
     const frase = FRASES[Math.floor(Math.random() * FRASES.length)]

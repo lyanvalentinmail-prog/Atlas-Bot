@@ -7,11 +7,11 @@ import { REACCION_SIMBOLOS } from '../../lib/data/texts.js'
 import { getAccount, saveDatabase } from '../../lib/database.js'
 
 export default {
-  name: 'reaccion',
-  alias: ['reflejos', 'rapidin'],
+  name: 'reaction',
+  alias: ['reflejos', 'rapidin', 'reaccion'],
   category: 'juegos',
   description: 'Pon a prueba tus reflejos con una respuesta rápida.',
-  usage: 'reaccion',
+  usage: 'reaction',
 
   run: async ({ sock, chatId, reply }) => {
     if (getGame(chatId)) return reply('» Ya hay un juego activo. Espera o escribe "salir".')

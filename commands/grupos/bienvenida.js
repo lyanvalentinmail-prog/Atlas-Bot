@@ -8,11 +8,11 @@
 import { getGroupSettings, saveDatabase } from '../../lib/database.js'
 
 export default {
-  name: 'bienvenida',
-  alias: ['welcome', 'bienvenidos'],
+  name: 'welcome',
+  alias: ['bienvenidos', 'bienvenida'],
   category: 'grupos',
   description: 'Activa/desactiva la bienvenida automática.',
-  usage: 'bienvenida on/off',
+  usage: 'welcome on/off',
   adminOnly: true,
   groupOnly: true,
 
@@ -32,7 +32,7 @@ export default {
 
     await reply(
       `» Estado actual: ${settings.welcome ? '*activada*' : '*desactivada*'}\n` +
-      `» Uso: ${prefix}bienvenida on ・ ${prefix}bienvenida off`
+      `» Uso: ${prefix}welcome on ・ ${prefix}welcome off`
     )
   }
 }

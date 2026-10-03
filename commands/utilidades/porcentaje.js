@@ -5,11 +5,11 @@
 // ╰────────────────────────────────────────────
 
 export default {
-  name: 'porcentaje',
-  alias: ['percent', 'porciento'],
+  name: 'percentage',
+  alias: ['percent', 'porciento', 'porcentaje'],
   category: 'utilidades',
   description: 'Calcula porcentajes rápidamente.',
-  usage: 'porcentaje <x> <y>  o  porcentaje <x> de <y>',
+  usage: 'percentage <x> <y>  o  porcentaje <x> de <y>',
 
   run: async ({ reply, args, prefix }) => {
     const nums = args.map(a => parseFloat(a.replace(',', '.'))).filter(n => !Number.isNaN(n))
@@ -18,8 +18,8 @@ export default {
     if (nums.length < 2) {
       return reply(
         `» Uso:\n` +
-        `» ${prefix}porcentaje 20 80 » el 20% de 80\n` +
-        `» ${prefix}porcentaje 20 de 80 » 20 es qué % de 80`
+        `» ${prefix}percentage 20 80 » el 20% de 80\n` +
+        `» ${prefix}percentage 20 de 80 » 20 es qué % de 80`
       )
     }
 

@@ -3,15 +3,15 @@
 // ╰────────────────────────────────────────────
 
 export default {
-  name: 'compatibilidad',
-  alias: ['porcentajeamor', 'match'],
+  name: 'compat',
+  alias: ['porcentajeamor', 'match', 'compatibilidad'],
   category: 'memes',
   description: 'Calcula una compatibilidad ficticia entre dos nombres.',
-  usage: 'compatibilidad <nombre1> <nombre2>',
+  usage: 'compat <nombre1> <nombre2>',
 
   run: async ({ reply, text, prefix, args }) => {
     const [a, b] = [args[0], args[1]]
-    if (!a || !b) return reply(`» Uso: ${prefix}compatibilidad <nombre1> <nombre2>\n» Ejemplo: ${prefix}compatibilidad Lyan Maria`)
+    if (!a || !b) return reply(`» Uso: ${prefix}compat <nombre1> <nombre2>\n» Ejemplo: ${prefix}compat Lyan Maria`)
 
     // Determinista: mismo par = mismo resultado
     const clave = [a.toLowerCase(), b.toLowerCase()].sort().join('|')

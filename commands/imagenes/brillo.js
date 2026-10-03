@@ -4,11 +4,11 @@
 import { processImage } from '../../lib/image.js'
 
 export default {
-  name: 'brillo',
-  alias: ['brightness', 'luz'],
+  name: 'brightness',
+  alias: ['luz', 'brillo'],
   category: 'imagenes',
   description: 'Ajusta el brillo de una imagen.',
-  usage: 'brillo [0.2-3] (respondiendo a una imagen)',
+  usage: 'brightness [0.2-3] (respondiendo a una imagen)',
 
   run: async ({ sock, msg, chatId, prefix, command, args }) => {
     let factor = parseFloat(args[0])

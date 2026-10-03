@@ -5,11 +5,11 @@ import { getAccount } from '../../lib/database.js'
 import { getTargetUser, getNumber } from '../../lib/utils.js'
 
 export default {
-  name: 'familia',
-  alias: ['family', 'pareja'],
+  name: 'family',
+  alias: ['pareja', 'familia'],
   category: 'perfil',
   description: 'Muestra tu familia virtual.',
-  usage: 'familia [@usuario]',
+  usage: 'family [@usuario]',
 
   run: async ({ msg, reply, sender }) => {
     const target = getTargetUser(msg) || sender

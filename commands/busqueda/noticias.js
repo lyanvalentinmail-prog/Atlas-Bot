@@ -4,11 +4,11 @@
 // ╰────────────────────────────────────────────
 
 export default {
-  name: 'noticias',
-  alias: ['news', 'titulares'],
+  name: 'news',
+  alias: ['titulares', 'noticias'],
   category: 'busqueda',
   description: 'Muestra noticias recientes.',
-  usage: 'noticias [tema]',
+  usage: 'news [tema]',
 
   run: async ({ reply, text }) => {
     const tema = text.trim()

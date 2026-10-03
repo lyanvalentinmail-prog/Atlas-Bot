@@ -3,11 +3,11 @@
 // ╰────────────────────────────────────────────
 
 export default {
-  name: 'fecha',
-  alias: ['date', 'hoy'],
+  name: 'date',
+  alias: ['hoy', 'fecha'],
   category: 'utilidades',
   description: 'Muestra la fecha actual.',
-  usage: 'fecha',
+  usage: 'date',
 
   run: async ({ reply }) => {
     const ahora = new Date()

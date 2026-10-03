@@ -6,11 +6,11 @@ import { getAccount, saveDatabase } from '../../lib/database.js'
 import { getTargetUser, getNumber } from '../../lib/utils.js'
 
 export default {
-  name: 'reputacion',
-  alias: ['rep', 'puntosrep'],
+  name: 'rep',
+  alias: ['puntosrep', 'reputacion'],
   category: 'perfil',
   description: 'Muestra tu reputación virtual (+1 a otros).',
-  usage: 'reputacion [@usuario] [+]',
+  usage: 'rep [@usuario] [+]',
 
   run: async ({ msg, reply, sender, args, prefix }) => {
     const target = getTargetUser(msg)
@@ -28,7 +28,7 @@ export default {
 
     await reply([
       `> Reputación de @${getNumber(objetivo)}: *${cuenta.rep}*`,
-      `> Súmale con: ${prefix}reputacion @usuario +`
+      `> Súmale con: ${prefix}rep @usuario +`
     ].join('\n'), { mentions: [objetivo] })
   }
 }

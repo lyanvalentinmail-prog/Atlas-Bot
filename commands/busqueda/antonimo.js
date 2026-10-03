@@ -4,15 +4,15 @@
 import { fetchJson } from '../../lib/utils.js'
 
 export default {
-  name: 'antonimo',
-  alias: ['antónimo', 'antonimos'],
+  name: 'antonym',
+  alias: ['antónimo', 'antonimos', 'antonimo'],
   category: 'busqueda',
   description: 'Busca antónimos de una palabra.',
-  usage: 'antonimo <palabra>',
+  usage: 'antonym <palabra>',
 
   run: async ({ reply, args, prefix }) => {
     const palabra = (args[0] || '').toLowerCase().trim()
-    if (!palabra) return reply(`» Uso: ${prefix}antonimo <palabra>`)
+    if (!palabra) return reply(`» Uso: ${prefix}antonym <palabra>`)
 
     for (const idioma of ['es', 'en']) {
       try {

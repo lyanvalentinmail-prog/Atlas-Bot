@@ -9,11 +9,11 @@ import { fetchJson } from '../../lib/utils.js'
 const MAX_GEN1 = 151
 
 export default {
-  name: 'atrapar',
-  alias: ['catch', 'capturar'],
+  name: 'catch',
+  alias: ['capturar', 'atrapar'],
   category: 'pokemon',
   description: 'Atrapa un pokemon salvaje al azar.',
-  usage: 'atrapar',
+  usage: 'catch',
 
   run: async ({ sock, msg, chatId, reply, sender }) => {
     const account = getAccount(sender)

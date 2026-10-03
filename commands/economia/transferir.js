@@ -6,11 +6,11 @@ import { getTargetUser, getNumber } from '../../lib/utils.js'
 import { getAccount, saveDatabase } from '../../lib/database.js'
 
 export default {
-  name: 'transferir',
-  alias: ['pagar', 'pay', 'enviarmonedas'],
+  name: 'transfer',
+  alias: ['pagar', 'pay', 'enviarmonedas', 'transferir'],
   category: 'economia',
   description: 'Transfiere monedas a otro usuario.',
-  usage: 'transferir <cantidad> @usuario',
+  usage: 'transfer <cantidad> @usuario',
 
   run: async ({ msg, reply, sender, args, prefix }) => {
     const cantidad = Math.abs(Math.floor(Number(args[0])))
@@ -18,8 +18,8 @@ export default {
 
     if (!cantidad || cantidad <= 0 || !destino || destino === sender) {
       return reply(
-        `» Uso: ${prefix}transferir <cantidad> @usuario\n` +
-        `» Ejemplo: ${prefix}transferir 100 @alguien`
+        `» Uso: ${prefix}transfer <cantidad> @usuario\n` +
+        `» Ejemplo: ${prefix}transfer 100 @alguien`
       )
     }
 

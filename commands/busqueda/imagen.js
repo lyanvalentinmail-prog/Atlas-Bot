@@ -5,15 +5,15 @@
 import { fetchJson } from '../../lib/utils.js'
 
 export default {
-  name: 'imagen',
-  alias: ['img', 'foto', 'pic'],
+  name: 'image',
+  alias: ['img', 'foto', 'pic', 'imagen'],
   category: 'busqueda',
   description: 'Busca imágenes relacionadas con un término.',
-  usage: 'imagen <término>',
+  usage: 'image <término>',
 
   run: async ({ sock, msg, chatId, reply, text, prefix }) => {
     // Evita confundirse con la categoría "imagenes"
-    if (!text) return reply(`» Uso: ${prefix}imagen <qué buscar>`)
+    if (!text) return reply(`» Uso: ${prefix}image <qué buscar>`)
 
     try {
       const data = await fetchJson(

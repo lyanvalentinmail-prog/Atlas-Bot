@@ -6,11 +6,11 @@
 import { getAccount, saveDatabase } from '../../lib/database.js'
 
 export default {
-  name: 'registrar',
-  alias: ['reg', 'verificar', 'registro'],
+  name: 'register',
+  alias: ['reg', 'verificar', 'registro', 'registrar'],
   category: 'perfil',
   description: 'Regístrate con tu nombre y edad.',
-  usage: 'registrar <nombre> <edad>',
+  usage: 'register <nombre> <edad>',
 
   run: async ({ reply, sender, args, prefix }) => {
     const account = getAccount(sender)
@@ -19,7 +19,7 @@ export default {
     const nombre = args.slice(0, -1).join(' ').trim()
 
     if (!nombre || !/^\d{1,3}$/.test(edadTexto)) {
-      return reply(`» Uso: ${prefix}registrar <nombre> <edad>\n» Ejemplo: ${prefix}registrar Lyan 20`)
+      return reply(`» Uso: ${prefix}register <nombre> <edad>\n» Ejemplo: ${prefix}register Lyan 20`)
     }
 
     const edad = Number(edadTexto)
@@ -39,7 +39,7 @@ export default {
       `│ » Edad   : ${edad} años`,
       '╰─────────────',
       '> ¡Registro completo! ૮₍ ˶ᵔ ᵕ ᔔ˶ ₎ა',
-      `> Míralo con ${prefix}perfil`
+      `> Míralo con ${prefix}profile`
     ].join('\n'))
   }
 }

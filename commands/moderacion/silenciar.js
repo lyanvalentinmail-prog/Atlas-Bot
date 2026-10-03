@@ -5,11 +5,11 @@
 import { getGroupSettings, saveDatabase } from '../../lib/database.js'
 
 export default {
-  name: 'silenciar',
-  alias: ['mutechat', 'silencio'],
+  name: 'muteall',
+  alias: ['mutechat', 'silencio', 'silenciar'],
   category: 'moderacion',
   description: 'Silencia el chat temporalmente.',
-  usage: 'silenciar [minutos]',
+  usage: 'muteall [minutos]',
   adminOnly: true,
   groupOnly: true,
   botAdminOnly: true,
@@ -26,6 +26,6 @@ export default {
 
     settings.mutedChat = -1
     saveDatabase()
-    await reply(`> 。。Chat *silenciado indefinidamente*. Solo escriben los admins.\n> Reactiva con ${prefix}desilenciar`)
+    await reply(`> 。。Chat *silenciado indefinidamente*. Solo escriben los admins.\n> Reactiva con ${prefix}unmuteall`)
   }
 }

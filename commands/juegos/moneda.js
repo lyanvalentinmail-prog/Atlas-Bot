@@ -5,11 +5,11 @@
 // ╰────────────────────────────────────────────
 
 export default {
-  name: 'moneda',
-  alias: ['coin', 'caracruz'],
+  name: 'coin',
+  alias: ['caracruz', 'moneda'],
   category: 'juegos',
   description: 'Lanza una moneda al aire.',
-  usage: 'moneda [cara|cruz]',
+  usage: 'coin [cara|cruz]',
 
   run: async ({ reply, args }) => {
     const guess = (args[0] || '').toLowerCase()

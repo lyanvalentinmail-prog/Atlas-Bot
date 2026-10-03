@@ -5,11 +5,11 @@
 // ╰────────────────────────────────────────────
 
 export default {
-  name: 'nuevolink',
-  alias: ['revocar', 'resetlink', 'reinvocar'],
+  name: 'newlink',
+  alias: ['revocar', 'resetlink', 'reinvocar', 'nuevolink'],
   category: 'grupos',
   description: 'Genera un enlace nuevo del grupo.',
-  usage: 'nuevolink',
+  usage: 'newlink',
   adminOnly: true,
   groupOnly: true,
   botAdminOnly: true,

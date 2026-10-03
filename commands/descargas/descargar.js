@@ -17,14 +17,14 @@
 // ╰────────────────────────────────────────────
 
 export default {
-  name: 'descargar',
-  alias: ['dl', 'download'],
+  name: 'download',
+  alias: ['dl', 'descargar'],
   category: 'descargas',
   description: 'Descarga videos y música (conecta tu API).',
-  usage: 'descargar <url>',
+  usage: 'download <url>',
 
   run: async ({ reply, args, prefix }) => {
-    if (!args[0]) return reply(`» Uso: ${prefix}descargar <url>`)
+    if (!args[0]) return reply(`» Uso: ${prefix}download <url>`)
 
     await reply(
       '> Las descargas aún no están configuradas.\n' +

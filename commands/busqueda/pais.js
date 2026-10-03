@@ -6,14 +6,14 @@
 import { fetchJson } from '../../lib/utils.js'
 
 export default {
-  name: 'pais',
-  alias: ['country', 'paisinfo'],
+  name: 'country',
+  alias: ['paisinfo', 'pais'],
   category: 'busqueda',
   description: 'Muestra información de un país.',
-  usage: 'pais <nombre>',
+  usage: 'country <nombre>',
 
   run: async ({ reply, text, prefix }) => {
-    if (!text) return reply(`» Uso: ${prefix}pais <nombre>\n» Ejemplo: ${prefix}pais Uruguay`)
+    if (!text) return reply(`» Uso: ${prefix}country <nombre>\n» Ejemplo: ${prefix}country Uruguay`)
 
     try {
       const data = await fetchJson(

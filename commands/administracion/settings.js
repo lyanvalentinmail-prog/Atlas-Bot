@@ -17,13 +17,13 @@ export default {
       `│ ${prefix}config » ver ajustes actuales`,
       `│ ${prefix}antilink on/off » enlaces de grupos`,
       `│ ${prefix}antilink2 borrar/avisar/expulsar`,
-      `│ ${prefix}bienvenida on/off » + ${prefix}setwelcome / ${prefix}setbye`,
+      `│ ${prefix}welcome on/off » + ${prefix}setwelcome / ${prefix}setbye`,
       `│ ${prefix}antispam on/off ・ ${prefix}antiflood on/off`,
       `│ ${prefix}antibot on/off ・ ${prefix}antinsfw on/off`,
-      `│ ${prefix}silenciar / ${prefix}desilenciar`,
-      `│ ${prefix}setreglas ・ ${prefix}setprefix ・ ${prefix}setfoto`,
-      `│ ${prefix}soloadmins add/del/lista`,
-      `│ ${prefix}resetgrupo » todo de fábrica`,
+      `│ ${prefix}muteall / ${prefix}unmuteall`,
+      `│ ${prefix}setrules ・ ${prefix}setprefix ・ ${prefix}setphoto`,
+      `│ ${prefix}adminsonly add/del/lista`,
+      `│ ${prefix}resetgroup » todo de fábrica`,
       '╰─────────────'
     ].join('\n'))
   }

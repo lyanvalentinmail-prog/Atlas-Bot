@@ -5,16 +5,16 @@
 // ╰────────────────────────────────────────────
 
 export default {
-  name: 'acortar',
-  alias: ['short', 'tinyurl'],
+  name: 'shorten',
+  alias: ['short', 'tinyurl', 'acortar'],
   category: 'herramientas',
   description: 'Acorta un enlace largo.',
-  usage: 'acortar <url>',
+  usage: 'shorten <url>',
 
   run: async ({ reply, args, prefix }) => {
     const url = args[0] || ''
     if (!/^https?:\/\/.+/i.test(url)) {
-      return reply(`» Uso: ${prefix}acortar <url>\n» Ejemplo: ${prefix}acortar https://ejemplo.com/pagina-muy-larga`)
+      return reply(`» Uso: ${prefix}shorten <url>\n» Ejemplo: ${prefix}shorten https://ejemplo.com/pagina-muy-larga`)
     }
 
     try {

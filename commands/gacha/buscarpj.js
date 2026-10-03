@@ -6,14 +6,14 @@
 import { CHARACTERS } from '../../lib/data/characters.js'
 
 export default {
-  name: 'buscarpj',
-  alias: ['buscarchara', 'charainfo', 'infochara'],
+  name: 'findchar',
+  alias: ['buscarchara', 'charainfo', 'infochara', 'buscarpj'],
   category: 'gacha',
   description: 'Busca un personaje del gacha por nombre.',
-  usage: 'buscarpj <nombre>',
+  usage: 'findchar <nombre>',
 
   run: async ({ reply, text, prefix }) => {
-    if (!text) return reply(`» Uso: ${prefix}buscarpj <nombre>\n» Ejemplo: ${prefix}buscarpj luffy`)
+    if (!text) return reply(`» Uso: ${prefix}findchar <nombre>\n» Ejemplo: ${prefix}findchar luffy`)
 
     const consulta = text.toLowerCase()
     const encontrados = CHARACTERS.filter(pj =>
@@ -21,7 +21,7 @@ export default {
     )
 
     if (encontrados.length === 0) {
-      return reply(`» No encontré *${text}* en el gacha. Usa ${prefix}personajes para ver todos.`)
+      return reply(`» No encontré *${text}* en el gacha. Usa ${prefix}characters para ver todos.`)
     }
 
     const lineas = encontrados.slice(0, 5).map(pj => {

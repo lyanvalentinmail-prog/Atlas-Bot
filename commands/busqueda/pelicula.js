@@ -5,14 +5,14 @@
 import { fetchJson } from '../../lib/utils.js'
 
 export default {
-  name: 'pelicula',
-  alias: ['movie', 'peli'],
+  name: 'movie',
+  alias: ['peli', 'pelicula'],
   category: 'busqueda',
   description: 'Busca información sobre una película.',
-  usage: 'pelicula <título>',
+  usage: 'movie <título>',
 
   run: async ({ reply, text, prefix }) => {
-    if (!text) return reply(`» Uso: ${prefix}pelicula <título>`)
+    if (!text) return reply(`» Uso: ${prefix}movie <título>`)
 
     try {
       const letra = (text[0] || 'a').toLowerCase()

@@ -4,15 +4,15 @@
 import { fetchJson } from '../../lib/utils.js'
 
 export default {
-  name: 'sinonimo',
-  alias: ['sinonimos', 'syn'],
+  name: 'synonym',
+  alias: ['sinonimos', 'syn', 'sinonimo'],
   category: 'busqueda',
   description: 'Busca sinónimos de una palabra.',
-  usage: 'sinonimo <palabra>',
+  usage: 'synonym <palabra>',
 
   run: async ({ reply, args, prefix }) => {
     const palabra = (args[0] || '').toLowerCase().trim()
-    if (!palabra) return reply(`» Uso: ${prefix}sinonimo <palabra>`)
+    if (!palabra) return reply(`» Uso: ${prefix}synonym <palabra>`)
 
     for (const idioma of ['es', 'en']) {
       try {

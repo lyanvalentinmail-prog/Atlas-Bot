@@ -7,11 +7,11 @@ import { fetchJson } from '../../lib/utils.js'
 const TEMPORADAS = ['winter', 'spring', 'summer', 'fall']
 
 export default {
-  name: 'temporada',
-  alias: ['season', 'animetemporada'],
+  name: 'season',
+  alias: ['animetemporada', 'temporada'],
   category: 'anime',
   description: 'Muestra animes de una temporada específica.',
-  usage: 'temporada [año temporada] ・ temporada (actual)',
+  usage: 'season [año temporada] ・ temporada (actual)',
 
   run: async ({ reply, args, prefix }) => {
     const anio = Math.abs(parseInt(args[0], 10))

@@ -5,11 +5,11 @@ import { startGame, getGame, endGame } from '../../lib/games.js'
 import { getAccount, saveDatabase } from '../../lib/database.js'
 
 export default {
-  name: 'numero',
-  alias: ['adivinanumero', 'num'],
+  name: 'number',
+  alias: ['adivinanumero', 'num', 'numero'],
   category: 'juegos',
   description: 'Adivina el número elegido por el bot (1-100).',
-  usage: 'numero',
+  usage: 'number',
 
   run: async ({ sock, chatId, reply }) => {
     if (getGame(chatId)) return reply('» Ya hay un juego activo. Espera o escribe "salir".')

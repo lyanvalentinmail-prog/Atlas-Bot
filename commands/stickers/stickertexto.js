@@ -6,14 +6,14 @@ import { getSharp } from '../../lib/image.js'
 const escapeXml = (t) => t.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
 
 export default {
-  name: 'stickertexto',
-  alias: ['stext', 'stickerletras'],
+  name: 'stickertext',
+  alias: ['stext', 'stickerletras', 'stickertexto'],
   category: 'stickers',
   description: 'Convierte un texto en sticker.',
-  usage: 'stickertexto <texto>',
+  usage: 'stickertext <texto>',
 
   run: async ({ sock, msg, chatId, text, prefix }) => {
-    if (!text) return sock.sendMessage(chatId, { text: `» Uso: ${prefix}stickertexto <texto>` }, { quoted: msg })
+    if (!text) return sock.sendMessage(chatId, { text: `» Uso: ${prefix}stickertext <texto>` }, { quoted: msg })
 
     const sharp = await getSharp()
     if (!sharp) return sock.sendMessage(chatId, { text: '> Necesito la librería *sharp*.\n> Instálala con: npm install sharp' }, { quoted: msg })

@@ -15,11 +15,11 @@
 // ╰────────────────────────────────────────────
 
 export default {
-  name: 'serbot',
-  alias: ['jadibot'],
+  name: 'subbot',
+  alias: ['jadibot', 'serbot'],
   category: 'subbots',
   description: 'Convierte tu número en un Sub-Bot.',
-  usage: 'serbot',
+  usage: 'subbot',
 
   run: async ({ reply }) => {
     await reply(

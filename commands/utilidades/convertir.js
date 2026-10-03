@@ -20,11 +20,11 @@ const RUTAS = {
 }
 
 export default {
-  name: 'convertir',
-  alias: ['convert', 'unidades'],
+  name: 'convert',
+  alias: ['unidades', 'convertir'],
   category: 'utilidades',
   description: 'Convierte unidades entre diferentes sistemas.',
-  usage: 'convertir <valor> <de> <a>',
+  usage: 'convert <valor> <de> <a>',
 
   run: async ({ reply, args, prefix }) => {
     const valor = parseFloat((args[0] || '').replace(',', '.'))
@@ -33,7 +33,7 @@ export default {
 
     if (Number.isNaN(valor) || !de || !a) {
       const rutas = [...new Set(Object.keys(RUTAS).flatMap(k => k.split(' ')))].join(', ')
-      return reply(`» Uso: ${prefix}convertir <valor> <de> a <a>\n» Ejemplo: ${prefix}convertir 100 km/h a mph\n» Unidades: ${rutas}`)
+      return reply(`» Uso: ${prefix}convert <valor> <de> a <a>\n» Ejemplo: ${prefix}convert 100 km/h a mph\n» Unidades: ${rutas}`)
     }
 
     const ruta = RUTAS[`${de} ${a}`]

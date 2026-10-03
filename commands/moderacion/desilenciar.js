@@ -4,11 +4,11 @@
 import { getGroupSettings, saveDatabase } from '../../lib/database.js'
 
 export default {
-  name: 'desilenciar',
-  alias: ['unmutechat', 'hablartodos'],
+  name: 'unmuteall',
+  alias: ['unmutechat', 'hablartodos', 'desilenciar'],
   category: 'moderacion',
   description: 'Reactiva el chat después de silenciarlo.',
-  usage: 'desilenciar',
+  usage: 'unmuteall',
   adminOnly: true,
   groupOnly: true,
 

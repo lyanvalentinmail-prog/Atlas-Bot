@@ -4,11 +4,11 @@
 import { processImage } from '../../lib/image.js'
 
 export default {
-  name: 'negativo',
-  alias: ['negative'],
+  name: 'negative',
+  alias: ['negativo'],
   category: 'imagenes',
   description: 'Crea un negativo de la imagen.',
-  usage: 'negativo (respondiendo a una imagen)',
+  usage: 'negative (respondiendo a una imagen)',
 
   run: async ({ sock, msg, chatId, prefix, command }) => {
     await processImage({

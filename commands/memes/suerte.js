@@ -5,11 +5,11 @@
 import { getNumber } from '../../lib/utils.js'
 
 export default {
-  name: 'suerte',
-  alias: ['luck', 'suertehoy'],
+  name: 'luck',
+  alias: ['suertehoy', 'suerte'],
   category: 'memes',
   description: 'Genera un porcentaje de suerte del día.',
-  usage: 'suerte',
+  usage: 'luck',
 
   run: async ({ reply, sender }) => {
     const hoy = new Date().toISOString().slice(0, 10)

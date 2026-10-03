@@ -4,11 +4,11 @@
 // ╰────────────────────────────────────────────
 
 export default {
-  name: 'dado',
-  alias: ['dice'],
+  name: 'dice',
+  alias: ['dado'],
   category: 'juegos',
   description: 'Tira un dado y muestra el resultado.',
-  usage: 'dado',
+  usage: 'dice',
 
   run: async ({ reply }) => {
     const result = Math.floor(Math.random() * 6) + 1

@@ -42,14 +42,14 @@ const MARCAS = {
 }
 
 export default {
-  name: 'estilo',
-  alias: ['font', 'fuentes', 'letras'],
+  name: 'style',
+  alias: ['font', 'fuentes', 'letras', 'estilo'],
   category: 'herramientas',
   description: 'Convierte texto en fuentes decorativas.',
-  usage: 'estilo <texto>',
+  usage: 'style <texto>',
 
   run: async ({ reply, text, prefix }) => {
-    if (!text) return reply(`» Uso: ${prefix}estilo <texto>\n» Ejemplo: ${prefix}estilo hola mundo`)
+    if (!text) return reply(`» Uso: ${prefix}style <texto>\n» Ejemplo: ${prefix}style hola mundo`)
 
     const lineas = Object.entries(MARCAS).map(
       ([numero, marca]) => `${numero}. ${marca.fn(text)}`

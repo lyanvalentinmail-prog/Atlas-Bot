@@ -4,11 +4,11 @@
 import { CONSEJOS } from '../../lib/data/texts.js'
 
 export default {
-  name: 'consejo',
-  alias: ['tip', 'advice'],
+  name: 'tip',
+  alias: ['advice', 'consejo'],
   category: 'memes',
   description: 'Entrega un consejo aleatorio.',
-  usage: 'consejo',
+  usage: 'tip',
 
   run: async ({ reply }) => {
     const consejo = CONSEJOS[Math.floor(Math.random() * CONSEJOS.length)]

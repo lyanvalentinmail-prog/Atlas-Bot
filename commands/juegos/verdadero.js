@@ -9,11 +9,11 @@ const esVerdaderoTxt = (t) => ['verdadero', 'v', 'true', 'si', 'sí'].includes(t
 const esFalsoTxt = (t) => ['falso', 'f', 'false', 'no'].includes(t)
 
 export default {
-  name: 'verdadero',
-  alias: ['verdaderofalso', 'vf'],
+  name: 'truefalse',
+  alias: ['verdaderofalso', 'vf', 'verdadero'],
   category: 'juegos',
   description: 'Decide si una afirmación es verdadera o falsa.',
-  usage: 'verdadero',
+  usage: 'truefalse',
 
   run: async ({ sock, chatId, reply }) => {
     if (getGame(chatId)) return reply('» Ya hay un juego activo. Espera o escribe "salir".')

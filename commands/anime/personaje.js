@@ -4,14 +4,14 @@
 import { fetchJson } from '../../lib/utils.js'
 
 export default {
-  name: 'personaje',
-  alias: ['chara', 'anichar'],
+  name: 'character',
+  alias: ['chara', 'anichar', 'personaje'],
   category: 'anime',
   description: 'Busca información sobre un personaje de anime.',
-  usage: 'personaje <nombre>',
+  usage: 'character <nombre>',
 
   run: async ({ sock, msg, chatId, reply, text, prefix }) => {
-    if (!text) return reply(`» Uso: ${prefix}personaje <nombre>`)
+    if (!text) return reply(`» Uso: ${prefix}character <nombre>`)
 
     try {
       const data = await fetchJson(`https://api.jikan.moe/v4/characters?q=${encodeURIComponent(text)}&limit=1&sfw`)

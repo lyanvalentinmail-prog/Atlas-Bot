@@ -4,11 +4,11 @@
 // ╰────────────────────────────────────────────
 
 export default {
-  name: 'creador',
-  alias: ['owner', 'dueno', 'dueño'],
+  name: 'owner',
+  alias: ['dueno', 'dueño', 'creador'],
   category: 'informacion',
   description: 'Muestra el contacto del dueño del bot.',
-  usage: 'creador',
+  usage: 'owner',
 
   run: async ({ reply, config }) => {
     const ownerJid = config.ownerNumbers[0]

@@ -4,11 +4,11 @@
 import { processImage } from '../../lib/image.js'
 
 export default {
-  name: 'invertir',
-  alias: ['invert', 'invertcolors'],
+  name: 'invert',
+  alias: ['invertcolors', 'invertir'],
   category: 'imagenes',
   description: 'Invierte los colores de una imagen.',
-  usage: 'invertir (respondiendo a una imagen)',
+  usage: 'invert (respondiendo a una imagen)',
 
   run: async ({ sock, msg, chatId, prefix, command }) => {
     await processImage({

@@ -4,11 +4,11 @@
 import { processImage } from '../../lib/image.js'
 
 export default {
-  name: 'marco',
-  alias: ['frame', 'borde'],
+  name: 'frame',
+  alias: ['borde', 'marco'],
   category: 'imagenes',
   description: 'Añade un marco decorativo.',
-  usage: 'marco [color opcional] (respondiendo a una imagen)',
+  usage: 'frame [color opcional] (respondiendo a una imagen)',
 
   run: async ({ sock, msg, chatId, prefix, command, args }) => {
     const color = (args[0] || '').match(/^#?[0-9a-fA-F]{6}$/)

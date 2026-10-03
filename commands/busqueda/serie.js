@@ -5,14 +5,14 @@
 import { fetchJson } from '../../lib/utils.js'
 
 export default {
-  name: 'serie',
-  alias: ['tv', 'series'],
+  name: 'series',
+  alias: ['tv', 'serie'],
   category: 'busqueda',
   description: 'Busca información sobre una serie.',
-  usage: 'serie <título>',
+  usage: 'series <título>',
 
   run: async ({ reply, text, prefix }) => {
-    if (!text) return reply(`» Uso: ${prefix}serie <título>`)
+    if (!text) return reply(`» Uso: ${prefix}series <título>`)
 
     try {
       const data = await fetchJson(`https://api.tvmaze.com/singlesearch/shows?q=${encodeURIComponent(text)}`)

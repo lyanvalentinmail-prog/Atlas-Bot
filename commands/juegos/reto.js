@@ -22,11 +22,11 @@ const RETOS = [
 ]
 
 export default {
-  name: 'reto',
-  alias: ['dare'],
+  name: 'dare',
+  alias: ['reto'],
   category: 'juegos',
   description: 'Reto aleatorio de "verdad o reto".',
-  usage: 'reto',
+  usage: 'dare',
 
   run: async ({ reply }) => {
     const reto = RETOS[Math.floor(Math.random() * RETOS.length)]

@@ -6,11 +6,11 @@
 import { getGroupSettings, saveDatabase } from '../../lib/database.js'
 
 export default {
-  name: 'soloadmins',
-  alias: ['cmdadmin', 'restrictcmd'],
+  name: 'adminsonly',
+  alias: ['cmdadmin', 'restrictcmd', 'soloadmins'],
   category: 'moderacion',
   description: 'Configura comandos exclusivos para administradores.',
-  usage: 'soloadmins add/del/lista <comando>',
+  usage: 'adminsonly add/del/lista <comando>',
   adminOnly: true,
   groupOnly: true,
 
@@ -23,11 +23,11 @@ export default {
       const lista = settings.soloAdmins.length
         ? settings.soloAdmins.map(c => `» ${prefix}${c}`).join(' ・ ')
         : 'ninguno'
-      return reply(`> Comandos solo-admins aquí:\n> ${lista}\n» Uso: ${prefix}soloadmins add/del <comando>`)
+      return reply(`> Comandos solo-admins aquí:\n> ${lista}\n» Uso: ${prefix}adminsonly add/del <comando>`)
     }
 
     if (!['add', 'del'].includes(accion) || !nombre) {
-      return reply(`» Uso: ${prefix}soloadmins add <comando> ・ ${prefix}soloadmins del <comando>`)
+      return reply(`» Uso: ${prefix}adminsonly add <comando> ・ ${prefix}adminsonly del <comando>`)
     }
 
     const cmd = commands.get(nombre)

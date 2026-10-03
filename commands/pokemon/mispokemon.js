@@ -5,11 +5,11 @@
 import { getAccount } from '../../lib/database.js'
 
 export default {
-  name: 'mispokemon',
-  alias: ['pokecoleccion', 'pokeball'],
+  name: 'mypokemon',
+  alias: ['pokecoleccion', 'pokeball', 'mispokemon'],
   category: 'pokemon',
   description: 'Muestra tu colección de pokemon.',
-  usage: 'mispokemon',
+  usage: 'mypokemon',
 
   run: async ({ reply, sender }) => {
     const account = getAccount(sender)

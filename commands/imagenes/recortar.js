@@ -4,11 +4,11 @@
 import { findImageMessage, downloadImage, getSharp } from '../../lib/image.js'
 
 export default {
-  name: 'recortar',
-  alias: ['crop', 'cortar'],
+  name: 'crop',
+  alias: ['cortar', 'recortar'],
   category: 'imagenes',
   description: 'Recorta una imagen (cuadrado centrado).',
-  usage: 'recortar (respondiendo a una imagen)',
+  usage: 'crop (respondiendo a una imagen)',
 
   run: async ({ sock, msg, chatId, prefix }) => {
     if (!findImageMessage(msg)) return sock.sendMessage(chatId, { text: '» Responde a una imagen para recortarla.' }, { quoted: msg })

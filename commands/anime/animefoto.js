@@ -4,14 +4,14 @@
 import { fetchJson } from '../../lib/utils.js'
 
 export default {
-  name: 'animefoto',
-  alias: ['animeimg', 'animepic'],
+  name: 'animepic',
+  alias: ['animeimg', 'animefoto'],
   category: 'anime',
   description: 'Busca una imagen de un anime.',
-  usage: 'animefoto <título>',
+  usage: 'animepic <título>',
 
   run: async ({ sock, msg, chatId, reply, text, prefix }) => {
-    if (!text) return reply(`» Uso: ${prefix}animefoto <título del anime>`)
+    if (!text) return reply(`» Uso: ${prefix}animepic <título del anime>`)
 
     try {
       const data = await fetchJson(`https://api.jikan.moe/v4/anime?q=${encodeURIComponent(text)}&limit=1&sfw`)

@@ -20,11 +20,11 @@ const render = (game) => {
 }
 
 export default {
-  name: 'ahorcado',
-  alias: ['hangman', 'ahorc'],
+  name: 'hangman',
+  alias: ['ahorc', 'ahorcado'],
   category: 'juegos',
   description: 'Juega al clásico juego del ahorcado.',
-  usage: 'ahorcado',
+  usage: 'hangman',
 
   run: async ({ sock, chatId, reply, sender, config }) => {
     if (getGame(chatId)) return reply('» Ya hay un juego activo en este chat. Espera o escribe "salir".')

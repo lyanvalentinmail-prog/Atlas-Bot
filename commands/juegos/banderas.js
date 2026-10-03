@@ -9,11 +9,11 @@ import { getAccount, saveDatabase } from '../../lib/database.js'
 const norm = (t) => t.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').trim()
 
 export default {
-  name: 'banderas',
-  alias: ['bandera', 'flagquiz'],
+  name: 'flags',
+  alias: ['bandera', 'flagquiz', 'banderas'],
   category: 'juegos',
   description: 'Adivina el país de una bandera descrita.',
-  usage: 'banderas',
+  usage: 'flags',
 
   run: async ({ sock, chatId, reply }) => {
     if (getGame(chatId)) return reply('» Ya hay un juego activo. Espera o escribe "salir".')

@@ -5,14 +5,14 @@ import { getAccount, saveDatabase } from '../../lib/database.js'
 import { findItem } from '../../lib/data/shop.js'
 
 export default {
-  name: 'vender',
-  alias: ['sell', 'venta'],
+  name: 'sell',
+  alias: ['venta', 'vender'],
   category: 'economia',
   description: 'Vende un objeto de tu inventario.',
-  usage: 'vender <id>',
+  usage: 'sell <id>',
 
   run: async ({ reply, sender, args, prefix }) => {
-    if (!args[0]) return reply(`» Uso: ${prefix}vender <id del objeto>`)
+    if (!args[0]) return reply(`» Uso: ${prefix}sell <id del objeto>`)
 
     const cuenta = getAccount(sender)
     const item = findItem(args[0])

@@ -6,11 +6,11 @@ import { getAccount } from '../../lib/database.js'
 import { CHARACTERS } from '../../lib/data/characters.js'
 
 export default {
-  name: 'personajes',
-  alias: ['coleccion', 'waifus'],
+  name: 'characters',
+  alias: ['coleccion', 'waifus', 'personajes'],
   category: 'gacha',
   description: 'Muestra tus personajes obtenidos en el gacha.',
-  usage: 'personajes',
+  usage: 'characters',
 
   run: async ({ reply, sender }) => {
     const account = getAccount(sender)

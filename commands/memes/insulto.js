@@ -6,11 +6,11 @@ import { INSULTOS } from '../../lib/data/texts.js'
 import { getTargetUser, getNumber } from '../../lib/utils.js'
 
 export default {
-  name: 'insulto',
-  alias: ['insultarliviano'],
+  name: 'insult',
+  alias: ['insultarliviano', 'insulto'],
   category: 'memes',
   description: 'Genera un insulto humorístico.',
-  usage: 'insulto [@usuario]',
+  usage: 'insult [@usuario]',
 
   run: async ({ msg, reply, sender }) => {
     const objetivo = getTargetUser(msg)

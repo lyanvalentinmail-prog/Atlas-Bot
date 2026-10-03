@@ -6,14 +6,14 @@ import { findImageMessage, downloadImage, getSharp } from '../../lib/image.js'
 const escapeXml = (t) => t.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
 
 export default {
-  name: 'textoimg',
-  alias: ['textoimagen', 'imgtexto'],
+  name: 'imagetext',
+  alias: ['textoimagen', 'imgtexto', 'textoimg'],
   category: 'imagenes',
   description: 'Añade texto sobre una imagen.',
-  usage: 'textoimg <texto> (respondiendo a una imagen)',
+  usage: 'imagetext <texto> (respondiendo a una imagen)',
 
   run: async ({ sock, msg, chatId, prefix, text }) => {
-    if (!text) return sock.sendMessage(chatId, { text: `» Uso: ${prefix}textoimg <texto> (respondiendo a una imagen)` }, { quoted: msg })
+    if (!text) return sock.sendMessage(chatId, { text: `» Uso: ${prefix}imagetext <texto> (respondiendo a una imagen)` }, { quoted: msg })
     if (!findImageMessage(msg)) return sock.sendMessage(chatId, { text: '» Responde a una imagen para escribir sobre ella.' }, { quoted: msg })
 
     const sharp = await getSharp()

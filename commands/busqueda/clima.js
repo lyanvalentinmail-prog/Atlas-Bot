@@ -16,14 +16,14 @@ const WEATHER_CODES = {
 }
 
 export default {
-  name: 'clima',
-  alias: ['weather'],
+  name: 'weather',
+  alias: ['clima'],
   category: 'busqueda',
   description: 'Muestra el clima actual de una ciudad.',
-  usage: 'clima <ciudad>',
+  usage: 'weather <ciudad>',
 
   run: async ({ reply, text, prefix }) => {
-    if (!text) return reply(`» Uso: ${prefix}clima <ciudad>`)
+    if (!text) return reply(`» Uso: ${prefix}weather <ciudad>`)
 
     let place, current
     try {

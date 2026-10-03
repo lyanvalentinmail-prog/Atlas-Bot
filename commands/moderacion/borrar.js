@@ -4,11 +4,11 @@
 import { getContextInfo } from '../../lib/utils.js'
 
 export default {
-  name: 'borrar',
-  alias: ['del', 'delete'],
+  name: 'delete',
+  alias: ['del', 'borrar'],
   category: 'moderacion',
   description: 'Elimina un mensaje del grupo (respóndelo).',
-  usage: 'borrar (respondiendo a un mensaje)',
+  usage: 'delete (respondiendo a un mensaje)',
   adminOnly: true,
   groupOnly: true,
   botAdminOnly: true,

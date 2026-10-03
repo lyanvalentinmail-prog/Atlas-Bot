@@ -5,14 +5,14 @@
 // ╰────────────────────────────────────────────
 
 export default {
-  name: 'calcular',
-  alias: ['calc', 'math'],
+  name: 'calc',
+  alias: ['math', 'calcular'],
   category: 'herramientas',
   description: 'Resuelve una operación matemática.',
-  usage: 'calcular <operación>',
+  usage: 'calc <operación>',
 
   run: async ({ reply, text, prefix }) => {
-    if (!text) return reply(`» Uso: ${prefix}calcular <operación>\n» Ejemplo: ${prefix}calcular (8+5)*2`)
+    if (!text) return reply(`» Uso: ${prefix}calc <operación>\n» Ejemplo: ${prefix}calc (8+5)*2`)
 
     const expression = text.replace(/,/g, '.')
 

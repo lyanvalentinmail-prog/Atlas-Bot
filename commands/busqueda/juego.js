@@ -5,14 +5,14 @@
 import { fetchJson } from '../../lib/utils.js'
 
 export default {
-  name: 'juego',
-  alias: ['game', 'videojuego'],
+  name: 'game',
+  alias: ['videojuego', 'juego'],
   category: 'busqueda',
   description: 'Busca información sobre un videojuego.',
-  usage: 'juego <título>',
+  usage: 'game <título>',
 
   run: async ({ reply, text, prefix }) => {
-    if (!text) return reply(`» Uso: ${prefix}juego <título>`)
+    if (!text) return reply(`» Uso: ${prefix}game <título>`)
 
     try {
       const data = await fetchJson(`https://www.cheapshark.com/api/1.0/games?title=${encodeURIComponent(text)}&limit=3&exact=0`)

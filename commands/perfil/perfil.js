@@ -8,11 +8,11 @@ import { getTargetUser, getNumber } from '../../lib/utils.js'
 import { getAccount } from '../../lib/database.js'
 
 export default {
-  name: 'perfil',
-  alias: ['profile', 'yo'],
+  name: 'profile',
+  alias: ['yo', 'perfil'],
   category: 'perfil',
   description: 'Muestra el perfil de un usuario.',
-  usage: 'perfil [@usuario]',
+  usage: 'profile [@usuario]',
 
   run: async ({ sock, msg, chatId, reply, sender, prefix }) => {
     const target = getTargetUser(msg) || sender
@@ -23,7 +23,7 @@ export default {
     const caption = [
       `╭─「 PERFIL 」`,
       `│ » Usuario   : @${number}`,
-      `│ » ${reg ? `Nombre    : ${reg.name} (${reg.age} años)` : `Registro  : no registrado · ${prefix}registrar`}`,
+      `│ » ${reg ? `Nombre    : ${reg.name} (${reg.age} años)` : `Registro  : no registrado · ${prefix}register`}`,
       `│ » Número    : +${number}`,
       `│ » Monedas   : ${account.coins}`,
       `│ » Pokemon   : ${account.pokemon.length} atrapados`,

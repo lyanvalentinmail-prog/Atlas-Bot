@@ -6,11 +6,11 @@
 import { getAccount } from '../../lib/database.js'
 
 export default {
-  name: 'apostar',
-  alias: ['bet', 'apuesta'],
+  name: 'bet',
+  alias: ['apuesta', 'apostar'],
   category: 'economia',
   description: 'Apuesta monedas a cara o cruz.',
-  usage: 'apostar <cantidad> <cara|cruz>',
+  usage: 'bet <cantidad> <cara|cruz>',
 
   run: async ({ reply, args, sender, prefix, config }) => {
     const amount = Number(args[0])
@@ -18,8 +18,8 @@ export default {
 
     if (!Number.isInteger(amount) || amount < config.game.minBet || !['cara', 'cruz'].includes(guess)) {
       return reply(
-        `» Uso: ${prefix}apostar <cantidad> <cara|cruz>\n` +
-        `» Ejemplo: ${prefix}apostar 50 cara\n` +
+        `» Uso: ${prefix}bet <cantidad> <cara|cruz>\n` +
+        `» Ejemplo: ${prefix}bet 50 cara\n` +
         `» Apuesta mínima: ${config.game.minBet} monedas`
       )
     }

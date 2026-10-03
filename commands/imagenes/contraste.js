@@ -4,11 +4,11 @@
 import { processImage } from '../../lib/image.js'
 
 export default {
-  name: 'contraste',
-  alias: ['contrast'],
+  name: 'contrast',
+  alias: ['contraste'],
   category: 'imagenes',
   description: 'Ajusta el contraste de una imagen.',
-  usage: 'contraste [0.2-3] (respondiendo a una imagen)',
+  usage: 'contrast [0.2-3] (respondiendo a una imagen)',
 
   run: async ({ sock, msg, chatId, prefix, command, args }) => {
     let factor = parseFloat(args[0])
