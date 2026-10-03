@@ -216,6 +216,17 @@ export const config = {
   //   categoryTitle      » { label, count }
   //   commandLine        » { prefix, name, description }
   menu: {
+    // ── « Lista interactiva » ────────────────
+    // true  » el menú se manda como UN mensaje de
+    //         lista desplegable: tocas la categoría
+    //         y se abre sola (en vez de 5 textos).
+    //         Si algún cliente no la muestra, el
+    //         menú cae a texto automáticamente.
+    // false » menú clásico en mensajes de texto.
+    useList: true,
+    // Texto del botón que despliega la lista:
+    listButton: 'Ver las categorías',
+
     // ── « Banner del menú » ──────────────────
     // Imagen que acompaña al menú (ruta relativa a la
     // carpeta del proyecto). El encabezado y la info van

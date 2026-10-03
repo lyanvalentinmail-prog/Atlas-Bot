@@ -19,6 +19,7 @@
 import { existsSync, readFileSync } from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { proto } from '@whiskeysockets/baileys'
 import { logger } from '../../lib/logger.js'
 import { formatUptime, getGreeting } from '../../lib/utils.js'
 import { getUserCount } from '../../lib/database.js'
@@ -95,6 +96,28 @@ const splitText = (text, max = MAX_CHUNK) => {
   return chunks.length <= 1
     ? chunks
     : chunks.map((chunk, i) => `${chunk}\n\n> [: ${i + 1}/${chunks.length}]`)
+}
+
+// Envía UN mensaje de lista interactivo (single_select).
+// Las filas ejecutan su "id" como mensaje al tocarlas:
+// así, tocar «JUEGOS» envía «.menu juegos» solo.
+const sendList = async (sock, chatId, msg, { title, text, footer, buttonText, sections }) => {
+  await sock.sendMessage(chatId, {
+    interactiveMessage: proto.Message.InteractiveMessage.fromObject({
+      body: { text },
+      footer: { text: footer },
+      header: { title, hasMediaAttachment: false },
+      nativeFlowMessage: {
+        buttons: [{
+          name: 'single_select',
+          buttonParamsJson: JSON.stringify({
+            title: buttonText,
+            sections
+          })
+        }]
+      }
+    })
+  }, { quoted: msg })
 }
 
 export default {
@@ -231,22 +254,92 @@ export default {
     const bodyText = body.filter(Boolean).join('\n')
     const chunks = [headText, ...splitText(bodyText)].filter(Boolean)
 
-    // ── « Envío: con banner o solo texto » ──
-    // (con filtro siempre va en texto puro: es una
-    // consulta puntual, no la portada del bot)
-    const bannerImg = requested ? null : getBanner(m)
+    // ── « Envío: lista interactiva (un solo mensaje) » ──
+    // En vez de 5 mensajes de texto, el menú es UNA
+    // lista que se toca y despliega (fallback a texto
+    // si el cliente/API no la acepta).
+    let bannerSent = false
+
+    if (m.useList !== false) {
+      try {
+        if (requested) {
+          // « Categoría filtrada: filas = comandos »
+          const [category, cmds] = entries[0]
+          const label = config.categoryLabels?.[category] || category.toUpperCase()
+          const perSection = 10
+          const sections = []
+          for (let i = 0; i < cmds.length; i += perSection) {
+            const slice = cmds.slice(i, i + perSection)
+            const part = Math.ceil(cmds.length / perSection) > 1
+              ? ` · ${i / perSection + 1}/${Math.ceil(cmds.length / perSection)}`
+              : ''
+            sections.push({
+              title: `${label}${part}`,
+              rows: slice.map(cmd => ({
+                id: `${prefix}help ${cmd.name}`,
+                title: `${prefix}${cmd.name}`,
+                description: cmd.description || ''
+              }))
+            })
+          }
+
+          await sendList(sock, chatId, msg, {
+            title: `${data.botName} ・ ${label}`,
+            text: `> ${cmds.length} comandos de *${label}*.\n> Toca uno para ver su ayuda completa.`,
+            footer: tpl(m, 'footer', data) || `${data.botName} ✧ ${totalCommands} comandos`,
+            buttonText: decor(m.listButton, `Abrir ${label.toLowerCase()}`),
+            sections
+          })
+          return
+        }
+
+        // « Menú completo: filas = categorías »
+        const bannerImg = getBanner(m)
+        if (bannerImg) {
+          try {
+            await sock.sendMessage(chatId, {
+              image: bannerImg,
+              caption: headText,
+              mentions: [sender]
+            }, { quoted: msg })
+            bannerSent = true
+          } catch (error) {
+            logger.warn(`No se pudo enviar el banner (${error.message}). Solo va la lista.`)
+          }
+        }
+
+        await sendList(sock, chatId, msg, {
+          title: `${data.botName} ・ MENÚ`,
+          text: `${header}\n\n> ${totalCommands} comandos en ${categories.size} categorías.\n> Toca una categoría para ver sus comandos.`,
+          footer: tpl(m, 'footer', data) || `${data.botName} ✧ ${totalCommands} comandos`,
+          buttonText: decor(m.listButton, 'Ver las categorías'),
+          sections: [{
+            title: 'CATEGORÍAS',
+            rows: [...categories].map(([category, cmds]) => ({
+              id: `${prefix}menu ${category}`,
+              title: config.categoryLabels?.[category] || category.toUpperCase(),
+              description: `${cmds.length} comandos › toca para verlos`
+            }))
+          }]
+        })
+        return
+      } catch (error) {
+        logger.warn(`La lista interactiva falló (${error.message}). El menú va como texto.`)
+      }
+    }
+
+    // ── « Envío de respaldo: texto en bloques » ──
+    // (si la lista ya mandó el banner, no se repite)
+    const bannerImg = requested || bannerSent ? null : getBanner(m)
 
     if (bannerImg) {
       try {
-        // Foto con el encabezado como pie de imagen.
         await sock.sendMessage(chatId, {
           image: bannerImg,
           caption: headText,
           mentions: [sender]
         }, { quoted: msg })
 
-        // Lista de comandos como texto (los captions tienen
-        // límite de caracteres, por eso viaja aparte).
         for (const chunk of splitText(bodyText)) {
           await sock.sendMessage(chatId, { text: chunk, mentions: [sender] })
         }

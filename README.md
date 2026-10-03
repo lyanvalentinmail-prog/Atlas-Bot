@@ -490,6 +490,11 @@ Notas del menú:
 
 - **`greeting`** dice «Buenos días / tardes / noches» según la hora del servidor (automático).
 - **`users`** es un conteo **real**: cada usuario que usa un comando se guarda en `database/users.json`.
+- El menú se manda como **UN mensaje de lista interactivo** (`menu.useList: true`):
+  tocas el botón, eliges la categoría y el bot abre solo esa sección. Cada fila
+  ejecuta un comando al tocarla (`!menu <categoría>` o `!help <comando>`).
+  Si el cliente no soporta listas, cae a texto automáticamente. Con
+  `useList: false` vuelve el menú clásico en mensajes numerados `[1/n]`.
 - El menú se puede **filtrar por categoría**: `!menu grupos` muestra solo esa categoría.
   También acepta **alias en español e inglés** (`!menu gatos` → utilidades;
   `!menu mod` → moderación; `!menu economy` → economía…). Se configuran en
