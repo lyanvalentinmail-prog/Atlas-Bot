@@ -14,8 +14,8 @@ Código limpio, sin emojis (solo símbolos), sin dependencias innecesarias y lis
 
 - Sistema de comandos dividido por **categorías** (carpetas).
 - **Menú decorado personalizable** (kaomojis y símbolos, sin emojis) con
-  saludo según la hora, filtro por categoría (`!menu grupos`) y contador
-  real de usuarios.
+  **banner de imagen**, saludo según la hora, filtro por categoría
+  (`!menu grupos`) y contador real de usuarios.
 - **Prefijo configurable** (uno o varios caracteres).
 - **Configuración central**: nombre del bot, dueño, símbolos y mensajes.
 - Conexión por **código QR** y **código de vinculación** (pairing).
@@ -53,6 +53,9 @@ Atlas-Bot/
 ├── ecosystem.config.cjs      # Configuración de PM2
 ├── .env.example              # Plantilla de variables de entorno
 ├── .gitignore                # Archivos ignorados por git
+│
+├── assets/
+│   └── banner.jpg            # Imagen del banner del menú (reemplázala)
 │
 ├── lib/                      # Núcleo del bot (no necesitas tocarlo)
 │   ├── connection.js         # Conexión, QR, pairing, reconexión y sesión
@@ -373,6 +376,18 @@ emojis: todo el estilo se logra con símbolos Unicode y kaomojis.
 botWeb: 'Aún no tiene web..',  // línea "ᴡᴇʙ" del menú
 botType: 'Sub-Bot',            // línea "ᴛɪᴘᴏ" del menú
 ```
+
+**Banner del menú** (en `config.js` » `menu`):
+
+```js
+banner: 'assets/banner.jpg',   // imagen del menú
+```
+
+- El menú se envía como **foto** (con el encabezado de pie de imagen) y la
+  lista de comandos llega en un texto justo después.
+- Para cambiarla: reemplaza el archivo `assets/banner.jpg` por tu imagen.
+- Para menú solo de texto: `banner: null` (también cae a texto automáticamente
+  si la imagen no existe).
 
 **Decoraciones y plantillas** (sección `menu`):
 

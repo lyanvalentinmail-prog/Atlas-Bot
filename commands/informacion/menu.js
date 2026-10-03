@@ -6,9 +6,35 @@
 // │  Uso:
 // │    !menu          -> menú completo
 // │    !menu grupos   -> solo esa categoría
+// │
+// │  Si hay banner (config.menu.banner), el
+// │  encabezado viaja como pie de la imagen y
+// │  la lista de comandos en un mensaje de texto.
 // ╰────────────────────────────────────────────
+import { existsSync, readFileSync } from 'node:fs'
+import path from 'node:path'
+import { ROOT_DIR } from '../../config.js'
+import { logger } from '../../lib/logger.js'
 import { formatUptime, getGreeting } from '../../lib/utils.js'
 import { getUserCount } from '../../lib/database.js'
+
+// El banner se lee del disco una sola vez.
+let bannerCache = null
+let bannerMissing = false
+
+const getBanner = (config) => {
+  if (bannerCache || bannerMissing) return bannerCache
+  if (!config.menu.banner) { bannerMissing = true; return null }
+
+  const filePath = path.resolve(ROOT_DIR, config.menu.banner)
+  if (!existsSync(filePath)) {
+    logger.warn(`No se encontró el banner "${config.menu.banner}". El menú se enviará como texto.`)
+    bannerMissing = true
+    return null
+  }
+  bannerCache = readFileSync(filePath)
+  return bannerCache
+}
 
 export default {
   name: 'menu',
@@ -55,15 +81,15 @@ export default {
     }
 
     // ── « Construcción del menú » ───────────
-    const parts = [
+    const head = [
       m.header(data),
       '',
       m.divider,
       '',
-      m.info(data),
-      '',
-      m.divider,
-      '',
+      m.info(data)
+    ]
+
+    const body = [
       m.commandsTitle(data),
       '',
       m.hint({ prefix, filtered: Boolean(requested), kaomojiHint: m.kaomojiHint })
@@ -72,31 +98,50 @@ export default {
     for (const [category, cmds] of entries) {
       const label = config.categoryLabels[category] || category.toUpperCase()
 
-      parts.push('', m.frameTop)
-      parts.push(m.categoryTitle({ label, count: cmds.length }))
-      parts.push('')
+      body.push('', m.frameTop)
+      body.push(m.categoryTitle({ label, count: cmds.length }))
+      body.push('')
 
       cmds.forEach((cmd, i) => {
         const extra = (cmd.usage || cmd.name).split(/\s+/).slice(1).join(' ')
-        parts.push(m.commandLine({
+        body.push(m.commandLine({
           prefix,
           name: cmd.name,
           alias: cmd.alias,
           extra,
           bullet: m.bullet
         }))
-        parts.push(m.commandDesc({ description: cmd.description }))
-        if (i < cmds.length - 1) parts.push('')
+        body.push(m.commandDesc({ description: cmd.description }))
+        if (i < cmds.length - 1) body.push('')
       })
 
-      parts.push(m.frameBottom)
+      body.push(m.frameBottom)
     }
 
-    parts.push('', m.divider, '', m.footer(data))
+    const footer = ['', m.divider, '', m.footer(data)]
 
-    await sock.sendMessage(chatId, {
-      text: parts.join('\n'),
-      mentions: [sender]
-    }, { quoted: msg })
+    // ── « Envío: con banner o solo texto » ──
+    const banner = getBanner(config)
+
+    if (banner) {
+      // Foto con el encabezado como pie de imagen
+      await sock.sendMessage(chatId, {
+        image: banner,
+        caption: head.join('\n'),
+        mentions: [sender]
+      }, { quoted: msg })
+
+      // Lista de comandos como texto (los captions tienen
+      // límite de caracteres, por eso viaja aparte)
+      await sock.sendMessage(chatId, {
+        text: [...body, ...footer].join('\n'),
+        mentions: [sender]
+      })
+    } else {
+      await sock.sendMessage(chatId, {
+        text: [...head, '', m.divider, ...body, ...footer].join('\n'),
+        mentions: [sender]
+      }, { quoted: msg })
+    }
   }
 }

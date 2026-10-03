@@ -9,10 +9,15 @@
 // │  por defecto si el .env no existe.
 // ╰────────────────────────────────────────────
 import process from 'node:process'
+import path from 'node:path'
+import { fileURLToPath } from 'node:url'
 import dotenv from 'dotenv'
 import { toSmallCaps } from './lib/utils.js'
 
 dotenv.config({ quiet: true })
+
+// Carpeta raíz del proyecto (donde está este archivo)
+export const ROOT_DIR = path.dirname(fileURLToPath(import.meta.url))
 
 // ── Utilidades internas ─────────────────────
 const cleanNumber = (value = '') => String(value).replace(/[^0-9]/g, '')
@@ -133,6 +138,14 @@ export const config = {
   //   commandLine        » { prefix, name, alias, extra }
   //   commandDesc        » { description }
   menu: {
+    // ── « Banner del menú » ──────────────────
+    // Imagen que acompaña al menú (ruta relativa a la
+    // carpeta del proyecto). El encabezado y la info van
+    // como pie de la imagen, y la lista llega en un
+    // mensaje de texto justo después.
+    // Ponlo en null para menú solo de texto.
+    banner: 'assets/banner.jpg',
+
     // ── « Decoraciones » ─────────────────────
     kaomoji: '૮₍ ˶ᵔ ᵕ ᔔ˶ ₎ა',
     kaomojiHint: '૮(˶ᵔᕕᔔ˶)ა',
