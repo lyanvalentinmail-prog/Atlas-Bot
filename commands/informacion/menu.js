@@ -133,25 +133,40 @@ const sendList = async (sock, chatId, msg, { title, subtitle, text, footer, butt
   const invalid = proto.Message.InteractiveMessage.verify(content)
   if (invalid) throw new Error(`lista inválida: ${invalid}`)
 
-  // Intento 1: sendMessage estándar (el camino normal).
+  // Intento 1 (el que se renderiza en WhatsApp actual):
+  // relayMessage con la lista envuelta en viewOnceMessage +
+  // deviceListMetadata. Sin esa envoltura WhatsApp recibe el
+  // mensaje "bien" pero lo descarta EN SILENCIO (no se ve nada).
+  if (typeof sock.relayMessage === 'function') {
+    try {
+      const full = generateWAMessageFromContent(chatId, {
+        viewOnceMessage: {
+          message: {
+            messageContextInfo: {
+              deviceListMetadata: {},
+              deviceListMetadataVersion: 2
+            },
+            interactiveMessage: content
+          }
+        }
+      }, { userJid: sock.user?.id })
+      await sock.relayMessage(chatId, full.message, { messageId: full.key.id })
+      return
+    } catch (firstError) {
+      logger.warn(`relay de la lista falló (${firstError.message}). Probando sendMessage…`)
+    }
+  }
+
+  // Intento 2: sendMessage estándar (puede descartarse en silencio,
+  // pero en algunas sesiones funciona).
   try {
     await sock.sendMessage(chatId, { interactiveMessage: content }, { quoted: msg })
     return
-  } catch (firstError) {
-    logger.warn(`sendMessage de la lista falló (${firstError.message}). Probando relayMessage…`)
+  } catch (secondError) {
+    logger.warn(`sendMessage de la lista falló (${secondError.message}).`)
   }
 
-  // Intento 2: generateWAMessageFromContent + relayMessage.
-  // Con listas nativas suele funcionar cuando sendMessage las rechaza.
-  if (typeof sock.relayMessage === 'function') {
-    const full = generateWAMessageFromContent(chatId, {
-      interactiveMessage: content
-    }, { userJid: sock.user?.id })
-    await sock.relayMessage(chatId, full.message, { messageId: full.key.id })
-    return
-  }
-
-  throw new Error('relayMessage no disponible en esta sesión')
+  throw new Error('ninguna vía de envío aceptó la lista')
 }
 
 export default {
