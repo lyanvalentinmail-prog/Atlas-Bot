@@ -86,7 +86,9 @@ Atlas-Bot/
 │
 ├── lib/                      # Núcleo del bot (no necesitas tocarlo)
 │   ├── connection.js         # Conexión, QR, pairing, reconexión y sesión
-│   ├── server.js             # Servidor HTTP + Panel Web en vivo para Render
+│   ├── server.js             # Servidor HTTP + API del panel (Render)
+│   ├── panel.html            # Interfaz del panel web (estado, comandos, ajustes)
+│   ├── settings.js           # Ajustes editables desde la web (prefijo, nombre, banner, dueño)
 │   ├── handler.js            # Lector de mensajes, prefijo, moderación y permisos
 │   ├── loader.js             # Cargador automático de comandos
 │   ├── database.js           # Mini base de datos JSON (usuarios, monedas, ajustes)
@@ -794,10 +796,59 @@ El bot incluye un **servidor web y panel de control interactivo** (`lib/server.j
 
 Una vez que Render termine de desplegar el servicio:
 1. Abre la URL que te da Render (por ejemplo: `https://atlas-bot-xxxx.onrender.com`).
-2. Verás el **Panel de Control en vivo de Atlas Bot**:
-   - **Con Código QR**: escanea el código QR directamente desde la página web.
-   - **Con Código de 8 dígitos (Pairing Code)**: haz clic en la pestaña **"Código de 8 dígitos"**, escribe tu número con código de país (ej. `59896719709`) y pulsa **Obtener código**. El código aparecerá en pantalla al instante.
+2. Verás el **Panel de Control en vivo de Atlas Bot**, con cuatro pestañas:
+
+   **» Vincular WhatsApp**
+   - **Código QR**: escanea el código QR directamente desde la página web (se renueva solo).
+   - **Código de 8 dígitos (Pairing Code)**: escribe tu número con código de país
+     (ej. `59896719709`, sin `+` ni espacios) y pulsa **Obtener código**.
+     El código se pide **una sola vez por conexión** y se muestra al instante; si
+     WhatsApp dice que no existe, pulsa **Generar otro código** y usa el nuevo.
+   - Botones **Reiniciar sesión** (borra la sesión y vuelve a empezar) y
+     **Cerrar sesión** (desvincula el dispositivo sin apagar el bot).
+
+   **» Comandos**
+   - Lista **completa** de comandos (nombre, alias, descripción, uso y permisos:
+     solo dueño, admin, solo grupos), con buscador y filtro por categoría.
+
+   **» Ajustes**
+   - **Prefijo**, **nombre del bot**, **nombre del dueño** y **números del dueño**.
+   - **Banner del menú**: súbelo desde tu dispositivo, pon una URL, usa el del
+     proyecto o quítalo (menú solo de texto).
+   - Todo se guarda en `database/db.json` y **se aplica al instante**, sin
+     reiniciar el bot: el menú de WhatsApp ya sale con el nombre, prefijo y
+     banner nuevos. Lo que pongas en el `.env` actúa como valor por defecto.
+
+   **» Consola**
+   - Registro en vivo de lo que hace el bot (últimas 30 líneas).
+
+   Además, arriba del todo verás las tarjetas de resumen: estado de la conexión,
+   cuenta vinculada, **espacio libre en el disco** (con barra de uso y lo que
+   ocupa la sesión, la base de datos, las imágenes y la memoria), prefijo/dueño
+   y total de comandos.
 3. Para mantener despierto el plan gratuito de Render 24/7, puedes registrar la ruta `https://tu-app.onrender.com/health` en [UptimeRobot](https://uptimerobot.com) o [cron-job.org](https://cron-job.org) cada 5 minutos (además del auto-ping integrado que hace el propio bot con `RENDER_EXTERNAL_URL`).
+
+### Rutas del servidor web
+
+| Ruta | Para qué sirve |
+| --- | --- |
+| `GET /` (o `/panel`) | Panel de control completo (interfaz web) |
+| `GET /health` | Health check para Render/UptimeRobot (`/ping` y `/healthz` también valen) |
+| `GET /api/status` | Estado del bot, espacio libre, ajustes, conexión y últimos logs |
+| `GET /api/storage` | Espacio libre en disco y peso de la sesión/base de datos |
+| `GET /api/commands` | Todos los comandos (`?q=` busca y `?category=` filtra) |
+| `GET /api/settings` | Ajustes actuales (prefijo, nombre, banner, dueño) |
+| `POST /api/settings` | Guarda los ajustes y los aplica al instante |
+| `GET /api/banner` | Devuelve la imagen del banner actual |
+| `POST /api/banner` | Cambia el banner: `{ "data": "data:image/..." }`, `{ "url": "https://..." }` o `{ "mode": "default" \| "none" }` |
+| `POST /api/pair` | Genera el código de 8 dígitos (`{ "number": "59896719709", "force": true }`) |
+| `POST /api/qr` | Pasa a modo código QR |
+| `POST /api/reset-session` | Borra la sesión y reinicia la conexión |
+| `POST /api/logout` | Cierra la sesión de WhatsApp (desvincula el dispositivo) |
+| `GET /qr` | SVG del código QR actual |
+
+> Si defines `PANEL_PASSWORD`, las rutas de escritura y `GET /api/settings`
+> piden la contraseña (el panel la envía en la cabecera `x-panel-password`).
 
 ---
 
@@ -811,11 +862,22 @@ En VPS: `sudo apt install -y build-essential git`. En Termux: `pkg install -y gi
 Agranda la ventana de la terminal (el QR necesita espacio) o cambia a
 `CONNECTION_METHOD=pairing`, que imprime solo un código corto.
 
-**» El código de vinculación da "Connection Failure" o no llega**
-Confirma que el número tenga **código de país, sin `+` y sin espacios**
-(`521234567890`), espera unos segundos tras el arranque y no reintentes
-muchas veces seguidas (WhatsApp limita los intentos). Si persiste, borra la
-carpeta `session/` y vuelve a intentar.
+**» El código de vinculación dice que "no existe" o no llega**
+El código de 8 dígitos **vive dentro de la conexión**: WhatsApp solo acepta el
+último código pedido y, si la conexión se reinicia, el anterior deja de existir.
+Por eso el bot ahora pide el código **una sola vez por conexión**, lo muestra
+con la fecha en que se generó y lo borra en cuanto la conexión se cae (así el
+panel nunca te enseña un código muerto). Si te sale "no existe":
+
+1. Confirma que el número lleva **código de país, sin `+` y sin espacios**
+   (`59896719709`) y que **no empieza con 0**.
+2. Vuelve a la pestaña **"Código de 8 dígitos"** y pulsa **Generar otro código**:
+   recibirás uno nuevo al instante.
+3. Escríbelo en WhatsApp » **Dispositivos vinculados** » **Vincular con el
+   número de teléfono** sin tardar (el código se renueva si la conexión cae).
+4. No pidas códigos muchas veces seguidas: WhatsApp limita los intentos por
+   número. Si persiste, pulsa **Reiniciar sesión** en el panel (o borra la
+   carpeta `session/`) y vuelve a intentarlo.
 
 **» El bot no me pregunta si quiero QR o pairing**
 Sucede cuando: 1) ya definiste `CONNECTION_METHOD` en el `.env`, 2) usaste

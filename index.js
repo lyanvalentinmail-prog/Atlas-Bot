@@ -4,8 +4,9 @@
 // ╰────────────────────────────────────────────
 import process from 'node:process'
 import { config } from './config.js'
-import { loadCommands } from './lib/loader.js'
-import { loadDatabase } from './lib/database.js'
+import { loadCommands, summarizeCommands } from './lib/loader.js'
+import { loadDatabase, flushDatabase } from './lib/database.js'
+import { loadStoredSettings } from './lib/settings.js'
 import { startConnection } from './lib/connection.js'
 import { startServer, setServerBotStats } from './lib/server.js'
 import { logger, colors } from './lib/logger.js'
@@ -48,6 +49,11 @@ const main = async () => {
     method = config.connectionMethod
   }
 
+  // Base de datos + ajustes guardados desde el panel web
+  // (prefijo, nombre del bot, banner y dueño).
+  loadDatabase()
+  loadStoredSettings()
+
   logger.info(`Dueño   : ${config.ownerName} » ${config.ownerNumbers.join(', ') || 'sin definir'}`)
   logger.info(`Prefijo : [ ${[...config.prefix].join(' ')} ]`)
   logger.info(
@@ -58,15 +64,18 @@ const main = async () => {
   )
 
   const { commands, categories, total } = await loadCommands()
-  setServerBotStats({ totalCommands: total, totalCategories: categories.size })
+  setServerBotStats({
+    totalCommands: total,
+    totalCategories: categories.size,
+    // Lista completa de comandos para la pestaña "Comandos" del panel.
+    commandsInfo: summarizeCommands(commands, categories)
+  })
 
   if (total === 0) {
     logger.warn('No se cargó ningún comando. Revisa la carpeta "commands".')
   } else {
     logger.success(`${total} comandos cargados en ${categories.size} categorías.`)
   }
-
-  loadDatabase()
 
   await startConnection({ commands, categories, sock: null, method })
 }
@@ -77,6 +86,15 @@ const main = async () => {
 process.on('uncaughtException', (error) => {
   logger.error('Error no controlado (uncaughtException):', error)
 })
+
+// Al apagar (Render envía SIGTERM), guarda los datos pendientes en disco.
+for (const signal of ['SIGTERM', 'SIGINT']) {
+  process.on(signal, () => {
+    flushDatabase()
+    logger.info(`Señal ${signal} recibida. Base de datos guardada. Cerrando...`)
+    process.exit(0)
+  })
+}
 process.on('unhandledRejection', (reason) => {
   logger.error('Promesa rechazada sin manejar (unhandledRejection):', reason)
 })

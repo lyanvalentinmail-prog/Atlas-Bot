@@ -1,0 +1,1057 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Panel · Atlas Bot</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='78' font-size='80'>⚡</text></svg>" />
+<style>
+  :root {
+    --bg: #080b13;
+    --card: #111a2c;
+    --card-2: #0d1524;
+    --border: #1f2c47;
+    --text: #e8eefb;
+    --muted: #8ba0c4;
+    --accent: #6366f1;
+    --accent-2: #8b5cf6;
+    --ok: #10b981;
+    --warn: #f59e0b;
+    --err: #ef4444;
+    --radius: 16px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    background:
+      radial-gradient(900px 500px at 12% -10%, rgba(99,102,241,0.20), transparent 60%),
+      radial-gradient(800px 500px at 100% 0%, rgba(139,92,246,0.16), transparent 55%),
+      var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 22px 16px 60px;
+    -webkit-font-smoothing: antialiased;
+  }
+  .container { max-width: 1120px; margin: 0 auto; }
+  a { color: var(--accent-2); }
+
+  /* ── Cabecera ── */
+  .topbar {
+    display: flex; flex-wrap: wrap; gap: 14px;
+    align-items: center; justify-content: space-between;
+    background: linear-gradient(180deg, rgba(255,255,255,0.045), rgba(255,255,255,0.012));
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 18px 20px;
+    margin-bottom: 18px;
+  }
+  .brand { display: flex; align-items: center; gap: 14px; }
+  .logo {
+    width: 46px; height: 46px; border-radius: 13px;
+    display: grid; place-items: center;
+    font-weight: 800; font-size: 1.3rem; color: #fff;
+    background: linear-gradient(140deg, var(--accent), var(--accent-2));
+    box-shadow: 0 10px 26px rgba(99,102,241,0.35);
+  }
+  .brand h1 { font-size: 1.3rem; letter-spacing: 0.4px; }
+  .brand p { color: var(--muted); font-size: 0.85rem; margin-top: 3px; }
+  .top-right { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .pw input { width: 210px; }
+  .badge {
+    display: inline-flex; align-items: center; gap: 9px;
+    padding: 9px 15px; border-radius: 999px;
+    font-size: 0.86rem; font-weight: 600;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.10);
+    white-space: nowrap;
+  }
+  .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--warn); flex: none; }
+  .badge.connected .dot { background: var(--ok); box-shadow: 0 0 12px var(--ok); }
+  .badge.qr .dot, .badge.pairing .dot { background: var(--warn); box-shadow: 0 0 12px var(--warn); }
+  .badge.disconnected .dot { background: var(--err); box-shadow: 0 0 12px var(--err); }
+  .badge.connected { border-color: rgba(16,185,129,0.4); }
+  .badge.disconnected { border-color: rgba(239,68,68,0.4); }
+
+  /* ── Tarjetas de datos ── */
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(215px, 1fr));
+    gap: 14px;
+    margin-bottom: 18px;
+  }
+  .stat {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 15px 17px;
+  }
+  .stat .label {
+    color: var(--muted); font-size: 0.74rem;
+    text-transform: uppercase; letter-spacing: 0.9px; font-weight: 600;
+  }
+  .stat .val { font-size: 1.02rem; font-weight: 650; margin-top: 7px; word-break: break-word; }
+  .stat .sub { color: var(--muted); font-size: 0.78rem; margin-top: 6px; line-height: 1.45; }
+  .stat.wide { grid-column: span 2; }
+  @media (max-width: 620px) { .stat.wide { grid-column: span 1; } }
+
+  .bar { height: 9px; border-radius: 99px; background: rgba(255,255,255,0.08); overflow: hidden; margin: 11px 0 8px; }
+  .bar i { display: block; height: 100%; border-radius: 99px; background: linear-gradient(90deg, var(--ok), #34d399); }
+  .bar i.warn { background: linear-gradient(90deg, #f59e0b, #fbbf24); }
+  .bar i.err { background: linear-gradient(90deg, #ef4444, #f87171); }
+
+  /* ── Pestañas ── */
+  .tabs {
+    display: flex; gap: 8px; flex-wrap: wrap;
+    background: rgba(255,255,255,0.035);
+    border: 1px solid var(--border);
+    padding: 7px; border-radius: 14px; margin-bottom: 18px;
+  }
+  .tabs button {
+    flex: 1 1 120px;
+    padding: 11px 14px; border-radius: 10px; border: 1px solid transparent;
+    background: transparent; color: var(--muted);
+    font-size: 0.9rem; font-weight: 650; cursor: pointer;
+    transition: 0.15s; font-family: inherit;
+  }
+  .tabs button:hover { color: var(--text); background: rgba(255,255,255,0.05); }
+  .tabs button.active {
+    background: linear-gradient(180deg, var(--accent), #4f46e5);
+    color: #fff; box-shadow: 0 8px 20px rgba(79,70,229,0.35);
+  }
+  .view { display: none; }
+  .view.active { display: block; animation: fade 0.18s ease; }
+  @keyframes fade { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+
+  /* ── Tarjetas ── */
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    margin-bottom: 16px;
+  }
+  .card h2 { font-size: 1.05rem; display: flex; align-items: center; gap: 9px; }
+  .card-head {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 12px; flex-wrap: wrap; margin-bottom: 16px;
+  }
+  .muted { color: var(--muted); font-size: 0.85rem; line-height: 1.5; }
+  .pill {
+    font-size: 0.76rem; font-weight: 700; letter-spacing: 0.4px;
+    padding: 5px 11px; border-radius: 99px;
+    background: rgba(99,102,241,0.16); color: #c7d2fe;
+    border: 1px solid rgba(99,102,241,0.35);
+  }
+
+  /* ── Controles ── */
+  input, select, textarea {
+    width: 100%; padding: 11px 13px; border-radius: 10px;
+    border: 1px solid var(--border); background: #0a1120; color: var(--text);
+    font-size: 0.93rem; font-family: inherit; outline: none; transition: 0.15s;
+  }
+  input:focus, select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(99,102,241,0.15); }
+  label.field { display: block; font-size: 0.8rem; color: var(--muted); font-weight: 600; }
+  label.field span { display: block; margin-bottom: 6px; }
+  label.field small { display: block; margin-top: 5px; color: #6b7fa3; font-weight: 500; }
+  button { font-family: inherit; cursor: pointer; transition: 0.15s; }
+  button.primary {
+    padding: 11px 18px; border-radius: 10px; border: none;
+    background: linear-gradient(180deg, var(--accent), #4f46e5); color: #fff;
+    font-weight: 650; font-size: 0.92rem;
+  }
+  button.primary:hover { filter: brightness(1.1); }
+  button.primary:disabled { opacity: 0.55; cursor: not-allowed; }
+  button.ghost {
+    padding: 9px 14px; border-radius: 10px;
+    border: 1px solid var(--border); background: rgba(255,255,255,0.04);
+    color: var(--muted); font-size: 0.84rem; font-weight: 600;
+  }
+  button.ghost:hover { color: #fff; border-color: var(--muted); }
+  button.ghost.danger:hover { color: #fff; background: rgba(239,68,68,0.22); border-color: rgba(239,68,68,0.5); }
+  .row { display: flex; gap: 9px; flex-wrap: wrap; align-items: center; }
+  .grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 14px; }
+  .msg { font-size: 0.86rem; margin-top: 10px; min-height: 1.2em; }
+  .msg.err { color: #fca5a5; }
+  .msg.ok { color: #6ee7b7; }
+
+  /* ── Vincular ── */
+  .modes { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+  .modes button {
+    padding: 10px 16px; border-radius: 10px; border: 1px solid var(--border);
+    background: rgba(255,255,255,0.03); color: var(--muted); font-weight: 600; font-size: 0.88rem;
+  }
+  .modes button.active { background: rgba(99,102,241,0.18); border-color: var(--accent); color: #fff; }
+  .link-area {
+    border: 1px dashed var(--border); border-radius: 14px;
+    background: rgba(0,0,0,0.22); padding: 20px;
+    display: flex; flex-direction: column; align-items: center; gap: 14px; text-align: center;
+    min-height: 240px; justify-content: center;
+  }
+  .qr-img { width: 268px; max-width: 76vw; height: auto; border-radius: 14px; background: #fff; padding: 10px; }
+  .qr-img.off { display: none; }
+  .pane { display: none; width: 100%; flex-direction: column; align-items: center; gap: 14px; }
+  .pane.active { display: flex; }
+  .code {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: clamp(2rem, 9vw, 2.7rem); font-weight: 800; letter-spacing: 0.22em;
+    color: #fff; background: rgba(99,102,241,0.16);
+    border: 1px solid var(--accent); border-radius: 14px;
+    padding: 16px 22px 16px 28px; user-select: all; word-break: break-all;
+  }
+  .ok-big { font-size: 2.6rem; }
+  .hint { color: var(--muted); font-size: 0.87rem; line-height: 1.55; max-width: 520px; }
+  .hint b { color: #cdd9f0; }
+  .phone-row { display: flex; gap: 9px; width: 100%; max-width: 420px; }
+  .phone-row input { text-align: center; letter-spacing: 1px; }
+  .spinner {
+    width: 30px; height: 30px; border-radius: 50%;
+    border: 3px solid rgba(255,255,255,0.15); border-top-color: var(--accent);
+    animation: spin 0.9s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .warn-box {
+    width: 100%; max-width: 520px; text-align: left;
+    background: rgba(245,158,11,0.10); border: 1px solid rgba(245,158,11,0.4);
+    color: #fcd34d; padding: 12px 14px; border-radius: 11px; font-size: 0.85rem; line-height: 1.5;
+  }
+  .steps { text-align: left; color: var(--muted); font-size: 0.85rem; line-height: 1.7; max-width: 520px; }
+  .steps code { background: rgba(255,255,255,0.07); padding: 1px 6px; border-radius: 6px; }
+
+  /* ── Comandos ── */
+  .filters { display: grid; grid-template-columns: 1.6fr 1fr auto; gap: 10px; margin-bottom: 16px; }
+  @media (max-width: 620px) { .filters { grid-template-columns: 1fr; } }
+  .cmd-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 11px; }
+  .cmd {
+    background: var(--card-2); border: 1px solid var(--border);
+    border-radius: 12px; padding: 13px 14px;
+  }
+  .cmd-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+  .cmd code {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 0.95rem; font-weight: 700; color: #c7d2fe;
+    background: rgba(99,102,241,0.13); border-radius: 8px; padding: 3px 9px;
+  }
+  .cmd .desc { color: #b9c7e2; font-size: 0.84rem; margin-top: 9px; line-height: 1.45; }
+  .cmd .meta { color: #7488ab; font-size: 0.75rem; margin-top: 8px; line-height: 1.5; }
+  .tag {
+    font-size: 0.66rem; font-weight: 800; letter-spacing: 0.5px;
+    padding: 3px 8px; border-radius: 99px; text-transform: uppercase;
+    border: 1px solid rgba(255,255,255,0.14); color: var(--muted);
+  }
+  .tag.owner { color: #fca5a5; border-color: rgba(239,68,68,0.45); background: rgba(239,68,68,0.12); }
+  .tag.admin { color: #fcd34d; border-color: rgba(245,158,11,0.4); background: rgba(245,158,11,0.1); }
+  .tag.group { color: #93c5fd; border-color: rgba(59,130,246,0.4); background: rgba(59,130,246,0.1); }
+  .empty { color: var(--muted); text-align: center; padding: 26px; font-size: 0.9rem; }
+
+  /* ── Banner / ajustes ── */
+  .banner-block { display: grid; grid-template-columns: 300px 1fr; gap: 18px; margin-top: 18px; }
+  @media (max-width: 720px) { .banner-block { grid-template-columns: 1fr; } }
+  .banner-preview {
+    border: 1px solid var(--border); border-radius: 13px; overflow: hidden;
+    background: #0a1120; min-height: 150px; display: grid; place-items: center;
+  }
+  .banner-preview img { width: 100%; height: auto; display: block; }
+  .banner-preview .none { color: #5f7292; font-size: 0.84rem; padding: 22px; text-align: center; }
+  .banner-controls { display: flex; flex-direction: column; gap: 11px; }
+  input[type=file] { padding: 9px; font-size: 0.83rem; }
+  .divider { height: 1px; background: var(--border); margin: 18px 0; }
+
+  /* ── Consola ── */
+  .logs {
+    background: #060a12; border: 1px solid var(--border); border-radius: 13px;
+    padding: 15px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 0.78rem; color: #b6c4de; height: 420px; overflow-y: auto;
+    white-space: pre-wrap; line-height: 1.55;
+  }
+
+  /* ── Aviso flotante ── */
+  #toast {
+    position: fixed; left: 50%; bottom: 26px; transform: translate(-50%, 120%);
+    background: #101b30; border: 1px solid var(--border); color: var(--text);
+    padding: 12px 18px; border-radius: 12px; font-size: 0.88rem; font-weight: 600;
+    box-shadow: 0 18px 40px rgba(0,0,0,0.5); transition: transform 0.25s ease; z-index: 50;
+    max-width: 90vw; text-align: center;
+  }
+  #toast.show { transform: translate(-50%, 0); }
+  #toast.ok { border-color: rgba(16,185,129,0.5); }
+  #toast.err { border-color: rgba(239,68,68,0.55); }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <header class="topbar">
+    <div class="brand">
+      <div class="logo" id="logo">A</div>
+      <div>
+        <h1 id="botName">Atlas Bot</h1>
+        <p id="botSub">Panel de control · cargando…</p>
+      </div>
+    </div>
+    <div class="top-right">
+      <div class="pw" id="pwWrap" style="display:none">
+        <input id="panelPassword" type="password" placeholder="Contraseña del panel" autocomplete="current-password" />
+      </div>
+      <div class="badge" id="statusBadge"><span class="dot"></span><span id="statusText">Cargando…</span></div>
+    </div>
+  </header>
+
+  <section class="stats">
+    <div class="stat">
+      <div class="label">Estado de WhatsApp</div>
+      <div class="val" id="statStatus">—</div>
+      <div class="sub" id="statUptime">Tiempo activo: —</div>
+    </div>
+    <div class="stat">
+      <div class="label">Cuenta vinculada</div>
+      <div class="val" id="statAccount">Sin vincular</div>
+      <div class="sub" id="statMethod">Método: —</div>
+    </div>
+    <div class="stat">
+      <div class="label">Prefijo y dueño</div>
+      <div class="val" id="statPrefix">!</div>
+      <div class="sub" id="statOwner">Dueño: —</div>
+    </div>
+    <div class="stat">
+      <div class="label">Comandos</div>
+      <div class="val" id="statCommands">0</div>
+      <div class="sub" id="statUsers">Usuarios: 0</div>
+    </div>
+    <div class="stat wide">
+      <div class="label">Espacio libre en el disco</div>
+      <div class="val" id="statFree">—</div>
+      <div class="bar"><i id="diskBar" style="width:0%"></i></div>
+      <div class="sub" id="statDiskDetail">—</div>
+      <div class="sub" id="statDiskBots">—</div>
+    </div>
+  </section>
+
+  <nav class="tabs">
+    <button data-view="link" class="active">Vincular WhatsApp</button>
+    <button data-view="commands">Comandos</button>
+    <button data-view="settings">Ajustes</button>
+    <button data-view="console">Consola</button>
+  </nav>
+
+  <!-- ── Vincular ── -->
+  <section class="view active" id="view-link">
+    <div class="card">
+      <div class="card-head">
+        <h2>Vinculación de WhatsApp</h2>
+        <div class="row">
+          <button class="ghost" id="btnReset">Reiniciar sesión</button>
+          <button class="ghost danger" id="btnLogout">Cerrar sesión</button>
+        </div>
+      </div>
+
+      <div class="modes" id="modes">
+        <button data-mode="qr" class="active">Código QR</button>
+        <button data-mode="pairing">Código de 8 dígitos</button>
+      </div>
+
+      <div class="link-area" id="linkArea">
+        <div class="pane active" id="paneQr">
+          <img class="qr-img off" id="qrImg" alt="Código QR de WhatsApp" />
+          <div class="spinner" id="qrSpinner"></div>
+          <p class="hint" id="qrHint">Consultando el estado de la conexión…</p>
+          <button class="ghost" id="btnNewQr">Nuevo QR</button>
+        </div>
+
+        <div class="pane" id="panePair">
+          <div id="pairCodeBox" style="width:100%;display:flex;flex-direction:column;align-items:center;gap:14px">
+            <p class="hint">Escribe tu número con código de país para recibir el código de 8 dígitos.</p>
+          </div>
+          <div class="phone-row">
+            <input id="phoneInput" inputmode="numeric" autocomplete="off" placeholder="Tu número: 59896719709" />
+            <button class="primary" id="btnPair">Obtener código</button>
+          </div>
+          <div class="row" id="pairActions" style="justify-content:center"></div>
+          <div class="steps">
+            1. Abre WhatsApp en tu teléfono.<br />
+            2. Ve a <b>Ajustes</b> » <b>Dispositivos vinculados</b> » <b>Vincular un dispositivo</b>.<br />
+            3. Elige <b>Vincular con el número de teléfono</b> e introduce el código.<br />
+            <span class="muted">El código solo sirve mientras la conexión siga activa: si WhatsApp dice que no existe, pulsa <b>Generar otro código</b>.</span>
+          </div>
+        </div>
+
+        <div class="pane" id="paneConnected">
+          <div class="ok-big">✓</div>
+          <h2 style="color:#34d399">Bot conectado</h2>
+          <p class="hint" id="connectedHint"></p>
+        </div>
+      </div>
+
+      <p class="msg" id="linkMsg"></p>
+    </div>
+  </section>
+
+  <!-- ── Comandos ── -->
+  <section class="view" id="view-commands">
+    <div class="card">
+      <div class="card-head">
+        <h2>Todos los comandos</h2>
+        <span class="pill" id="cmdCount">cargando…</span>
+      </div>
+      <div class="filters">
+        <input id="cmdSearch" placeholder="Buscar por nombre, alias o descripción…" />
+        <select id="cmdCategory"><option value="">Todas las categorías</option></select>
+        <button class="ghost" id="cmdClear">Limpiar</button>
+      </div>
+      <div class="cmd-list" id="cmdList"><div class="empty">Cargando comandos…</div></div>
+    </div>
+  </section>
+
+  <!-- ── Ajustes ── -->
+  <section class="view" id="view-settings">
+    <form class="card" id="settingsForm">
+      <div class="card-head">
+        <h2>Ajustes del bot</h2>
+        <span class="pill">se aplican al instante</span>
+      </div>
+
+      <div class="grid2">
+        <label class="field"><span>Prefijo de comandos</span>
+          <input id="setPrefix" maxlength="4" placeholder="!" />
+          <small>De 1 a 4 símbolos (sin letras ni números). Ej: <b>!</b> <b>.</b> <b>#</b> <b>./</b></small>
+        </label>
+        <label class="field"><span>Nombre del bot</span>
+          <input id="setBotName" maxlength="32" placeholder="Atlas Bot" />
+          <small>Aparece en el menú y en los mensajes del bot.</small>
+        </label>
+        <label class="field"><span>Nombre del dueño</span>
+          <input id="setOwnerName" maxlength="32" placeholder="Tu nombre" />
+          <small>Se muestra como dueño del bot.</small>
+        </label>
+        <label class="field"><span>Números del dueño</span>
+          <input id="setOwnerNumbers" placeholder="59896719709, 521234567890" />
+          <small>Con código de país, sin <b>+</b>, separados por coma.</small>
+        </label>
+      </div>
+
+      <div class="divider"></div>
+
+      <h2>Banner del menú</h2>
+      <p class="muted" style="margin-top:6px">Es la imagen que acompaña al menú dentro de WhatsApp.</p>
+      <div class="banner-block">
+        <div class="banner-preview" id="bannerPreview"><div class="none">Sin banner</div></div>
+        <div class="banner-controls">
+          <p class="muted" id="bannerLabel">—</p>
+          <input type="file" id="bannerFile" accept="image/png,image/jpeg,image/webp,image/gif" />
+          <input id="bannerUrlInput" placeholder="https://… (también vale una ruta del proyecto)" />
+          <div class="row">
+            <button type="button" class="ghost" id="bannerUseUrl">Usar URL</button>
+            <button type="button" class="ghost" id="bannerDefault">Banner del proyecto</button>
+            <button type="button" class="ghost" id="bannerNone">Quitar banner</button>
+          </div>
+          <p class="muted">Máximo 5 MB · JPG, PNG, WEBP o GIF.</p>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="row">
+        <button type="submit" class="primary" id="btnSave">Guardar ajustes</button>
+        <span class="msg" id="settingsMsg"></span>
+      </div>
+    </form>
+  </section>
+
+  <!-- ── Consola ── -->
+  <section class="view" id="view-console">
+    <div class="card">
+      <div class="card-head">
+        <h2>Consola en vivo</h2>
+        <button class="ghost" id="btnScroll">Ir al final</button>
+      </div>
+      <div class="logs" id="logBox">Cargando registros…</div>
+    </div>
+  </section>
+
+</div>
+<div id="toast"></div>
+
+<script>
+(() => {
+  "use strict";
+
+  const $ = (id) => document.getElementById(id);
+  const state = {
+    view: "link",
+    mode: "qr",
+    status: null,
+    settings: null,
+    commands: null,
+    qrLoadedAt: 0,
+    lastCommandQuery: "",
+    lastCategory: "",
+    filledSettings: false,
+    busy: false
+  };
+
+  // ── Utilidades ──────────────────────────────
+  const fmtBytes = (bytes) => {
+    if (bytes === null || bytes === undefined || Number.isNaN(bytes)) return "—";
+    const units = ["B", "KB", "MB", "GB", "TB"];
+    let value = Number(bytes);
+    let i = 0;
+    while (value >= 1024 && i < units.length - 1) { value /= 1024; i++; }
+    const decimals = value >= 100 || i === 0 ? 0 : 1;
+    return value.toFixed(decimals) + " " + units[i];
+  };
+
+  const fmtAgo = (ts) => {
+    if (!ts) return "—";
+    const secs = Math.max(0, Math.round((Date.now() - ts) / 1000));
+    if (secs < 60) return "hace " + secs + " s";
+    const mins = Math.floor(secs / 60);
+    if (mins < 60) return "hace " + mins + " min";
+    const hours = Math.floor(mins / 60);
+    if (hours < 24) return "hace " + hours + " h";
+    return "hace " + Math.floor(hours / 24) + " d";
+  };
+
+  const esc = (text) => String(text ?? "").replace(/[&<>"']/g, (c) => (
+    { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]
+  ));
+
+  let toastTimer = null;
+  const toast = (text, kind = "ok") => {
+    const el = $("toast");
+    el.textContent = text;
+    el.className = "show " + kind;
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => { el.className = ""; }, 4200);
+  };
+
+  const getPassword = () => {
+    const el = $("panelPassword");
+    if (el && el.value) return el.value;
+    try { return sessionStorage.getItem("atlasPanelPassword") || ""; } catch { return ""; }
+  };
+
+  const api = async (path, { method = "GET", body = null } = {}) => {
+    const headers = {};
+    const password = getPassword();
+    if (password) headers["x-panel-password"] = password;
+    if (body !== null) headers["Content-Type"] = "application/json";
+
+    const res = await fetch(path, {
+      method,
+      headers,
+      body: body !== null ? JSON.stringify(body) : undefined
+    });
+
+    let data = null;
+    try { data = await res.json(); } catch { data = null; }
+    if (!res.ok || (data && data.ok === false)) {
+      const error = new Error((data && data.error) || ("Error " + res.status));
+      error.status = res.status;
+      error.details = data && data.details;
+      throw error;
+    }
+    return data;
+  };
+
+  const setMsg = (id, text, kind = "") => {
+    const el = $(id);
+    if (!el) return;
+    el.textContent = text || "";
+    el.className = "msg " + kind;
+  };
+
+  // ── Pestañas ────────────────────────────────
+  document.querySelectorAll(".tabs button").forEach((button) => {
+    button.addEventListener("click", () => {
+      state.view = button.dataset.view;
+      document.querySelectorAll(".tabs button").forEach(b => b.classList.toggle("active", b === button));
+      document.querySelectorAll(".view").forEach(v => v.classList.toggle("active", v.id === "view-" + state.view));
+
+      if (state.view === "commands" && !state.commands) loadCommands();
+      if (state.view === "settings") loadSettings();
+      if (state.view === "link") renderLink();
+    });
+  });
+
+  // ── Estado general ──────────────────────────
+  const statusLabels = {
+    connected: "Conectado a WhatsApp",
+    qr: "Esperando escaneo del QR",
+    pairing: "Modo código de 8 dígitos",
+    reconnecting: "Reconectando…",
+    starting: "Iniciando el bot…",
+    disconnected: "Desconectado"
+  };
+
+  const renderStats = (data) => {
+    const conn = data.connection || {};
+    const user = conn.user || {};
+
+    $("botName").textContent = data.botName || "Atlas Bot";
+    $("logo").textContent = (data.botName || "A").trim().charAt(0).toUpperCase() || "A";
+    document.title = (data.botName || "Atlas Bot") + " · Panel";
+    $("botSub").textContent = "Panel de control · v" + (data.botVersion || "1.0.0") +
+      " · Node " + (data.node || "");
+
+    $("statusBadge").className = "badge " + (conn.status || "");
+    $("statusText").textContent = statusLabels[conn.status] || conn.status || "Activo";
+    $("statStatus").textContent = statusLabels[conn.status] || conn.status || "—";
+    $("statUptime").textContent = "Tiempo activo: " + (data.uptimeFormatted || "0s");
+
+    $("statAccount").textContent = user.number
+      ? ("+" + user.number + (user.name && user.name !== user.number ? " · " + user.name : ""))
+      : "Sin vincular";
+    $("statMethod").textContent = "Método: " +
+      (conn.method === "pairing" ? "código de 8 dígitos" : conn.method === "qr" ? "código QR" : "—");
+
+    $("statPrefix").textContent = "[ " + (data.prefix || "!") + " ]";
+    $("statOwner").textContent = "Dueño: " + (data.ownerName || "Sin definir") +
+      (data.ownerNumbers && data.ownerNumbers.length ? " · +" + data.ownerNumbers[0] : "");
+
+    $("statCommands").textContent = (data.totalCommands || 0) + " en " + (data.totalCategories || 0) + " categorías";
+    $("statUsers").textContent = "Usuarios registrados: " + (data.totalUsers || 0);
+
+    renderStorage(data.storage || {});
+    if (data.protected && !$("pwWrap").dataset.ready) {
+      $("pwWrap").style.display = "block";
+      $("pwWrap").dataset.ready = "1";
+    }
+  };
+
+  const renderStorage = (storage) => {
+    const disk = storage.disk;
+    if (!disk) {
+      $("statFree").textContent = "No disponible";
+      $("statDiskDetail").textContent = "Este sistema no permite leer el espacio libre.";
+      return;
+    }
+    $("statFree").textContent = fmtBytes(disk.free) + " libres de " + fmtBytes(disk.total);
+    const bar = $("diskBar");
+    bar.style.width = Math.min(100, disk.usedPercent) + "%";
+    bar.className = disk.usedPercent >= 90 ? "err" : disk.usedPercent >= 70 ? "warn" : "";
+    $("statDiskDetail").textContent = "Disco usado al " + disk.usedPercent + "%";
+
+    const dirs = storage.dirs || {};
+    const memory = storage.memory || {};
+    $("statDiskBots").innerHTML =
+      "El bot ocupa: sesión " + fmtBytes(dirs.session && dirs.session.bytes) +
+      " · base de datos " + fmtBytes(dirs.database && dirs.database.bytes) +
+      " · imágenes " + fmtBytes(dirs.assets && dirs.assets.bytes) +
+      " · memoria " + fmtBytes(memory.rss);
+  };
+
+  // ── Vincular ────────────────────────────────
+  document.querySelectorAll("#modes button").forEach((button) => {
+    button.addEventListener("click", () => {
+      state.mode = button.dataset.mode;
+      state.modeChosen = true;
+      document.querySelectorAll("#modes button").forEach(b => b.classList.toggle("active", b === button));
+      setMsg("linkMsg", "");
+      if (state.mode === "qr") requestQr();
+      renderLink();
+    });
+  });
+
+  const requestQr = async () => {
+    try {
+      await api("/api/qr", { method: "POST", body: { password: getPassword() } });
+    } catch (error) {
+      if (error.status === 401) setMsg("linkMsg", error.message, "err");
+    }
+  };
+
+  const showPane = (id) => {
+    ["paneQr", "panePair", "paneConnected"].forEach((pane) => {
+      $(pane).classList.toggle("active", pane === id);
+    });
+  };
+
+  const renderLink = () => {
+    const data = state.status;
+    if (!data) return;
+    const conn = data.connection || {};
+    const modes = $("modes");
+
+    // Si el bot quedó en modo pairing, el panel abre esa pestaña solo.
+    if (!state.modeChosen && conn.method === "pairing") {
+      state.mode = "pairing";
+      document.querySelectorAll("#modes button").forEach(b =>
+        b.classList.toggle("active", b.dataset.mode === "pairing"));
+    }
+
+    if (conn.status === "connected") {
+      modes.style.display = "none";
+      showPane("paneConnected");
+      const user = conn.user || {};
+      $("connectedHint").innerHTML =
+        "Vinculado a <b>" + esc(user.name || "WhatsApp") + "</b>" +
+        (user.number ? " (+" + esc(user.number) + ")" : "") + ".<br />" +
+        "Escribe <b>" + esc(data.prefix || "!") + "menu</b> en WhatsApp para probarlo.";
+      return;
+    }
+
+    modes.style.display = "flex";
+
+    if (state.mode === "pairing") {
+      showPane("panePair");
+      renderPairing(conn);
+      return;
+    }
+
+    showPane("paneQr");
+    const img = $("qrImg");
+    const spinner = $("qrSpinner");
+    if (conn.hasQr) {
+      img.classList.remove("off");
+      spinner.style.display = "none";
+      img.src = "/qr?t=" + encodeURIComponent(conn.qrToken || Date.now());
+      $("qrHint").innerHTML =
+        "WhatsApp » <b>Dispositivos vinculados</b> » <b>Vincular un dispositivo</b> y escanea este código.";
+    } else {
+      img.classList.add("off");
+      spinner.style.display = "block";
+      $("qrHint").innerHTML = conn.pairingError
+        ? esc(conn.pairingError)
+        : "Generando el código QR de WhatsApp…<br />Si tarda, pulsa <b>Nuevo QR</b> o usa el <b>código de 8 dígitos</b>.";
+    }
+  };
+
+  // Solo se repinta el código y los botones: el input del número nunca
+  // se toca mientras escribes.
+  const renderPairing = (conn) => {
+    const box = $("pairCodeBox");
+    const code = conn.pairingCode;
+
+    if (code && box.dataset.code !== code) {
+      box.dataset.code = code;
+      box.innerHTML =
+        '<div class="code">' + esc(code) + "</div>" +
+        '<p class="hint">Número destino: <b>+' + esc(conn.pairingNumber || "") + "</b><br />" +
+        "Generado " + fmtAgo(conn.pairingIssuedAt) +
+        " · el código deja de existir cuando la conexión se reinicia.</p>";
+    } else if (!code && box.dataset.code !== "waiting") {
+      box.dataset.code = "waiting";
+      box.innerHTML = conn.pairingError
+        ? '<div class="warn-box">' + esc(conn.pairingError) + "</div>"
+        : '<div class="spinner"></div><p class="hint">Pidiendo el código a WhatsApp…</p>';
+    } else if (!code && conn.pairingError && box.dataset.error !== conn.pairingError) {
+      box.dataset.error = conn.pairingError;
+      box.innerHTML = '<div class="warn-box">' + esc(conn.pairingError) + "</div>";
+    }
+
+    const actions = $("pairActions");
+    const wanted = code ? "copy" : "none";
+    if (actions.dataset.state !== wanted) {
+      actions.dataset.state = wanted;
+      actions.innerHTML = code
+        ? '<button class="ghost" id="btnCopy">Copiar código</button>' +
+          '<button class="ghost" id="btnNewCode">Generar otro código</button>'
+        : "";
+      if (code) {
+        $("btnCopy").addEventListener("click", async () => {
+          const value = (state.status.connection || {}).pairingCode || "";
+          try {
+            await navigator.clipboard.writeText(value);
+            toast("Código copiado: " + value, "ok");
+          } catch {
+            toast("Copia manualmente: " + value, "ok");
+          }
+        });
+        $("btnNewCode").addEventListener("click", () => requestPair(null, true));
+      }
+    }
+
+    const button = $("btnPair");
+    if (button && !state.busy) button.textContent = code ? "Actualizar" : "Obtener código";
+    const input = $("phoneInput");
+    if (input && !input.value && conn.pairingNumber) input.value = conn.pairingNumber;
+  };
+
+  const requestPair = async (event, force = false) => {
+    if (event && event.preventDefault) event.preventDefault();
+    if (state.busy) return;
+
+    const input = $("phoneInput");
+    const number = (input ? input.value : "").trim();
+    if (!number) {
+      setMsg("linkMsg", "Escribe tu número con código de país (ej: 59896719709).", "err");
+      return;
+    }
+
+    state.busy = true;
+    const button = $("btnPair");
+    if (button) { button.disabled = true; button.textContent = "Consultando…"; }
+    setMsg("linkMsg", "Pidiendo el código a WhatsApp…");
+
+    try {
+      const data = await api("/api/pair", { method: "POST", body: { number, force, password: getPassword() } });
+      setMsg("linkMsg", "Código listo: " + data.code + " · ingrésalo en WhatsApp » Dispositivos vinculados.", "ok");
+      toast("Código generado: " + data.code, "ok");
+      await refreshStatus();
+    } catch (error) {
+      setMsg("linkMsg", error.message || "No se pudo generar el código.", "err");
+      toast(error.message || "No se pudo generar el código.", "err");
+    } finally {
+      state.busy = false;
+      const again = $("btnPair");
+      if (again) again.disabled = false;
+      renderLink();
+    }
+  };
+
+  // ── Comandos ────────────────────────────────
+  const loadCommands = async (query = "", category = "") => {
+    const list = $("cmdList");
+    list.innerHTML = '<div class="empty">Cargando comandos…</div>';
+    try {
+      const data = await api("/api/commands?q=" + encodeURIComponent(query) + "&category=" + encodeURIComponent(category));
+      state.commands = data;
+      state.lastCommandQuery = query;
+      state.lastCategory = category;
+
+      $("cmdCount").textContent = data.filtered + " de " + data.total + " comandos";
+      const select = $("cmdCategory");
+      if (select.options.length <= 1 && data.categories) {
+        for (const category of data.categories) {
+          const option = document.createElement("option");
+          option.value = category.id;
+          option.textContent = category.label + " (" + category.count + ")";
+          select.appendChild(option);
+        }
+      }
+      renderCommands(data);
+    } catch (error) {
+      list.innerHTML = '<div class="empty">' + esc(error.message) + "</div>";
+    }
+  };
+
+  const renderCommands = (data) => {
+    const list = $("cmdList");
+    if (!data.commands || !data.commands.length) {
+      list.innerHTML = '<div class="empty">No hay comandos que coincidan con el filtro.</div>';
+      return;
+    }
+
+    let lastCategory = null;
+    const html = [];
+    for (const command of data.commands) {
+      if (command.category !== lastCategory) {
+        lastCategory = command.category;
+        html.push('<div class="cmd" style="grid-column:1/-1;background:rgba(99,102,241,0.09);border-color:rgba(99,102,241,0.35)">' +
+          '<div class="cmd-top"><strong>' + esc(command.label) + "</strong><span class=\"tag\">" +
+          (data.commands.filter(c => c.category === command.category).length) + " comandos</span></div></div>");
+      }
+
+      const tags = [];
+      if (command.ownerOnly) tags.push('<span class="tag owner">solo dueño</span>');
+      if (command.adminOnly) tags.push('<span class="tag admin">admin</span>');
+      if (command.botAdminOnly) tags.push('<span class="tag admin">bot admin</span>');
+      if (command.groupOnly) tags.push('<span class="tag group">solo grupos</span>');
+
+      html.push(
+        '<div class="cmd">' +
+          '<div class="cmd-top"><code>' + esc(data.prefix + command.name) + "</code>" +
+          '<span class="row">' + tags.join("") + "</span></div>" +
+          '<div class="desc">' + esc(command.description || "Sin descripción") + "</div>" +
+          '<div class="meta">Uso: ' + esc(data.prefix + command.usage) +
+          (command.aliases.length ? " · Alias: " + esc(command.aliases.join(", ")) : "") + "</div>" +
+        "</div>"
+      );
+    }
+    list.innerHTML = html.join("");
+  };
+
+  $("cmdSearch").addEventListener("input", (event) => {
+    clearTimeout(event.target._timer);
+    event.target._timer = setTimeout(() => loadCommands(event.target.value.trim(), $("cmdCategory").value), 260);
+  });
+  $("cmdCategory").addEventListener("change", (event) => {
+    loadCommands($("cmdSearch").value.trim(), event.target.value);
+  });
+  $("cmdClear").addEventListener("click", () => {
+    $("cmdSearch").value = "";
+    $("cmdCategory").value = "";
+    loadCommands("", "");
+  });
+
+  // ── Ajustes ─────────────────────────────────
+  const fillSettings = (settings) => {
+    if (!settings) return;
+    state.settings = settings;
+    $("setPrefix").value = settings.prefix || "";
+    $("setBotName").value = settings.botName || "";
+    $("setOwnerName").value = settings.ownerName || "";
+    $("setOwnerNumbers").value = settings.ownerNumbersText || "";
+    renderBanner(settings);
+    state.filledSettings = true;
+  };
+
+  const renderBanner = (settings) => {
+    const preview = $("bannerPreview");
+    $("bannerLabel").textContent = settings.bannerLabel || "—";
+    if (settings.bannerUrl && settings.bannerExists) {
+      preview.innerHTML = '<img alt="Banner actual" src="' + esc(settings.bannerUrl) + "&t=" + Date.now() + '" />';
+    } else {
+      preview.innerHTML = '<div class="none">Sin banner (el menú se envía solo como texto)</div>';
+    }
+  };
+
+  const loadSettings = async () => {
+    try {
+      const data = await api("/api/settings");
+      fillSettings(data.settings);
+      setMsg("settingsMsg", "");
+    } catch (error) {
+      if (error.status === 401) {
+        setMsg("settingsMsg", "Escribe la contraseña del panel para ver y editar los ajustes.", "err");
+        $("pwWrap").style.display = "block";
+      } else {
+        setMsg("settingsMsg", error.message, "err");
+      }
+    }
+  };
+
+  $("settingsForm").addEventListener("submit", async (event) => {
+    event.preventDefault();
+    setMsg("settingsMsg", "Guardando…");
+    try {
+      const data = await api("/api/settings", {
+        method: "POST",
+        body: {
+          password: getPassword(),
+          prefix: $("setPrefix").value,
+          botName: $("setBotName").value,
+          ownerName: $("setOwnerName").value,
+          ownerNumbers: $("setOwnerNumbers").value
+        }
+      });
+      fillSettings(data.settings);
+      setMsg("settingsMsg", data.message || "Ajustes guardados.", "ok");
+      toast("Ajustes guardados", "ok");
+      await refreshStatus();
+    } catch (error) {
+      setMsg("settingsMsg", error.message, "err");
+      toast(error.message, "err");
+    }
+  });
+
+  const uploadBanner = async (payload, description) => {
+    setMsg("settingsMsg", "Actualizando " + description + "…");
+    try {
+      const data = await api("/api/banner", { method: "POST", body: { ...payload, password: getPassword() } });
+      fillSettings(data.settings);
+      setMsg("settingsMsg", description + " actualizado.", "ok");
+      toast("Banner actualizado", "ok");
+      await refreshStatus();
+    } catch (error) {
+      setMsg("settingsMsg", error.message, "err");
+      toast(error.message, "err");
+    }
+  };
+
+  $("bannerFile").addEventListener("change", (event) => {
+    const file = event.target.files && event.target.files[0];
+    if (!file) return;
+    if (file.size > 5 * 1024 * 1024) {
+      setMsg("settingsMsg", "La imagen supera los 5 MB.", "err");
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = () => uploadBanner({ data: reader.result }, "el banner");
+    reader.onerror = () => setMsg("settingsMsg", "No se pudo leer la imagen.", "err");
+    reader.readAsDataURL(file);
+  });
+
+  $("bannerUseUrl").addEventListener("click", () => {
+    const url = $("bannerUrlInput").value.trim();
+    if (!url) {
+      setMsg("settingsMsg", "Escribe una URL o una ruta del proyecto.", "err");
+      return;
+    }
+    uploadBanner({ url }, "el banner");
+  });
+  $("bannerDefault").addEventListener("click", () => uploadBanner({ mode: "default" }, "el banner"));
+  $("bannerNone").addEventListener("click", () => uploadBanner({ mode: "none" }, "el banner"));
+
+  $("btnNewQr").addEventListener("click", () => requestQr());
+
+  // ── Acciones de sesión ──────────────────────
+  $("btnReset").addEventListener("click", async () => {
+    if (!confirm("¿Cerrar y reiniciar la sesión actual de WhatsApp? Tendrás que vincular el bot otra vez.")) return;
+    setMsg("linkMsg", "Reiniciando la sesión…");
+    try {
+      await api("/api/reset-session", { method: "POST", body: { password: getPassword() } });
+      state.mode = "qr";
+      document.querySelectorAll("#modes button").forEach(b => b.classList.toggle("active", b.dataset.mode === "qr"));
+      setMsg("linkMsg", "Sesión reiniciada. Esperando el nuevo código QR…", "ok");
+      await refreshStatus();
+    } catch (error) {
+      setMsg("linkMsg", error.message, "err");
+    }
+  });
+
+  $("btnLogout").addEventListener("click", async () => {
+    if (!confirm("¿Cerrar la sesión de WhatsApp? El dispositivo quedará desvinculado.")) return;
+    setMsg("linkMsg", "Cerrando la sesión…");
+    try {
+      await api("/api/logout", { method: "POST", body: { password: getPassword() } });
+      setMsg("linkMsg", "Sesión cerrada. Vincula el bot de nuevo cuando quieras.", "ok");
+      await refreshStatus();
+    } catch (error) {
+      setMsg("linkMsg", error.message, "err");
+    }
+  });
+
+  $("btnScroll").addEventListener("click", () => {
+    const box = $("logBox");
+    box.scrollTop = box.scrollHeight;
+  });
+
+  $("panelPassword").addEventListener("change", () => {
+    const value = $("panelPassword").value;
+    try { sessionStorage.setItem("atlasPanelPassword", value); } catch {}
+    refreshStatus();
+    if (state.view === "settings") loadSettings();
+    if (state.view === "commands") loadCommands(state.lastCommandQuery, state.lastCategory);
+  });
+
+  // ── Bucle de actualización ──────────────────
+  const renderLogs = (logs) => {
+    const box = $("logBox");
+    const atBottom = box.scrollHeight - box.scrollTop - box.clientHeight < 60;
+    box.textContent = (logs && logs.length) ? logs.join("\n") : "Sin registros aún.";
+    if (atBottom) box.scrollTop = box.scrollHeight;
+  };
+
+  const refreshStatus = async () => {
+    try {
+      const data = await api("/api/status");
+      state.status = data;
+      renderStats(data);
+      renderLogs(data.logs);
+      renderLink();
+    } catch {}
+  };
+
+  const boot = async () => {
+    try {
+      const stored = sessionStorage.getItem("atlasPanelPassword");
+      if (stored) $("panelPassword").value = stored;
+    } catch {}
+    await refreshStatus();
+    if (!state.commands) loadCommands();
+  };
+
+  boot();
+  setInterval(refreshStatus, 3000);
+  // Si estás en la pestaña de QR, refresca la imagen cada 20 s (el QR vive 60 s).
+  setInterval(() => {
+    const conn = (state.status && state.status.connection) || {};
+    if (state.view === "link" && state.mode === "qr" && conn.status === "qr") {
+      const img = document.querySelector(".qr-img");
+      if (img) img.src = "/qr?t=" + Date.now();
+    }
+  }, 20000);
+})();
+</script>
+</body>
+</html>
