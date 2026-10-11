@@ -18,7 +18,10 @@ Código limpio, sin emojis (solo símbolos), sin dependencias innecesarias y lis
   (`!menu grupos`) y contador real de usuarios.
 - **Prefijo configurable** (uno o varios caracteres).
 - **Configuración central**: nombre del bot, dueño, símbolos y mensajes.
-- Conexión por **código QR** y **código de vinculación** (pairing).
+- Conexión por **código QR** y **código de vinculación** (pairing)
+  **confirmado por WhatsApp**: el código de 8 dígitos solo se muestra cuando el
+  servidor lo registra de verdad (adiós a los códigos "falsos" que el teléfono
+  dice que no existen).
 - **Sesión persistente**: no vuelves a vincular después de reiniciar.
 - **Reconexión automática** y manejo de errores.
 - **227 comandos** con alias en **20 categorías**: información, IA, descargas,
@@ -86,6 +89,7 @@ Atlas-Bot/
 │
 ├── lib/                      # Núcleo del bot (no necesitas tocarlo)
 │   ├── connection.js         # Conexión, QR, pairing, reconexión y sesión
+│   ├── pairing.js            # Código de vinculación confirmado por WhatsApp
 │   ├── server.js             # Servidor HTTP + API del panel (Render)
 │   ├── panel.html            # Interfaz del panel web (estado, comandos, ajustes)
 │   ├── settings.js           # Ajustes editables desde la web (prefijo, nombre, banner, dueño)
@@ -150,6 +154,8 @@ Atlas-Bot/
                            # eval, exec, join, logs, owners, plugins, restart, reload
                            # shell, unblock, update
 
+├── tests/                    # Pruebas del código de vinculación (npm test)
+│
 ├── database/                 # Se crea sola: usuarios y monedas (ignorada por git)
 └── session/                  # Se crea sola: guarda la sesión (ignorada por git)
 ```
@@ -351,10 +357,32 @@ Ideal para Termux o terminales donde el QR no se ve bien.
 2. Escribe tu número **con código de país, sin `+` ni espacios**
    (`521234567890`) cuando el bot lo pida — o déjalo listo en
    `PAIRING_NUMBER` del `.env` para saltarte la pregunta.
-3. El bot mostrará un código tipo `ABCD-1234`.
+3. El bot pide el código a WhatsApp y **espera su confirmación**: solo entonces
+   muestra el código tipo `ABCD 1234` en la consola (y en el panel web). Si
+   WhatsApp lo rechaza, verás el motivo exacto en vez de un código inventado.
 4. En WhatsApp ve a: **Ajustes » Dispositivos vinculados » Vincular con número de teléfono**
-   e ingresa el código. Si expira antes de usarlo, reinicia el bot para
-   generar uno nuevo.
+   e ingresa el código. Si la conexión se reinicia antes de usarlo, ese código
+   deja de existir: genera uno nuevo.
+
+> **¿Por qué algunos bots dan códigos que "no existen"?**
+> Baileys genera el código **en local** y lo devuelve en cuanto escribe la
+> petición en el WebSocket, sin esperar la respuesta de WhatsApp. Si el servidor
+> la rechaza (número inválido, conexión todavía sin negociar, identidad de
+> navegador no aceptada, saturación...) el código mostrado nunca llegó a
+> existir. `lib/pairing.js` lo arregla así:
+>
+> 1. Espera la señal de vinculación de WhatsApp (`pair-device`) antes de pedir nada.
+> 2. Registra el código con `query()`, que **sí espera la respuesta del servidor**.
+> 3. Normaliza la plataforma declarada (`Chrome (Ubuntu)`, `Chrome (Mac OS)`...),
+>    que WhatsApp valida con más rigor en este flujo que en el QR.
+> 4. Si algo falla, limpia el estado y muestra el motivo: **nunca un código**.
+> 5. Solo tras la confirmación guarda la sesión pendiente y publica el código.
+>
+> Es el mismo criterio del arreglo oficial de Baileys (PR
+> [WhiskeySockets/Baileys#2559](https://github.com/WhiskeySockets/Baileys/pull/2559),
+> issue [#2560](https://github.com/WhiskeySockets/Baileys/issues/2560)), aplicado
+> en el bot para que funcione también con la versión fijada en `package.json`.
+> Puedes comprobarlo con `npm test`.
 
 ## » Sesión persistente
 
@@ -805,10 +833,12 @@ Una vez que Render termine de desplegar el servicio:
    - **Código QR**: escanea el código QR directamente desde la página web (se renueva solo).
    - **Código de 8 dígitos (Pairing Code)**: escribe tu número con código de país
      (ej. `59896719709`, sin `+` ni espacios) y pulsa **Obtener código**
-     (el botón o la tecla **Enter**). El código se pide **una sola vez por
-     conexión**; si WhatsApp tarda unos segundos, aparecerá solo en el panel
-     (verás *"Pidiendo el código a WhatsApp…"* mientras tanto). Si WhatsApp dice
-     que no existe, pulsa **Generar otro código** y usa el nuevo.
+     (el botón o la tecla **Enter**). El panel muestra el paso real de la
+     petición (*"Esperando la señal de vinculación de WhatsApp…"*, *"Registrando
+     el código en WhatsApp…"*) y **no enseña ningún código hasta que WhatsApp lo
+     confirma** (caja verde *"WhatsApp confirmó este código"*). Si la petición
+     falla, aparece el motivo en una caja ámbar. El código se pide **una sola vez
+     por conexión**; si la conexión se reinicia, pulsa **Generar otro código**.
    - Botones **Reiniciar sesión** (borra la sesión y vuelve a empezar) y
      **Cerrar sesión** (desvincula el dispositivo sin apagar el bot).
 
@@ -846,7 +876,7 @@ Una vez que Render termine de desplegar el servicio:
 | `POST /api/settings` | Guarda los ajustes y los aplica al instante |
 | `GET /api/banner` | Devuelve la imagen del banner actual |
 | `POST /api/banner` | Cambia el banner: `{ "data": "data:image/..." }`, `{ "url": "https://..." }` o `{ "mode": "default" \| "none" }` |
-| `POST /api/pair` | Genera el código de 8 dígitos (`{ "number": "59896719709", "force": true }`) |
+| `POST /api/pair` | Genera el código de 8 dígitos (`{ "number": "59896719709", "force": true }`); responde `confirmed: true` solo si WhatsApp lo registró |
 | `POST /api/qr` | Pasa a modo código QR |
 | `POST /api/reset-session` | Borra la sesión y reinicia la conexión |
 | `POST /api/logout` | Cierra la sesión de WhatsApp (desvincula el dispositivo) |
@@ -874,11 +904,14 @@ código"*, no es un error: el panel lo muestra en cuanto WhatsApp lo confirma
 (se refresca solo cada 3 segundos).
 
 **» El código de vinculación dice que "no existe" o no llega**
-El código de 8 dígitos **vive dentro de la conexión**: WhatsApp solo acepta el
+El bot **ya no muestra códigos falsos**: registra el código en WhatsApp, espera
+su respuesta y solo lo publica si el servidor lo acepta (si lo rechaza, verás el
+motivo: número inválido, conexión caída, demasiados intentos...). Aun así, el
+código de 8 dígitos **vive dentro de la conexión**: WhatsApp solo acepta el
 último código pedido y, si la conexión se reinicia, el anterior deja de existir.
-Por eso el bot ahora pide el código **una sola vez por conexión**, lo muestra
-con la fecha en que se generó y lo borra en cuanto la conexión se cae (así el
-panel nunca te enseña un código muerto). Si te sale "no existe":
+Por eso el bot pide el código **una sola vez por conexión**, lo muestra con la
+fecha en que se generó, indica si está **confirmado** y lo borra en cuanto la
+conexión se cae. Si aun así te sale "no existe":
 
 1. Confirma que el número lleva **código de país, sin `+` y sin espacios**
    (`59896719709`) y que **no empieza con 0**.

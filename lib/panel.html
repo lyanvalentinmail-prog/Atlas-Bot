@@ -214,6 +214,12 @@
     background: rgba(245,158,11,0.10); border: 1px solid rgba(245,158,11,0.4);
     color: #fcd34d; padding: 12px 14px; border-radius: 11px; font-size: 0.85rem; line-height: 1.5;
   }
+  .ok-box {
+    width: 100%; max-width: 520px; text-align: left;
+    background: rgba(16,185,129,0.10); border: 1px solid rgba(16,185,129,0.4);
+    color: #6ee7b7; padding: 12px 14px; border-radius: 11px; font-size: 0.85rem; line-height: 1.5;
+  }
+  .ok-box b, .warn-box b { color: #fff; }
   .steps { text-align: left; color: var(--muted); font-size: 0.85rem; line-height: 1.7; max-width: 520px; }
   .steps code { background: rgba(255,255,255,0.07); padding: 1px 6px; border-radius: 6px; }
 
@@ -275,6 +281,7 @@
   #toast.show { transform: translate(-50%, 0); }
   #toast.ok { border-color: rgba(16,185,129,0.5); }
   #toast.err { border-color: rgba(239,68,68,0.55); }
+  #toast.warn { border-color: rgba(245,158,11,0.55); }
 </style>
 </head>
 <body>
@@ -370,7 +377,7 @@
             1. Abre WhatsApp en tu teléfono.<br />
             2. Ve a <b>Ajustes</b> » <b>Dispositivos vinculados</b> » <b>Vincular un dispositivo</b>.<br />
             3. Elige <b>Vincular con el número de teléfono</b> e introduce el código.<br />
-            <span class="muted">El código solo sirve mientras la conexión siga activa: si WhatsApp dice que no existe, pulsa <b>Generar otro código</b>.</span>
+            <span class="muted">El bot solo muestra el código cuando <b>WhatsApp lo confirma</b>; si la petición falla verás el motivo en vez de un código que no existe. El código deja de servir si la conexión se reinicia: en ese caso pulsa <b>Generar otro código</b>.</span>
           </div>
         </div>
 
@@ -715,31 +722,52 @@
     }
   };
 
+  // Pasos reales de la petición (los informa el bot en pairingStage).
+  const PAIRING_STAGES = {
+    "waiting-signal": "Esperando la señal de vinculación de WhatsApp…",
+    requesting: "Registrando el código en WhatsApp…",
+    confirmed: "Código confirmado por WhatsApp.",
+    failed: "No se pudo generar el código."
+  };
+
   // Solo se repinta el código y los botones: el input del número nunca
   // se toca mientras escribes.
   const renderPairing = (conn) => {
     const box = $("pairCodeBox");
     const code = conn.pairingCode;
+    // Un código solo es real si WhatsApp confirmó el registro.
+    const confirmado = conn.pairingConfirmed === true;
     const problema = conn.pairingError || "";
+    const stage = conn.pairingStage || "idle";
     // Si el bot ya está en modo pairing, hay una petición en curso.
     const esperando = conn.method === "pairing";
 
-    // Huella de lo que hay que mostrar: si cambia el código o el aviso,
-    // se repinta (así nunca se queda en pantalla un estado viejo).
-    const huella = code ? "code:" + code : problema ? "error:" + problema : esperando ? "waiting" : "inicio";
+    // Huella de lo que hay que mostrar: si cambia el código, la confirmación
+    // o el aviso, se repinta (así nunca se queda en pantalla un estado viejo).
+    const huella = code
+      ? "code:" + code + (confirmado ? ":ok" : ":sinconfirmar")
+      : problema ? "error:" + problema
+      : esperando ? "waiting:" + stage
+      : "inicio";
 
     if (box.dataset.state !== huella) {
       box.dataset.state = huella;
       box.innerHTML = code
         ? '<div class="code">' + esc(code) + "</div>" +
+          '<div class="' + (confirmado ? "ok-box" : "warn-box") + '">' +
+            (confirmado
+              ? "WhatsApp confirmó este código: ingrésalo tal cual en tu teléfono."
+              : "WhatsApp <b>no llegó a confirmar</b> este código. Si tu teléfono dice que no existe, pulsa <b>Generar otro código</b>.") +
+          "</div>" +
           '<p class="hint">Número destino: <b>+' + esc(conn.pairingNumber || "") + "</b><br />" +
           "Generado " + fmtAgo(conn.pairingIssuedAt) +
           " · el código deja de existir cuando la conexión se reinicia.</p>"
         : problema
           ? '<div class="warn-box">' + esc(problema) + "</div>"
           : esperando
-            ? '<div class="spinner"></div><p class="hint">Pidiendo el código a WhatsApp… ' +
-              "aparecerá aquí en cuanto esté listo.</p>"
+            ? '<div class="spinner"></div><p class="hint">' +
+              esc(PAIRING_STAGES[stage] || "Pidiendo el código a WhatsApp…") +
+              " El código aparece aquí solo cuando WhatsApp lo confirma.</p>"
             : '<p class="hint">Escribe tu número con código de país (ej: <b>59896719709</b>) ' +
               "y pulsa <b>Obtener código</b>.</p>";
     }
@@ -791,11 +819,17 @@
     try {
       const data = await api("/api/pair", { method: "POST", body: { number, force, password: getPassword() } });
       if (data.code) {
-        setMsg("linkMsg", "Código listo: " + data.code + " · ingrésalo en WhatsApp » Dispositivos vinculados.", "ok");
-        toast("Código generado: " + data.code, "ok");
+        // confirmed = WhatsApp aceptó el registro de ese código.
+        if (data.confirmed !== false) {
+          setMsg("linkMsg", "Código confirmado por WhatsApp: " + data.code + " · ingrésalo en WhatsApp » Dispositivos vinculados.", "ok");
+          toast("Código confirmado: " + data.code, "ok");
+        } else {
+          setMsg("linkMsg", "Código generado sin confirmar por WhatsApp: " + data.code + ". Si tu teléfono dice que no existe, pide otro.", "err");
+          toast("Código sin confirmar: " + data.code, "warn");
+        }
       } else {
         // WhatsApp todavía no lo confirmó: el sondeo del panel lo mostrará solo.
-        setMsg("linkMsg", data.message || "WhatsApp está procesando la petición. El código aparecerá aquí en unos segundos.");
+        setMsg("linkMsg", data.message || "WhatsApp está procesando la petición. Aquí no se muestra ningún código hasta que lo confirme.");
       }
       await refreshStatus();
     } catch (error) {
