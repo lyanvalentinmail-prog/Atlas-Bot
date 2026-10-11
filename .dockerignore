@@ -1,0 +1,8 @@
+node_modules
+session
+sessions
+database/*.json
+tmp
+.env
+.git
+npm-debug.log*
