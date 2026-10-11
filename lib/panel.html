@@ -720,22 +720,28 @@
   const renderPairing = (conn) => {
     const box = $("pairCodeBox");
     const code = conn.pairingCode;
+    const problema = conn.pairingError || "";
+    // Si el bot ya está en modo pairing, hay una petición en curso.
+    const esperando = conn.method === "pairing";
 
-    if (code && box.dataset.code !== code) {
-      box.dataset.code = code;
-      box.innerHTML =
-        '<div class="code">' + esc(code) + "</div>" +
-        '<p class="hint">Número destino: <b>+' + esc(conn.pairingNumber || "") + "</b><br />" +
-        "Generado " + fmtAgo(conn.pairingIssuedAt) +
-        " · el código deja de existir cuando la conexión se reinicia.</p>";
-    } else if (!code && box.dataset.code !== "waiting") {
-      box.dataset.code = "waiting";
-      box.innerHTML = conn.pairingError
-        ? '<div class="warn-box">' + esc(conn.pairingError) + "</div>"
-        : '<div class="spinner"></div><p class="hint">Pidiendo el código a WhatsApp…</p>';
-    } else if (!code && conn.pairingError && box.dataset.error !== conn.pairingError) {
-      box.dataset.error = conn.pairingError;
-      box.innerHTML = '<div class="warn-box">' + esc(conn.pairingError) + "</div>";
+    // Huella de lo que hay que mostrar: si cambia el código o el aviso,
+    // se repinta (así nunca se queda en pantalla un estado viejo).
+    const huella = code ? "code:" + code : problema ? "error:" + problema : esperando ? "waiting" : "inicio";
+
+    if (box.dataset.state !== huella) {
+      box.dataset.state = huella;
+      box.innerHTML = code
+        ? '<div class="code">' + esc(code) + "</div>" +
+          '<p class="hint">Número destino: <b>+' + esc(conn.pairingNumber || "") + "</b><br />" +
+          "Generado " + fmtAgo(conn.pairingIssuedAt) +
+          " · el código deja de existir cuando la conexión se reinicia.</p>"
+        : problema
+          ? '<div class="warn-box">' + esc(problema) + "</div>"
+          : esperando
+            ? '<div class="spinner"></div><p class="hint">Pidiendo el código a WhatsApp… ' +
+              "aparecerá aquí en cuanto esté listo.</p>"
+            : '<p class="hint">Escribe tu número con código de país (ej: <b>59896719709</b>) ' +
+              "y pulsa <b>Obtener código</b>.</p>";
     }
 
     const actions = $("pairActions");
@@ -784,8 +790,13 @@
 
     try {
       const data = await api("/api/pair", { method: "POST", body: { number, force, password: getPassword() } });
-      setMsg("linkMsg", "Código listo: " + data.code + " · ingrésalo en WhatsApp » Dispositivos vinculados.", "ok");
-      toast("Código generado: " + data.code, "ok");
+      if (data.code) {
+        setMsg("linkMsg", "Código listo: " + data.code + " · ingrésalo en WhatsApp » Dispositivos vinculados.", "ok");
+        toast("Código generado: " + data.code, "ok");
+      } else {
+        // WhatsApp todavía no lo confirmó: el sondeo del panel lo mostrará solo.
+        setMsg("linkMsg", data.message || "WhatsApp está procesando la petición. El código aparecerá aquí en unos segundos.");
+      }
       await refreshStatus();
     } catch (error) {
       setMsg("linkMsg", error.message || "No se pudo generar el código.", "err");
@@ -797,6 +808,13 @@
       renderLink();
     }
   };
+
+  // Estos listeners son el corazón de la vinculación por web: sin ellos el
+  // botón "Obtener código" no hacía nada (el código nunca se pedía).
+  $("btnPair").addEventListener("click", (event) => requestPair(event));
+  $("phoneInput").addEventListener("keydown", (event) => {
+    if (event.key === "Enter") requestPair(event);
+  });
 
   // ── Comandos ────────────────────────────────
   const loadCommands = async (query = "", category = "") => {

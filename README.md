@@ -344,7 +344,10 @@ PAIRING_NUMBER=521234567890     # solo necesario para pairing
 
 Ideal para Termux o terminales donde el QR no se ve bien.
 
-1. Elige el método pairing (opción 2, `npm run start:pairing` o `CONNECTION_METHOD=pairing`).
+0. **Desde el panel web** (Render): pestaña **Vincular WhatsApp » Código de 8
+   dígitos**, escribe tu número y pulsa **Obtener código**. El bot se reinicia
+   solo en modo pairing y el código aparece en la propia página.
+1. Desde la consola, elige el método pairing (opción 2, `npm run start:pairing` o `CONNECTION_METHOD=pairing`).
 2. Escribe tu número **con código de país, sin `+` ni espacios**
    (`521234567890`) cuando el bot lo pida — o déjalo listo en
    `PAIRING_NUMBER` del `.env` para saltarte la pregunta.
@@ -801,9 +804,11 @@ Una vez que Render termine de desplegar el servicio:
    **» Vincular WhatsApp**
    - **Código QR**: escanea el código QR directamente desde la página web (se renueva solo).
    - **Código de 8 dígitos (Pairing Code)**: escribe tu número con código de país
-     (ej. `59896719709`, sin `+` ni espacios) y pulsa **Obtener código**.
-     El código se pide **una sola vez por conexión** y se muestra al instante; si
-     WhatsApp dice que no existe, pulsa **Generar otro código** y usa el nuevo.
+     (ej. `59896719709`, sin `+` ni espacios) y pulsa **Obtener código**
+     (el botón o la tecla **Enter**). El código se pide **una sola vez por
+     conexión**; si WhatsApp tarda unos segundos, aparecerá solo en el panel
+     (verás *"Pidiendo el código a WhatsApp…"* mientras tanto). Si WhatsApp dice
+     que no existe, pulsa **Generar otro código** y usa el nuevo.
    - Botones **Reiniciar sesión** (borra la sesión y vuelve a empezar) y
      **Cerrar sesión** (desvincula el dispositivo sin apagar el bot).
 
@@ -861,6 +866,12 @@ En VPS: `sudo apt install -y build-essential git`. En Termux: `pkg install -y gi
 **» El código QR no se muestra o se ve cortado**
 Agranda la ventana de la terminal (el QR necesita espacio) o cambia a
 `CONNECTION_METHOD=pairing`, que imprime solo un código corto.
+
+**» En el panel web, el botón "Obtener código" no hacía nada**
+Corregido: el botón (y la tecla **Enter** en el campo del número) ahora pide el
+código de verdad. Si al pulsarlo responde *"WhatsApp todavía está confirmando el
+código"*, no es un error: el panel lo muestra en cuanto WhatsApp lo confirma
+(se refresca solo cada 3 segundos).
 
 **» El código de vinculación dice que "no existe" o no llega**
 El código de 8 dígitos **vive dentro de la conexión**: WhatsApp solo acepta el
