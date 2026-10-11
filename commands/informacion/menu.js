@@ -16,7 +16,7 @@
 // │   - Si el texto sale muy largo, se divide en
 // │     varios mensajes para que WhatsApp no se trabe.
 // ╰────────────────────────────────────────────
-import { existsSync, readFileSync } from 'node:fs'
+import { existsSync, readFileSync, statSync } from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { logger } from '../../lib/logger.js'
@@ -37,25 +37,33 @@ const MAX_CHUNK = 3500
 const normalize = (value = '') =>
   String(value).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '')
 
-// El banner se lee del disco una sola vez.
-let bannerCache = null
-let bannerMissing = false
+// El banner se cachea por archivo + fecha de modificación: si lo cambias
+// desde el panel web (o reemplazas el archivo), el próximo menú ya lo usa.
+let bannerCache = { key: null, buffer: null }
+const bannerWarned = new Set()
 
 const getBanner = (menuCfg) => {
-  if (bannerCache || bannerMissing) return bannerCache
   const bannerPath = menuCfg?.banner
-  if (!bannerPath) { bannerMissing = true; return null }
+  if (!bannerPath) return null
 
   try {
     const filePath = path.resolve(PROJECT_ROOT, bannerPath)
     if (!existsSync(filePath)) throw new Error('archivo inexistente')
-    bannerCache = readFileSync(filePath)
+
+    const stat = statSync(filePath)
+    const key = `${filePath}:${stat.size}:${stat.mtimeMs}`
+    if (bannerCache.key === key) return bannerCache.buffer
+
+    bannerCache = { key, buffer: readFileSync(filePath) }
+    bannerWarned.delete(bannerPath)
+    return bannerCache.buffer
   } catch {
-    logger.warn(`No se encontró el banner "${bannerPath}". El menú se enviará como texto.`)
-    bannerMissing = true
+    if (!bannerWarned.has(bannerPath)) {
+      logger.warn(`No se encontró el banner "${bannerPath}". El menú se enviará como texto.`)
+      bannerWarned.add(bannerPath)
+    }
     return null
   }
-  return bannerCache
 }
 
 // Ejecuta una plantilla del menú; nunca lanza error.
