@@ -830,21 +830,26 @@ Una vez que Render termine de desplegar el servicio:
 2. Verás el **Panel de Control en vivo de Atlas Bot**, con cuatro pestañas:
 
    **» Vincular WhatsApp**
-   - **Código QR**: escanea el código QR directamente desde la página web (se renueva solo).
+   - **Código QR**: escanea el código QR directamente desde la página web.
+     Incluye una **barra de vigencia** con los segundos que le quedan al QR
+     (60 s) y se renueva solo cuando WhatsApp genera uno nuevo; si la conexión
+     se corta, el QR viejo desaparece en el acto para que no intentes escanear
+     un código muerto.
    - **Código de 8 dígitos (Pairing Code)**: escribe tu número con código de país
      (ej. `59896719709`, sin `+` ni espacios) y pulsa **Obtener código**
-     (el botón o la tecla **Enter**). El panel muestra el paso real de la
-     petición (*"Esperando la señal de vinculación de WhatsApp…"*, *"Registrando
-     el código en WhatsApp…"*) y **no enseña ningún código hasta que WhatsApp lo
-     confirma** (caja verde *"WhatsApp confirmó este código"*). Si la petición
-     falla, aparece el motivo en una caja ámbar. El código se pide **una sola vez
+     (el botón o la tecla **Enter**). El panel muestra el avance real en una
+     línea de pasos (*1. Conectar » 2. Registrar » 3. Confirmar*) y **no enseña
+     ningún código hasta que WhatsApp lo confirma** (caja verde con el código
+     en grande y botón **Copiar**). Si la petición falla, el paso donde falló
+     se pinta en rojo y aparece el motivo. El código se pide **una sola vez
      por conexión**; si la conexión se reinicia, pulsa **Generar otro código**.
    - Botones **Reiniciar sesión** (borra la sesión y vuelve a empezar) y
      **Cerrar sesión** (desvincula el dispositivo sin apagar el bot).
 
    **» Comandos**
    - Lista **completa** de comandos (nombre, alias, descripción, uso y permisos:
-     solo dueño, admin, solo grupos), con buscador y filtro por categoría.
+     solo dueño, admin, solo grupos), con buscador, chips de categoría y botón
+     de copiado rápido.
 
    **» Ajustes**
    - **Prefijo**, **nombre del bot**, **nombre del dueño** y **números del dueño**.
@@ -855,7 +860,8 @@ Una vez que Render termine de desplegar el servicio:
      banner nuevos. Lo que pongas en el `.env` actúa como valor por defecto.
 
    **» Consola**
-   - Registro en vivo de lo que hace el bot (últimas 30 líneas).
+   - Registro en vivo de lo que hace el bot (últimas 30 líneas, con color por
+     nivel: errores en rojo, avisos en ámbar, comandos en violeta...).
 
    Además, arriba del todo verás las tarjetas de resumen: estado de la conexión,
    cuenta vinculada, **espacio libre en el disco** (con barra de uso y lo que
