@@ -7,6 +7,7 @@ import { config } from './config.js'
 import { loadCommands } from './lib/loader.js'
 import { loadDatabase } from './lib/database.js'
 import { startConnection } from './lib/connection.js'
+import { startServer, setServerBotStats } from './lib/server.js'
 import { logger, colors } from './lib/logger.js'
 
 // ── « Banner de inicio » ────────────────────
@@ -25,7 +26,6 @@ const showBanner = () => {
   console.log(colors.reset)
 }
 
-// ── « Inicio » ──────────────────────────────
 // ── « Método de conexión por argumentos » ───
 // npm start -- --qr   |   npm start -- --pairing
 // (o los atajos: npm run start:qr / start:pairing)
@@ -39,7 +39,10 @@ const getCliMethod = () => {
 const main = async () => {
   showBanner()
 
-  // El método se decide así: argumento CLI > .env > pregunta al iniciar.
+  // Inicia el servidor HTTP y panel web de inmediato (requerido por Render en $PORT)
+  startServer()
+
+  // El método se decide así: argumento CLI > .env > pregunta al iniciar (o QR + panel web en Render).
   let method = getCliMethod()
   if (!method && ['qr', 'pairing'].includes(config.connectionMethod)) {
     method = config.connectionMethod
@@ -51,10 +54,12 @@ const main = async () => {
     'Método  : ' +
     (method === 'pairing' ? 'Código de vinculación'
       : method === 'qr' ? 'Código QR'
-      : 'se elegirá al iniciar')
+      : 'automático / panel web')
   )
 
   const { commands, categories, total } = await loadCommands()
+  setServerBotStats({ totalCommands: total, totalCategories: categories.size })
+
   if (total === 0) {
     logger.warn('No se cargó ningún comando. Revisa la carpeta "commands".')
   } else {
@@ -78,5 +83,7 @@ process.on('unhandledRejection', (reason) => {
 
 main().catch((error) => {
   logger.error('No se pudo iniciar el bot:', error)
-  process.exit(1)
+  if (!process.env.RENDER && process.stdin.isTTY) {
+    process.exit(1)
+  }
 })

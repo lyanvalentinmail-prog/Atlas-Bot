@@ -38,9 +38,14 @@ export const config = {
   ownerNumbers: toNumberList(process.env.OWNER_NUMBER),
 
   // Datos extra que se muestran en el menú
-  botWeb: 'Aún no tiene web..',
+  botWeb: process.env.RENDER_EXTERNAL_URL || process.env.BOT_WEB || 'Aún no tiene web..',
   botType: 'Sub-Bot',
   repoUrl: 'https://github.com/lyanvalentinmail-prog/Atlas-Bot',
+
+  // Servidor HTTP y Panel Web (necesario para Render)
+  port: Number(process.env.PORT) || 3000,
+  keepAliveUrl: process.env.KEEP_ALIVE_URL || process.env.RENDER_EXTERNAL_URL || '',
+  panelPassword: process.env.PANEL_PASSWORD || '',
 
   // Prefijo de comandos. Cada carácter funciona como prefijo:
   // PREFIX = '!'  -> solo !

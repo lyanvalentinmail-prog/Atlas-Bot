@@ -1,0 +1,32 @@
+# ╭────────────────────────────────────────────
+# │  ATLAS BOT · Configuración Blueprint para Render
+# │  Despliegue automático en https://render.com
+# ╰────────────────────────────────────────────
+services:
+  - type: web
+    name: atlas-bot
+    runtime: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /health
+    autoDeploy: true
+    envVars:
+      - key: NODE_VERSION
+        value: 20.18.0
+      - key: BOT_NAME
+        value: Atlas Bot
+      - key: OWNER_NAME
+        value: Lyan
+      - key: OWNER_NUMBER
+        value: "59896719709"
+      - key: BOT_PREFIX
+        value: "!"
+      - key: CONNECTION_METHOD
+        value: qr
+      - key: PAIRING_NUMBER
+        sync: false
+      - key: PANEL_PASSWORD
+        sync: false
+      - key: AI_API_KEY
+        sync: false

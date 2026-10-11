@@ -72,9 +72,11 @@ Código limpio, sin emojis (solo símbolos), sin dependencias innecesarias y lis
 ```
 Atlas-Bot/
 │
-├── index.js                  # Punto de entrada (banner, carga y arranque)
+├── index.js                  # Punto de entrada (banner, servidor web, carga y arranque)
 ├── config.js                 # CONFIGURACIÓN CENTRAL del bot
 ├── package.json              # Dependencias y scripts
+├── render.yaml               # Blueprint para desplegar en Render en 1 clic
+├── Dockerfile                # Contenedor Docker listo para Render / VPS
 ├── ecosystem.config.cjs      # Configuración de PM2
 ├── .env.example              # Plantilla de variables de entorno
 ├── .gitignore                # Archivos ignorados por git
@@ -84,6 +86,7 @@ Atlas-Bot/
 │
 ├── lib/                      # Núcleo del bot (no necesitas tocarlo)
 │   ├── connection.js         # Conexión, QR, pairing, reconexión y sesión
+│   ├── server.js             # Servidor HTTP + Panel Web en vivo para Render
 │   ├── handler.js            # Lector de mensajes, prefijo, moderación y permisos
 │   ├── loader.js             # Cargador automático de comandos
 │   ├── database.js           # Mini base de datos JSON (usuarios, monedas, ajustes)
@@ -755,6 +758,46 @@ Se activan **por grupo** y solo los admins pueden cambiarlos:
 El comando apaga el proceso limpiamente (`process.exit`). Para que el bot
 **vuelva solo**, debe estar corriendo con PM2 (`pm2 start ecosystem.config.cjs`);
 si lo iniciaste con `npm start`, tendrás que encenderlo a mano.
+
+---
+
+# DESPLIEGUE EN RENDER (WEB SERVICE)
+
+El bot incluye un **servidor web y panel de control interactivo** (`lib/server.js`) que escucha automáticamente en `0.0.0.0:$PORT`, junto con los archivos `render.yaml` y `Dockerfile` listos para **Render**.
+
+### Opción 1 » Despliegue rápido como Web Service (Node.js o Docker)
+
+1. Sube este repositorio a tu cuenta de GitHub.
+2. Entra en [render.com](https://render.com) y pulsa **New + » Web Service**.
+3. Conecta tu repositorio `Atlas-Bot`.
+4. Configura el servicio:
+   - **Runtime**: `Node` (o `Docker`)
+   - **Build Command**: `npm install`
+   - **Start Command**: `npm start`
+   - **Plan**: `Free` (o el que prefieras)
+5. *(Opcional)* En **Environment Variables**, puedes agregar:
+   - `OWNER_NAME` = `TuNombre`
+   - `OWNER_NUMBER` = `59896719709` *(tu número con código de país, sin `+`)*
+   - `BOT_PREFIX` = `!`
+   - `CONNECTION_METHOD` = `qr` *(o `pairing`)*
+   - `PAIRING_NUMBER` = *(tu número si quieres que genere el código al arrancar)*
+   - `PANEL_PASSWORD` = *(opcional, contraseña para proteger el panel web)*
+6. Pulsa **Create Web Service**.
+
+### Opción 2 » Despliegue en 1 clic con Blueprint (`render.yaml`)
+
+1. En Render ve a **New + » Blueprint**.
+2. Selecciona el repositorio `Atlas-Bot`.
+3. Render detectará `render.yaml` automáticamente con el health check `/health` y las variables listas.
+
+### ¿Cómo vincular tu WhatsApp desde Render?
+
+Una vez que Render termine de desplegar el servicio:
+1. Abre la URL que te da Render (por ejemplo: `https://atlas-bot-xxxx.onrender.com`).
+2. Verás el **Panel de Control en vivo de Atlas Bot**:
+   - **Con Código QR**: escanea el código QR directamente desde la página web.
+   - **Con Código de 8 dígitos (Pairing Code)**: haz clic en la pestaña **"Código de 8 dígitos"**, escribe tu número con código de país (ej. `59896719709`) y pulsa **Obtener código**. El código aparecerá en pantalla al instante.
+3. Para mantener despierto el plan gratuito de Render 24/7, puedes registrar la ruta `https://tu-app.onrender.com/health` en [UptimeRobot](https://uptimerobot.com) o [cron-job.org](https://cron-job.org) cada 5 minutos (además del auto-ping integrado que hace el propio bot con `RENDER_EXTERNAL_URL`).
 
 ---
 
